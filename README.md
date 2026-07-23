@@ -32,8 +32,7 @@ Full product and engineering requirements live in [`docs/`](docs/):
 | [Business Requirements Document](docs/Business%20Requirements%20Document.md) | Business goals, capabilities, rules, and constraints |
 | [Software Requirements Specification](docs/Software%20Requirements%20Specification.md) | Functional & non-functional requirements, architecture, data model, API design |
 | [Product Backlog & User Stories](docs/Product%20Backlog%20and%20User%20Stories.md) | Epics, user stories, and MVP scope for implementation |
-
-> Note: `docs/` is currently listed in `.gitignore`, so these files are local-only and won't appear in the pushed repository. Remove that entry if you want the documentation tracked in git.
+| [Entity Relationship Diagram & Database Schema](docs/Entity%20Relationship%20Diagram%20and%20Database%20Schema.md) | ERD and field-level PostgreSQL schema, ready for migrations |
 
 ## Planned technology stack
 
