@@ -33,6 +33,7 @@ Full product and engineering requirements live in [`docs/`](docs/):
 | [Software Requirements Specification](docs/Software%20Requirements%20Specification.md) | Functional & non-functional requirements, architecture, data model, API design |
 | [Product Backlog & User Stories](docs/Product%20Backlog%20and%20User%20Stories.md) | Epics, user stories, and MVP scope for implementation |
 | [Entity Relationship Diagram & Database Schema](docs/Entity%20Relationship%20Diagram%20and%20Database%20Schema.md) | ERD and field-level PostgreSQL schema, ready for migrations |
+| [API Specification](docs/API%20Specification.md) | REST endpoint contract, conventions, and request/response shapes |
 
 ## Planned technology stack
 
