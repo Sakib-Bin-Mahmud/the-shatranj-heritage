@@ -26,8 +26,9 @@ Engineering implementation is underway, following the [Implementation Plan](docs
 - **Phase 1 (Authentication & Customers)** — done: customer registration/login/logout/refresh/forgot-reset-password, admin login, RBAC (roles/permissions), customer profile & address management (self-service and admin), all wired end-to-end through a working Next.js UI.
 - **Phase 2 (Product Catalog & Inventory)** — done: categories (tree, self-referencing), artisans, products & variants with attribute-based filtering, image uploads to S3-compatible storage, public browse/search/filter/sort, and admin inventory management (stock adjustment with a full audit ledger, low-stock reporting).
 - **Phase 3 (Search & Discovery)** — done: Postgres full-text search (weighted, GIN-indexed `tsvector` over product name/description) with relevance ranking, SKU matching, a `featured` filter and flag, and a no-results state that surfaces category and featured-product suggestions instead of a dead end.
+- **Phase 4 (Shopping Cart)** — done: guest (cookie-based) and customer (token-based) carts, add/update/remove items with quantity capped by live inventory, a standalone totals/pricing service (subtotal plus shipping/tax/discount placeholders Checkout will fill in later), self-healing stock revalidation, and a guest cart that merges into the customer's own cart on login/registration.
 
-Next up: Phase 4 (Shopping Cart).
+Next up: Phase 5 (Checkout, Payments & Orders).
 
 ## Documentation
 
