@@ -33,6 +33,20 @@ async def get_current_customer(
     return customer
 
 
+async def get_optional_customer(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    session: AsyncSession = Depends(get_db_session),
+) -> Customer | None:
+    """For Public/Customer endpoints (cart) that behave differently for
+    a guest vs. a logged-in customer but never require login. A token
+    that IS supplied must still be valid — this only makes the token
+    itself optional, not tolerant of a bad one.
+    """
+    if not credentials:
+        return None
+    return await get_current_customer(credentials, session)
+
+
 @dataclass(frozen=True)
 class AdminPrincipal:
     """The authenticated admin, plus the permission codes granted by

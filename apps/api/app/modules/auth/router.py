@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Cookie, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
@@ -19,9 +19,25 @@ from app.modules.auth.schemas import (
     TokenResponse,
 )
 from app.modules.auth.security import decode_token
+from app.modules.cart import service as cart_service
+from app.modules.cart.router import CART_SESSION_COOKIE
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 admin_router = APIRouter(prefix="/admin/auth", tags=["Admin Auth"])
+
+
+async def _merge_guest_cart(
+    session: AsyncSession, response: Response, customer_id, cart_session_id: str | None
+) -> None:
+    """US-CRT-008 (MVP slice): a guest cart built up before login/
+    registration isn't abandoned — it's folded into the customer's own
+    cart, and the now-redundant guest cookie is cleared."""
+    if not cart_session_id:
+        return
+    await cart_service.merge_guest_cart_into_customer(
+        session, customer_id=customer_id, session_id=cart_session_id
+    )
+    response.delete_cookie(CART_SESSION_COOKIE)
 
 
 @router.post(
@@ -30,7 +46,10 @@ admin_router = APIRouter(prefix="/admin/auth", tags=["Admin Auth"])
     dependencies=[Depends(rate_limit("auth_register", limit=10, window_seconds=60))],
 )
 async def register(
-    payload: RegisterRequest, session: AsyncSession = Depends(get_db_session)
+    payload: RegisterRequest,
+    response: Response,
+    cart_session_id: str | None = Cookie(default=None),
+    session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """US-AUTH-001 / US-AUTH-002, FR-AUTH-001."""
     customer = await auth_service.register_customer(
@@ -41,6 +60,7 @@ async def register(
         full_name=payload.full_name,
     )
     access_token, refresh_token = await auth_service.issue_customer_tokens(session, customer)
+    await _merge_guest_cart(session, response, customer.id, cart_session_id)
     await session.commit()
 
     return success_envelope(
@@ -54,12 +74,18 @@ async def register(
 @router.post(
     "/login", dependencies=[Depends(rate_limit("auth_login", limit=10, window_seconds=60))]
 )
-async def login(payload: LoginRequest, session: AsyncSession = Depends(get_db_session)) -> dict:
+async def login(
+    payload: LoginRequest,
+    response: Response,
+    cart_session_id: str | None = Cookie(default=None),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
     """US-AUTH-003, FR-AUTH-002."""
     customer = await auth_service.authenticate_customer(
         session, identifier=payload.identifier, password=payload.password
     )
     access_token, refresh_token = await auth_service.issue_customer_tokens(session, customer)
+    await _merge_guest_cart(session, response, customer.id, cart_session_id)
     await session.commit()
 
     return success_envelope(
