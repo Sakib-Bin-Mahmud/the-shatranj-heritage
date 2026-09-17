@@ -334,6 +334,92 @@ def test_availability_filter_requires_in_stock_variant(
     assert out_of_stock["id"] not in ids
 
 
+def test_search_ranks_name_matches_above_description_matches(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    inv_headers = auth_headers(admin_token(client, inventory_manager_credentials))
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    category = create_category(client, content_headers)
+
+    # Created in reverse of the expected result order, so the assertion
+    # below can only pass because of the name/description weighting
+    # (search_vector's setweight('A'/'B')) — not because of insertion
+    # or scan order.
+    description_match = create_product(
+        client,
+        inv_headers,
+        category["id"],
+        name="Collector's Board",
+        description="Comes with a handcrafted rosewood box.",
+    )
+    name_match = create_product(
+        client,
+        inv_headers,
+        category["id"],
+        name="Handcrafted Rosewood Chess Set",
+        description="A fine set for any collector.",
+    )
+
+    result = client.get("/api/v1/products?q=rosewood").json()["data"]
+    ids = [p["id"] for p in result["items"]]
+    assert ids.index(name_match["id"]) < ids.index(description_match["id"])
+
+
+def test_search_matches_sku(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    inv_headers = auth_headers(admin_token(client, inventory_manager_credentials))
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    category = create_category(client, content_headers)
+
+    suffix = uuid.uuid4().hex[:8]
+    product = create_product(client, inv_headers, category["id"], sku=f"UNIQUE-SKU-{suffix}")
+
+    result = client.get(f"/api/v1/products?q=UNIQUE-SKU-{suffix}").json()["data"]
+    assert [p["id"] for p in result["items"]] == [product["id"]]
+
+
+def test_featured_filter(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    inv_headers = auth_headers(admin_token(client, inventory_manager_credentials))
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    category = create_category(client, content_headers)
+
+    featured = create_product(client, inv_headers, category["id"], is_featured=True)
+    plain = create_product(client, inv_headers, category["id"], is_featured=False)
+
+    result = client.get(f"/api/v1/products?category={category['slug']}&featured=true").json()[
+        "data"
+    ]
+    ids = [p["id"] for p in result["items"]]
+    assert featured["id"] in ids
+    assert plain["id"] not in ids
+    assert all(p["is_featured"] for p in result["items"])
+
+
+def test_no_results_search_returns_suggestions(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    inv_headers = auth_headers(admin_token(client, inventory_manager_credentials))
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    category = create_category(client, content_headers)
+    create_product(client, inv_headers, category["id"], is_featured=True)
+
+    nonsense = uuid.uuid4().hex
+    result = client.get(f"/api/v1/products?q={nonsense}").json()["data"]
+    assert result["meta"]["total"] == 0
+    assert "suggestions" in result
+    # Both lists are capped (top-N), so with many categories/products
+    # accumulated across the suite we only assert the shape and that
+    # returned featured products really are featured — not that this
+    # test's own category/product survives the cap.
+    assert isinstance(result["suggestions"]["categories"], list)
+    assert result["suggestions"]["categories"]
+    assert isinstance(result["suggestions"]["featured_products"], list)
+    assert all(p["is_featured"] for p in result["suggestions"]["featured_products"])
+
+
 def test_related_products_same_category(
     client: TestClient, inventory_manager_credentials, content_manager_credentials
 ):

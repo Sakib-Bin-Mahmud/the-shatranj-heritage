@@ -136,6 +136,7 @@ class CreateProductRequest(BaseModel):
     status: str = Field(default="draft", pattern="^(draft|active|archived)$")
     meta_title: str | None = None
     meta_description: str | None = None
+    is_featured: bool = False
 
 
 class UpdateProductRequest(BaseModel):
@@ -150,6 +151,7 @@ class UpdateProductRequest(BaseModel):
     status: str | None = Field(default=None, pattern="^(draft|active|archived)$")
     meta_title: str | None = None
     meta_description: str | None = None
+    is_featured: bool | None = None
 
 
 class ProductSummary(BaseModel):
@@ -161,6 +163,7 @@ class ProductSummary(BaseModel):
     primary_image_url: str | None
     price: Decimal
     stock_status: str
+    is_featured: bool = False
 
 
 class ProductDetail(BaseModel):
@@ -176,22 +179,14 @@ class ProductDetail(BaseModel):
     currency: str
     weight_grams: int | None
     status: str
+    is_featured: bool
     variants: list[VariantResponse]
     images: list[ImageResponse]
 
 
-class PaginationMeta(BaseModel):
-    page: int
-    limit: int
-    total: int
-    total_pages: int
+class SearchSuggestions(BaseModel):
+    """US-SRC-005: shown alongside an empty search result so the visitor
+    isn't left at a dead end."""
 
-
-class ProductListResponse(BaseModel):
-    items: list[ProductSummary]
-    meta: PaginationMeta
-
-
-class AdminProductListResponse(BaseModel):
-    items: list[ProductDetail]
-    meta: PaginationMeta
+    categories: list[CategoryResponse]
+    featured_products: list[ProductSummary]
