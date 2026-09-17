@@ -15,12 +15,10 @@ def test_health_ok() -> None:
 
 
 def test_module_scaffolds_are_wired() -> None:
-    # auth, customers, and orders have gained real endpoints since Phase 1
-    # (see tests/test_auth.py, tests/test_customers.py) — this only
-    # covers modules still at the Phase 0 placeholder stage.
+    # auth, customers, and orders gained real endpoints in Phase 1;
+    # catalog and inventory in Phase 2 (see their own test modules) —
+    # this only covers modules still at the Phase 0 placeholder stage.
     for module in (
-        "catalog",
-        "inventory",
         "cart",
         "payments",
         "shipping",

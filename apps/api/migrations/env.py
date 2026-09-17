@@ -20,7 +20,9 @@ from app.core.database import Base  # noqa: E402
 # add their `from app.modules.<name> import models` line as they gain
 # a schema.
 from app.modules.auth import models as auth_models  # noqa: E402, F401
+from app.modules.catalog import models as catalog_models  # noqa: E402, F401
 from app.modules.customers import models as customers_models  # noqa: E402, F401
+from app.modules.inventory import models as inventory_models  # noqa: E402, F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

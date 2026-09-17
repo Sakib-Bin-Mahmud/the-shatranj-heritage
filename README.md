@@ -24,8 +24,9 @@ Engineering implementation is underway, following the [Implementation Plan](docs
 
 - **Phase 0 (engineering foundations)** — done: monorepo, FastAPI + Next.js skeletons, Docker Compose, CI, linting/formatting.
 - **Phase 1 (Authentication & Customers)** — done: customer registration/login/logout/refresh/forgot-reset-password, admin login, RBAC (roles/permissions), customer profile & address management (self-service and admin), all wired end-to-end through a working Next.js UI.
+- **Phase 2 (Product Catalog & Inventory)** — done: categories (tree, self-referencing), artisans, products & variants with attribute-based filtering, image uploads to S3-compatible storage, public browse/search/filter/sort, and admin inventory management (stock adjustment with a full audit ledger, low-stock reporting).
 
-Next up: Phase 2 (Product Catalog & Inventory).
+Next up: Phase 3 (Search & Discovery).
 
 ## Documentation
 
