@@ -34,6 +34,7 @@ Full product and engineering requirements live in [`docs/`](docs/):
 | [Product Backlog & User Stories](docs/Product%20Backlog%20and%20User%20Stories.md) | Epics, user stories, and MVP scope for implementation |
 | [Entity Relationship Diagram & Database Schema](docs/Entity%20Relationship%20Diagram%20and%20Database%20Schema.md) | ERD and field-level PostgreSQL schema, ready for migrations |
 | [API Specification](docs/API%20Specification.md) | REST endpoint contract, conventions, and request/response shapes |
+| [Implementation Plan](docs/Implementation%20Plan.md) | Phased, sequenced engineering plan from empty repo to MVP launch and beyond |
 
 ## Planned technology stack
 
