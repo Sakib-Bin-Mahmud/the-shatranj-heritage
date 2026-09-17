@@ -20,7 +20,7 @@ Beyond selling products, the platform is built to showcase Bangladeshi craftsman
 
 ## Project status
 
-This project is currently in the **planning and requirements stage** — no application code has been written yet. The focus so far has been on defining *what* to build and *why* before *how*.
+Engineering implementation has started, following the [Implementation Plan](docs/Implementation%20Plan.md). **Phase 0 (engineering foundations)** is in place: a monorepo with a FastAPI backend and Next.js frontend, Docker Compose for local dependencies, CI, and linting/formatting. No product features are implemented yet — those begin with Phase 1 (Authentication & Customers).
 
 ## Documentation
 
@@ -54,6 +54,69 @@ As proposed in the SRS, pending final confirmation:
 | Monitoring | Prometheus + Grafana |
 
 The initial architecture is a **modular monolith** rather than microservices, to keep MVP delivery fast and simple while preserving clean module boundaries for future extraction.
+
+## Repository layout
+
+```
+apps/
+  api/   FastAPI backend — modular monolith (app/modules/<domain>/...)
+  web/   Next.js (App Router, TypeScript) frontend
+docs/    Product & engineering requirements (PVD, BRD, SRS, ERD, API spec, implementation plan)
+docker-compose.yml   Local dev environment: Postgres, Redis, MinIO, API, web
+```
+
+## Local development
+
+**Prerequisites:** Docker, or Python 3.11+ and Node.js 22+ for running the apps outside containers.
+
+### Full stack via Docker Compose
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+This starts Postgres, Redis, MinIO, the API (`http://localhost:8000`), and the web app (`http://localhost:3000`). A one-off `minio-init` service creates the object storage bucket on first run.
+
+### Running apps directly (faster inner loop, hot reload)
+
+Start just the infrastructure with Docker, then run each app natively:
+
+```bash
+docker compose up postgres redis minio minio-init
+```
+
+**API:**
+
+```bash
+cd apps/api
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+cp .env.example .env
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+**Web:**
+
+```bash
+cd apps/web
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+### Checks
+
+```bash
+# API — from apps/api, with the venv active
+ruff check . && ruff format --check . && pytest -q
+
+# Web — from apps/web
+npm run lint && npm run typecheck && npm run format && npm run build
+```
+
+Optionally install [pre-commit](https://pre-commit.com/) hooks (`pre-commit install`) to run the same checks automatically before each commit.
 
 ## Roadmap
 

@@ -1,0 +1,13 @@
+{
+  "common": {
+    "siteName": "The Shatranj Heritage",
+    "tagline": "Bangladesh's first dedicated e-commerce platform for chess."
+  },
+  "home": {
+    "heading": "The Shatranj Heritage",
+    "subheading": "Commerce, community, craftsmanship, and education for the chess world.",
+    "apiStatusLabel": "API status",
+    "apiStatusOk": "Connected",
+    "apiStatusError": "Unavailable"
+  }
+}
