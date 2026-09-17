@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from app.core.audit import AuditLog  # noqa: E402, F401
 from app.core.config import get_settings  # noqa: E402
 from app.core.database import Base  # noqa: E402
 
@@ -17,7 +18,9 @@ from app.core.database import Base  # noqa: E402
 # autogenerate, in the dependency order documented in
 # docs/Entity Relationship Diagram and Database Schema.md §7. Modules
 # add their `from app.modules.<name> import models` line as they gain
-# a schema, starting with Auth/Customers in Phase 1.
+# a schema.
+from app.modules.auth import models as auth_models  # noqa: E402, F401
+from app.modules.customers import models as customers_models  # noqa: E402, F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

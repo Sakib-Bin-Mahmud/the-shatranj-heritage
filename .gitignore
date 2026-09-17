@@ -38,3 +38,6 @@ Thumbs.db
 
 # Docker volumes data (if ever mounted locally)
 .docker-data/
+
+# Local Redis dump (created if redis-server is run directly, not via Docker)
+dump.rdb

@@ -8,15 +8,36 @@ See the [repository README](../../README.md#local-development) for setup instruc
 
 ```
 app/
-  core/       Settings, DB session, logging, standard response envelope
-  modules/    One package per business domain (auth, catalog, inventory,
-              cart, orders, payments, shipping, cms, admin, notifications).
-              Each currently exposes a scaffold placeholder router; real
-              endpoints land as each module's implementation phase begins.
+  core/       Settings, DB session, logging, standard response envelope,
+              Redis client, rate limiting, audit log
+  modules/    One package per business domain. `auth` and `customers`
+              have real endpoints (Phase 1: registration, login,
+              refresh/logout, forgot/reset password, RBAC, profile &
+              address management). The rest (catalog, inventory, cart,
+              payments, shipping, cms, admin, notifications) still
+              expose a scaffold placeholder router; real endpoints land
+              as each module's implementation phase begins.
   api/v1/     Aggregates all module routers under /api/v1
 migrations/   Alembic, wired to app.core.database.Base.metadata
+scripts/      One-off CLI scripts (e.g. bootstrapping the first admin user)
 tests/
 ```
+
+## Bootstrapping the first admin account
+
+Staff account creation via API is Phase 7 (Admin Portal) work — until
+then, create the first `super_admin` with:
+
+```bash
+python -m scripts.create_admin_user --email admin@example.com --role super_admin
+```
+
+## Known gotchas
+
+- `bcrypt` is pinned to `4.0.1` in `requirements.txt`. `passlib==1.7.4`
+  (last released 2020) version-sniffs `bcrypt.__about__`, which `bcrypt>=4.1`
+  removed — hashing/verifying passwords raises a confusing "password cannot
+  be longer than 72 bytes" error otherwise. Don't upgrade `bcrypt` alone.
 
 ## Scripts
 

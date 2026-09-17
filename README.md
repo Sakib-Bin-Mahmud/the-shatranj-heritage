@@ -20,7 +20,12 @@ Beyond selling products, the platform is built to showcase Bangladeshi craftsman
 
 ## Project status
 
-Engineering implementation has started, following the [Implementation Plan](docs/Implementation%20Plan.md). **Phase 0 (engineering foundations)** is in place: a monorepo with a FastAPI backend and Next.js frontend, Docker Compose for local dependencies, CI, and linting/formatting. No product features are implemented yet — those begin with Phase 1 (Authentication & Customers).
+Engineering implementation is underway, following the [Implementation Plan](docs/Implementation%20Plan.md).
+
+- **Phase 0 (engineering foundations)** — done: monorepo, FastAPI + Next.js skeletons, Docker Compose, CI, linting/formatting.
+- **Phase 1 (Authentication & Customers)** — done: customer registration/login/logout/refresh/forgot-reset-password, admin login, RBAC (roles/permissions), customer profile & address management (self-service and admin), all wired end-to-end through a working Next.js UI.
+
+Next up: Phase 2 (Product Catalog & Inventory).
 
 ## Documentation
 
