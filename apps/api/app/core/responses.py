@@ -21,10 +21,22 @@ def error_envelope(code: str, message: str) -> dict:
     return {"success": False, "error": {"code": code, "message": message}}
 
 
+class AppError(HTTPException):
+    """Raise this instead of plain HTTPException when the API Specification
+    names a specific error code (e.g. `EMAIL_ALREADY_EXISTS`,
+    `INVALID_CREDENTIALS`) rather than the generic `HTTP_<status>` fallback.
+    """
+
+    def __init__(self, status_code: int, code: str, message: str):
+        super().__init__(status_code=status_code, detail=message)
+        self.code = code
+
+
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    code = getattr(exc, "code", None) or f"HTTP_{exc.status_code}"
     return JSONResponse(
         status_code=exc.status_code,
-        content=error_envelope(code=f"HTTP_{exc.status_code}", message=str(exc.detail)),
+        content=error_envelope(code=code, message=str(exc.detail)),
     )
 
 
