@@ -5,15 +5,17 @@ from typing import Any
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
+    Computed,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     String,
     Text,
     func,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -65,6 +67,7 @@ class Product(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "products"
     __table_args__ = (
         CheckConstraint("status IN ('draft', 'active', 'archived')", name="ck_products_status"),
+        Index("ix_products_search_vector", "search_vector", postgresql_using="gin"),
     )
 
     sku: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
@@ -94,7 +97,26 @@ class Product(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     meta_title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     meta_description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_featured: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Phase 3 (FR-SCH-001): kept in sync by Postgres itself (GENERATED
+    # ALWAYS ... STORED), not the application, so it can never drift from
+    # name/description. Matches the indexing strategy in
+    # docs/Entity Relationship Diagram and Database Schema.md §6.
+    # `name` is weighted 'A' and `description` 'B' so ts_rank favors a
+    # name match over a description match, not just insertion order.
+    search_vector: Mapped[str] = mapped_column(
+        TSVECTOR,
+        Computed(
+            "setweight(to_tsvector('english', coalesce(name, '')), 'A') || "
+            "setweight(to_tsvector('english', coalesce(description, '')), 'B')",
+            persisted=True,
+        ),
+        nullable=False,
+    )
 
     category: Mapped[Category] = relationship()
     artisan: Mapped[Artisan | None] = relationship()

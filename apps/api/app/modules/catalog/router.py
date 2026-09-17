@@ -43,6 +43,7 @@ async def _product_detail(session: AsyncSession, product: Product) -> dict:
         currency=product.currency,
         weight_grams=product.weight_grams,
         status=product.status,
+        is_featured=product.is_featured,
         variants=await catalog_service.build_variant_responses(session, product),
         images=[ImageResponse.model_validate(i) for i in product.images],
     ).model_dump()
@@ -79,12 +80,18 @@ async def list_products(
     price_max: float | None = None,
     material: str | None = None,
     availability: str = Query(default="all", pattern="^(in_stock|all)$"),
-    sort: str = Query(default="newest"),
+    featured: bool | None = None,
+    sort: str | None = Query(
+        default=None,
+        pattern="^(relevance|price_asc|price_desc|newest|best_selling|rating|alphabetical)$",
+    ),
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=20, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
-    """FR-SCH-001…007, US-SRC-001…003."""
+    """FR-SCH-001…007, US-SRC-001…003. `sort` defaults to relevance
+    ranking when `q` is given, newest otherwise (see
+    catalog/service.py:public_list_products)."""
     products, total = await catalog_service.public_list_products(
         session,
         page=page,
@@ -95,16 +102,27 @@ async def list_products(
         price_max=price_max,
         material=material,
         availability=availability,
+        featured=featured,
         sort=sort,
     )
     summaries = await catalog_service.build_product_summaries(session, products)
     total_pages = (total + limit - 1) // limit if total else 0
-    return success_envelope(
-        data={
-            "items": summaries,
-            "meta": {"page": page, "limit": limit, "total": total, "total_pages": total_pages},
+
+    data = {
+        "items": summaries,
+        "meta": {"page": page, "limit": limit, "total": total, "total_pages": total_pages},
+    }
+    if q and total == 0:
+        # US-SRC-005: helpful feedback instead of a dead end.
+        suggestions = await catalog_service.search_suggestions(session)
+        data["suggestions"] = {
+            "categories": [
+                CategoryResponse.model_validate(c).model_dump() for c in suggestions["categories"]
+            ],
+            "featured_products": suggestions["featured_products"],
         }
-    )
+
+    return success_envelope(data=data)
 
 
 @router.get("/products/{slug}")

@@ -338,17 +338,20 @@ async def public_list_products(
     price_max: Decimal | None = None,
     material: str | None = None,
     availability: str = "all",
-    sort: str = "newest",
+    featured: bool | None = None,
+    sort: str | None = None,
 ) -> tuple[list[Product], int]:
     query = select(Product).where(Product.status == "active")
     count_query = select(func.count(func.distinct(Product.id))).where(Product.status == "active")
 
+    text_query = func.websearch_to_tsquery("english", q) if q else None
     if q:
-        # Basic substring match for MVP; Phase 3 upgrades this to a
-        # Postgres full-text (tsvector/GIN) ranked search, per
-        # docs/Implementation Plan.md.
-        pattern = f"%{q}%"
-        condition = or_(Product.name.ilike(pattern), Product.description.ilike(pattern))
+        # FR-SCH-001: relevance-ranked full-text search over name +
+        # description (Product.search_vector, a GIN-indexed generated
+        # column — see the model), OR'd with a SKU match per the
+        # acceptance criteria in US-SRC-001 ("Search by: Product name,
+        # SKU, Category, Description").
+        condition = or_(Product.search_vector.op("@@")(text_query), Product.sku.ilike(f"%{q}%"))
         query = query.where(condition)
         count_query = count_query.where(condition)
 
@@ -381,6 +384,13 @@ async def public_list_products(
         query = query.where(condition)
         count_query = count_query.where(condition)
 
+    if featured is not None:
+        query = query.where(Product.is_featured.is_(featured))
+        count_query = count_query.where(Product.is_featured.is_(featured))
+
+    # Default to relevance ranking for a keyword search (unless the
+    # caller explicitly asked for a different order); newest otherwise.
+    effective_sort = sort or ("relevance" if q else "newest")
     sort_map = {
         "price_asc": Product.base_price.asc(),
         "price_desc": Product.base_price.desc(),
@@ -392,13 +402,35 @@ async def public_list_products(
         "best_selling": Product.created_at.desc(),
         "rating": Product.created_at.desc(),
     }
-    query = query.order_by(sort_map.get(sort, Product.created_at.desc()))
+    if effective_sort == "relevance" and text_query is not None:
+        query = query.order_by(func.ts_rank(Product.search_vector, text_query).desc())
+    else:
+        query = query.order_by(sort_map.get(effective_sort, Product.created_at.desc()))
 
     total = await session.scalar(count_query) or 0
     products = await session.scalars(
         query.options(*PRODUCT_LOAD_OPTIONS).offset((page - 1) * limit).limit(limit)
     )
     return list(products), total
+
+
+async def search_suggestions(session: AsyncSession, *, limit: int = 6) -> dict[str, Any]:
+    """US-SRC-005: offered alongside an empty search result so the
+    visitor isn't left at a dead end."""
+    categories = await list_categories(session)
+    featured_products = list(
+        await session.scalars(
+            select(Product)
+            .options(*PRODUCT_LOAD_OPTIONS)
+            .where(Product.status == "active", Product.is_featured.is_(True))
+            .order_by(Product.created_at.desc())
+            .limit(limit)
+        )
+    )
+    return {
+        "categories": categories[:limit],
+        "featured_products": await build_product_summaries(session, featured_products),
+    }
 
 
 async def admin_list_products(
@@ -463,6 +495,7 @@ async def build_product_summaries(
                 "primary_image_url": primary_image.url if primary_image else None,
                 "price": product_display_price(product),
                 "stock_status": product_stock_status(product, inventory_by_variant),
+                "is_featured": product.is_featured,
             }
         )
     return summaries
