@@ -1,11 +1,20 @@
 import asyncio
+import os
 import subprocess
 import sys
 import uuid
 from pathlib import Path
 
+# Must run before `app.main` (and anything importing app.core.config) is
+# ever imported below, since Settings is cached on first read: tests that
+# exercise image upload need S3_ENDPOINT_URL pointed at the in-process
+# moto server started by the `moto_s3_server` fixture, not the real
+# MinIO instance docker-compose provides outside tests.
+os.environ.setdefault("S3_ENDPOINT_URL", "http://localhost:9099")
+
 import pytest
 from fastapi.testclient import TestClient
+from moto.server import ThreadedMotoServer
 from redis.asyncio import Redis
 
 from app.core.config import get_settings
@@ -71,6 +80,27 @@ def super_admin_credentials() -> dict[str, str]:
 @pytest.fixture(scope="session")
 def customer_support_credentials() -> dict[str, str]:
     return _create_admin_user("customer_support")
+
+
+@pytest.fixture(scope="session")
+def inventory_manager_credentials() -> dict[str, str]:
+    return _create_admin_user("inventory_manager")
+
+
+@pytest.fixture(scope="session")
+def content_manager_credentials() -> dict[str, str]:
+    return _create_admin_user("content_manager")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def moto_s3_server():
+    """An in-process fake S3 server backing app.core.storage in tests,
+    so image-upload tests don't depend on a real MinIO instance (only
+    docker-compose runs that, not CI or this test suite)."""
+    server = ThreadedMotoServer(port=9099)
+    server.start()
+    yield
+    server.stop()
 
 
 async def _flush_rate_limit_keys() -> None:

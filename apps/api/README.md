@@ -9,14 +9,13 @@ See the [repository README](../../README.md#local-development) for setup instruc
 ```
 app/
   core/       Settings, DB session, logging, standard response envelope,
-              Redis client, rate limiting, audit log
-  modules/    One package per business domain. `auth` and `customers`
-              have real endpoints (Phase 1: registration, login,
-              refresh/logout, forgot/reset password, RBAC, profile &
-              address management). The rest (catalog, inventory, cart,
-              payments, shipping, cms, admin, notifications) still
-              expose a scaffold placeholder router; real endpoints land
-              as each module's implementation phase begins.
+              Redis client, rate limiting, audit log, S3/MinIO storage
+  modules/    One package per business domain. `auth`, `customers`
+              (Phase 1), `catalog`, and `inventory` (Phase 2) have real
+              endpoints. The rest (cart, payments, shipping, cms, admin,
+              notifications) still expose a scaffold placeholder router;
+              real endpoints land as each module's implementation phase
+              begins.
   api/v1/     Aggregates all module routers under /api/v1
 migrations/   Alembic, wired to app.core.database.Base.metadata
 scripts/      One-off CLI scripts (e.g. bootstrapping the first admin user)
