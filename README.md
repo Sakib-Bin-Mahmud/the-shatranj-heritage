@@ -27,8 +27,9 @@ Engineering implementation is underway, following the [Implementation Plan](docs
 - **Phase 2 (Product Catalog & Inventory)** — done: categories (tree, self-referencing), artisans, products & variants with attribute-based filtering, image uploads to S3-compatible storage, public browse/search/filter/sort, and admin inventory management (stock adjustment with a full audit ledger, low-stock reporting).
 - **Phase 3 (Search & Discovery)** — done: Postgres full-text search (weighted, GIN-indexed `tsvector` over product name/description) with relevance ranking, SKU matching, a `featured` filter and flag, and a no-results state that surfaces category and featured-product suggestions instead of a dead end.
 - **Phase 4 (Shopping Cart)** — done: guest (cookie-based) and customer (token-based) carts, add/update/remove items with quantity capped by live inventory, a standalone totals/pricing service (subtotal plus shipping/tax/discount placeholders Checkout will fill in later), self-healing stock revalidation, and a guest cart that merges into the customer's own cart on login/registration.
+- **Phase 5 (Checkout, Payments & Orders)** — done: checkout quote and atomic order placement (guest or customer, row-locked inventory reservation, idempotency-key replay protection), a `PaymentProvider` interface with a real SSLCommerz integration and a fake one for tests, a signature-verified payment webhook that converts a reservation into a real deduction on success, the full order lifecycle (pending → awaiting payment → confirmed → packed → shipped → delivered, with cancellation restoring stock and auto-filing a refund request), and admin order management with audit-logged status transitions.
 
-Next up: Phase 5 (Checkout, Payments & Orders).
+Next up: Phase 6 (Shipping & Fulfillment).
 
 ## Documentation
 

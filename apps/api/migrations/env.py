@@ -24,6 +24,9 @@ from app.modules.cart import models as cart_models  # noqa: E402, F401
 from app.modules.catalog import models as catalog_models  # noqa: E402, F401
 from app.modules.customers import models as customers_models  # noqa: E402, F401
 from app.modules.inventory import models as inventory_models  # noqa: E402, F401
+from app.modules.orders import models as orders_models  # noqa: E402, F401
+from app.modules.payments import models as payments_models  # noqa: E402, F401
+from app.modules.shipping import models as shipping_models  # noqa: E402, F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

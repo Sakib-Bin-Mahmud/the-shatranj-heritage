@@ -151,19 +151,6 @@ def test_cannot_access_another_customers_address(client: TestClient) -> None:
     assert response.status_code == 404
 
 
-def test_orders_history_stub_requires_auth_and_is_empty(client: TestClient) -> None:
-    unauthenticated = client.get("/api/v1/orders/")
-    assert unauthenticated.status_code == 401
-
-    token, _ = register_and_login(client)
-    response = client.get("/api/v1/orders/", headers=auth_headers(token))
-    assert response.status_code == 200
-    assert response.json()["data"] == {
-        "items": [],
-        "meta": {"page": 1, "limit": 20, "total": 0, "total_pages": 0},
-    }
-
-
 def test_admin_customer_endpoints_require_admin_token(client: TestClient) -> None:
     token, _ = register_and_login(client)
     response = client.get("/api/v1/admin/customers", headers=auth_headers(token))
