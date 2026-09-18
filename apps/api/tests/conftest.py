@@ -12,6 +12,11 @@ from pathlib import Path
 # MinIO instance docker-compose provides outside tests.
 os.environ.setdefault("S3_ENDPOINT_URL", "http://localhost:9099")
 
+# Same reasoning: payment tests must never reach the real SSLCommerz
+# sandbox over the network. FakePaymentProvider still exercises real
+# HMAC signature verification (see app/modules/payments/providers.py).
+os.environ.setdefault("PAYMENT_PROVIDER", "fake")
+
 import pytest
 from fastapi.testclient import TestClient
 from moto.server import ThreadedMotoServer
@@ -90,6 +95,11 @@ def inventory_manager_credentials() -> dict[str, str]:
 @pytest.fixture(scope="session")
 def content_manager_credentials() -> dict[str, str]:
     return _create_admin_user("content_manager")
+
+
+@pytest.fixture(scope="session")
+def order_manager_credentials() -> dict[str, str]:
+    return _create_admin_user("order_manager")
 
 
 @pytest.fixture(scope="session", autouse=True)

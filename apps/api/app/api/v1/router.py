@@ -11,6 +11,8 @@ from app.modules.customers.router import admin_router as customers_admin_router
 from app.modules.customers.router import router as customers_router
 from app.modules.inventory.router import router as inventory_router
 from app.modules.notifications.router import router as notifications_router
+from app.modules.orders.router import admin_router as orders_admin_router
+from app.modules.orders.router import checkout_router
 from app.modules.orders.router import router as orders_router
 from app.modules.payments.router import router as payments_router
 from app.modules.shipping.router import router as shipping_router
@@ -26,7 +28,9 @@ for module_router in (
     catalog_admin_router,
     inventory_router,
     cart_router,
+    checkout_router,
     orders_router,
+    orders_admin_router,
     payments_router,
     shipping_router,
     cms_router,

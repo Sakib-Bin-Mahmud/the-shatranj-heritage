@@ -30,7 +30,7 @@ def _set_guest_cookie(response: Response, session_id: str) -> None:
     )
 
 
-async def _resolve_cart(
+async def resolve_cart(
     session: AsyncSession,
     response: Response,
     customer: Customer | None,
@@ -41,6 +41,9 @@ async def _resolve_cart(
     Specification §4 `POST /cart/items`). A guest visiting for the
     first time gets a fresh cookie issued right away, before they've
     added anything, so the same cart is found on their next request.
+
+    Public (not module-private) because orders/router.py's checkout
+    endpoints resolve the same cart the same way.
     """
     if customer:
         return await cart_service.get_or_create_cart(session, customer_id=customer.id)
@@ -61,7 +64,7 @@ async def get_cart(
     """US-CRT-004/006. Self-heals the cart against current stock/product
     status (US-CRT-009) before returning it, surfacing any adjustment
     as a warning rather than silently changing the customer's cart."""
-    cart = await _resolve_cart(session, response, customer, cart_session_id)
+    cart = await resolve_cart(session, response, customer, cart_session_id)
     warnings = await cart_service.revalidate_cart(session, cart)
     await session.commit()
 
@@ -80,7 +83,7 @@ async def add_cart_item(
 ) -> dict:
     """US-CRT-001. Quantity is capped by available inventory at
     add-time (US-CRT-002/009)."""
-    cart = await _resolve_cart(session, response, customer, cart_session_id)
+    cart = await resolve_cart(session, response, customer, cart_session_id)
     await cart_service.add_item(
         session, cart, product_variant_id=payload.product_variant_id, quantity=payload.quantity
     )
@@ -100,7 +103,7 @@ async def update_cart_item(
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """US-CRT-002."""
-    cart = await _resolve_cart(session, response, customer, cart_session_id)
+    cart = await resolve_cart(session, response, customer, cart_session_id)
     await cart_service.update_item_quantity(session, cart, item_id, payload.quantity)
     await session.commit()
 
@@ -117,7 +120,7 @@ async def remove_cart_item(
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """US-CRT-003."""
-    cart = await _resolve_cart(session, response, customer, cart_session_id)
+    cart = await resolve_cart(session, response, customer, cart_session_id)
     await cart_service.remove_item(session, cart, item_id)
     await session.commit()
 
