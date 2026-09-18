@@ -30,10 +30,8 @@ async def admin_update_shipment_status(
 
     if payload.status == "delivered":
         order = await orders_service.get_order_or_404(session, shipment.order_id)
-        # BR-ORD-004 / US-SHP-004: delivery notification is Phase 7's
-        # notification service — logged here as the retrofit point,
-        # per docs/Implementation Plan.md Phase 7 scope.
         await orders_service.admin_update_order_status(session, order, "delivered", admin.id)
+        await orders_service.send_delivery_confirmation(session, order)
 
     await session.commit()
     return success_envelope(data=orders_service.build_shipment_response(shipment))

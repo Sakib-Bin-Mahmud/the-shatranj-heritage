@@ -16,6 +16,7 @@ from app.modules.catalog.models import ProductVariant
 from app.modules.catalog.service import effective_weight, quantity_available
 from app.modules.customers.models import Customer, CustomerAddress
 from app.modules.inventory.models import Inventory, InventoryTransaction
+from app.modules.notifications import service as notifications_service
 from app.modules.orders.models import Order, OrderItem
 from app.modules.payments.models import Payment, Refund
 from app.modules.payments.providers import PaymentProvider
@@ -44,6 +45,17 @@ async def _calculate_cart_weight(session: AsyncSession, cart: Cart) -> int:
         if variant:
             total += effective_weight(variant, variant.product) * item.quantity
     return total
+
+
+async def _get_order_contact(session: AsyncSession, order: Order) -> tuple[str | None, str | None]:
+    """Notification recipient for an order: the account's own contact
+    info for a customer order, the snapshot fields for a guest one."""
+    if order.customer_id:
+        customer = await session.get(Customer, order.customer_id)
+        if customer:
+            return customer.email, customer.mobile_number
+        return None, None
+    return order.guest_email, order.guest_phone
 
 
 # --- Address resolution (US-CHK-002) ----------------------------------
@@ -339,11 +351,22 @@ async def place_order(
     cart.status = "converted"
     await session.flush()
 
-    # US-CHK-006 / BR-ORD-004: confirmation notification is Phase 7's
-    # notification service — logged here as the retrofit point, per
-    # docs/Implementation Plan.md Phase 7 scope.
     payment, redirect_url = await _initiate_payment(
         session, order=order, method=payment_method, provider=provider, base_url=base_url
+    )
+
+    # US-CHK-006 / BR-ORD-004, US-NOT-001.
+    await notifications_service.notify(
+        session,
+        customer_id=customer.id if customer else None,
+        email=customer.email if customer else guest_email,
+        mobile_number=customer.mobile_number if customer else guest_phone,
+        template_code="order_confirmation",
+        context={
+            "order_number": order.order_number,
+            "total_amount": str(order.total_amount),
+            "currency": order.currency,
+        },
     )
     return order, payment, redirect_url
 
@@ -704,6 +727,21 @@ async def admin_assign_shipment(
         provider=provider,
     )
     await admin_update_order_status(session, order, "shipped", admin_id)
+
+    # US-SHP-002 / US-NOT-002.
+    email, mobile_number = await _get_order_contact(session, order)
+    await notifications_service.notify(
+        session,
+        customer_id=order.customer_id,
+        email=email,
+        mobile_number=mobile_number,
+        template_code="shipment_dispatched",
+        context={
+            "order_number": order.order_number,
+            "courier_name": shipment.courier_name,
+            "tracking_number": shipment.tracking_number,
+        },
+    )
     return shipment
 
 
@@ -718,3 +756,36 @@ def build_shipment_response(shipment: Shipment) -> dict[str, Any]:
         "shipped_at": shipment.shipped_at,
         "delivered_at": shipment.delivered_at,
     }
+
+
+async def send_delivery_confirmation(session: AsyncSession, order: Order) -> None:
+    """US-SHP-004 / US-NOT-003. Called by shipping/router.py once a
+    shipment reaches `delivered` (which also completes the order —
+    see that endpoint)."""
+    email, mobile_number = await _get_order_contact(session, order)
+    await notifications_service.notify(
+        session,
+        customer_id=order.customer_id,
+        email=email,
+        mobile_number=mobile_number,
+        template_code="delivery_confirmation",
+        context={"order_number": order.order_number},
+    )
+
+
+async def send_payment_confirmation(session: AsyncSession, order: Order, payment: Payment) -> None:
+    """FR-NOT-001-adjacent (payment confirmation). Called by
+    payments/service.py on a successful webhook."""
+    email, mobile_number = await _get_order_contact(session, order)
+    await notifications_service.notify(
+        session,
+        customer_id=order.customer_id,
+        email=email,
+        mobile_number=mobile_number,
+        template_code="payment_confirmation",
+        context={
+            "order_number": order.order_number,
+            "amount": str(payment.amount),
+            "currency": payment.currency,
+        },
+    )
