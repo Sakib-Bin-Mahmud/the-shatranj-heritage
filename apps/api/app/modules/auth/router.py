@@ -144,9 +144,12 @@ async def forgot_password(
 
     data = None
     if get_settings().debug and raw_token:
-        # Stopgap until Phase 7 wires a real email/SMS notification
-        # service: surface the token so the flow is usable/testable
-        # end to end. Never enabled when debug=False (see .env.example).
+        # The Phase 7 notification service records the token's send
+        # (redacted) in notifications_log — see auth/service.py — but
+        # there's still no real inbox to read it from without a live
+        # email/SMS vendor behind it, so debug builds echo it here for
+        # an end-to-end testable flow. Never enabled when debug=False
+        # (see .env.example).
         data = {"debug_reset_token": raw_token}
 
     return success_envelope(

@@ -70,6 +70,7 @@ async def process_webhook(
         payment.paid_at = datetime.now(UTC)
         payment.raw_response = payload
         await orders_service.confirm_order(session, order)
+        await orders_service.send_payment_confirmation(session, order, payment)
     else:
         payment.status = "failed"
         payment.raw_response = payload

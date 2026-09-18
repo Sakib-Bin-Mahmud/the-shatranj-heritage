@@ -20,6 +20,7 @@ from app.modules.auth.security import (
     verify_password,
 )
 from app.modules.customers.models import Customer
+from app.modules.notifications import service as notifications_service
 
 logger = get_logger(__name__)
 
@@ -63,6 +64,15 @@ async def register_customer(
     )
     session.add(customer)
     await session.flush()
+
+    await notifications_service.notify(
+        session,
+        customer_id=customer.id,
+        email=customer.email,
+        mobile_number=customer.mobile_number,
+        template_code="registration_welcome",
+        context={"full_name": customer.full_name},
+    )
     return customer
 
 
@@ -221,9 +231,9 @@ async def logout(session: AsyncSession, raw_refresh_token: str) -> None:
 
 
 async def request_password_reset(session: AsyncSession, identifier: str) -> str | None:
-    """Returns the raw reset token so the caller can act on it (Phase 7:
-    hand it to the email/SMS notification service; until then: logged,
-    and surfaced in the API response when `settings.debug` is on — see
+    """Also returns the raw reset token so the router can still echo it
+    in debug mode (there's no real inbox to check locally without a
+    live email/SMS vendor behind LoggingNotificationChannel — see
     auth/router.py). Returns None if the identifier isn't registered,
     without revealing that fact to the router/customer.
     """
@@ -244,7 +254,14 @@ async def request_password_reset(session: AsyncSession, identifier: str) -> str 
             expires_at=datetime.now(UTC) + timedelta(minutes=PASSWORD_RESET_TOKEN_TTL_MINUTES),
         )
     )
-    await logger.ainfo("password_reset_requested", customer_id=str(customer.id))
+    await notifications_service.notify(
+        session,
+        customer_id=customer.id,
+        email=customer.email,
+        mobile_number=customer.mobile_number,
+        template_code="password_reset",
+        context={"reset_token": raw_token},
+    )
     return raw_token
 
 

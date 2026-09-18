@@ -12,11 +12,12 @@ app/
               Redis client, rate limiting, audit log, S3/MinIO storage
   modules/    One package per business domain. `auth`, `customers`
               (Phase 1), `catalog`, `inventory` (Phase 2), `cart`
-              (Phase 4), `orders`, `payments` (Phase 5), and `shipping`
-              (Phase 6) have real endpoints. The rest (cms, admin,
-              notifications) still expose a scaffold placeholder router;
-              real endpoints land as each module's implementation phase
-              begins.
+              (Phase 4), `orders`, `payments` (Phase 5), `shipping`
+              (Phase 6), and `notifications`, `cms`, `admin`, `reports`
+              (Phase 7) all have real endpoints. `notifications` is
+              push-only (triggered by other modules; no dedicated
+              router) and `reports` has no models.py — it only reads
+              other modules' tables.
   api/v1/     Aggregates all module routers under /api/v1
 migrations/   Alembic, wired to app.core.database.Base.metadata
 scripts/      One-off CLI scripts (e.g. bootstrapping the first admin user)
@@ -25,8 +26,9 @@ tests/
 
 ## Bootstrapping the first admin account
 
-Staff account creation via API is Phase 7 (Admin Portal) work — until
-then, create the first `super_admin` with:
+`POST /admin/users` (Phase 7) creates staff accounts, but it requires
+an already-authenticated `super_admin` — so the very first one must
+still be bootstrapped via this CLI script:
 
 ```bash
 python -m scripts.create_admin_user --email admin@example.com --role super_admin
