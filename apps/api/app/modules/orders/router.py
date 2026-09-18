@@ -22,6 +22,9 @@ from app.modules.orders.schemas import (
     PlaceOrderRequest,
 )
 from app.modules.payments.providers import PaymentProvider, get_payment_provider
+from app.modules.shipping import service as shipping_service
+from app.modules.shipping.providers import CourierProvider, get_courier_provider
+from app.modules.shipping.schemas import AssignCourierRequest
 
 checkout_router = APIRouter(prefix="/checkout", tags=["Checkout"])
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -49,14 +52,16 @@ async def get_checkout_quote(
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """US-CHK-003/004. Stateless preview — no record created, no
-    inventory touched. `address_id`/`address` are accepted (and, for
-    an existing address, validated to exist) per the documented
-    contract but don't yet affect the quote: Phase 5's shipping rate
-    is flat regardless of destination — see BR-SHP-002 / Phase 6.
-    """
+    inventory touched. Shipping cost is real (BR-SHP-002: location +
+    weight), so a different address or method changes the total."""
     cart = await resolve_cart(session, response, customer, cart_session_id)
     quote = await orders_service.checkout_quote(
-        session, cart=cart, shipping_method=payload.shipping_method
+        session,
+        cart=cart,
+        customer=customer,
+        address_id=payload.address_id,
+        inline_address=payload.address.model_dump() if payload.address else None,
+        shipping_method=payload.shipping_method,
     )
     return success_envelope(data=quote)
 
@@ -154,6 +159,19 @@ async def cancel_my_order(
     return success_envelope(data=await orders_service.build_order_summary(order))
 
 
+@router.get("/{order_number}/shipment")
+async def get_my_order_shipment(
+    order_number: str,
+    customer: Customer = Depends(get_current_customer),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """US-SHP-003: tracking number, status, and estimated delivery date
+    once a courier has been assigned."""
+    order = await orders_service.get_customer_order_or_404(session, customer.id, order_number)
+    shipment = await shipping_service.get_shipment_by_order_or_404(session, order.id)
+    return success_envelope(data=orders_service.build_shipment_response(shipment))
+
+
 # --- Admin (Order Manager+) ---------------------------------------------
 
 
@@ -228,3 +246,27 @@ async def admin_request_refund(
             "reason": refund.reason,
         }
     )
+
+
+@admin_router.post("/{order_id}/shipment", status_code=201)
+async def admin_assign_shipment(
+    order_id: uuid.UUID,
+    payload: AssignCourierRequest,
+    admin: AdminPrincipal = Depends(require_permission("orders.write")),
+    session: AsyncSession = Depends(get_db_session),
+    provider: CourierProvider = Depends(get_courier_provider),
+) -> dict:
+    """US-SHP-002. Requires the order to be `packed`; on success the
+    order moves to `shipped` (see orders/service.py:admin_assign_shipment)."""
+    order = await orders_service.get_order_or_404(session, order_id)
+    shipment = await orders_service.admin_assign_shipment(
+        session,
+        order=order,
+        courier_name=payload.courier_name,
+        tracking_number=payload.tracking_number,
+        estimated_delivery_date=payload.estimated_delivery_date,
+        provider=provider,
+        admin_id=admin.id,
+    )
+    await session.commit()
+    return success_envelope(data=orders_service.build_shipment_response(shipment))

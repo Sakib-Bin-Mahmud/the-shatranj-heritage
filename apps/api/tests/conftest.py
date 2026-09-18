@@ -17,6 +17,10 @@ os.environ.setdefault("S3_ENDPOINT_URL", "http://localhost:9099")
 # HMAC signature verification (see app/modules/payments/providers.py).
 os.environ.setdefault("PAYMENT_PROVIDER", "fake")
 
+# Same reasoning again for courier booking (Phase 6) — never reach the
+# real Pathao API in tests.
+os.environ.setdefault("COURIER_PROVIDER", "fake")
+
 import pytest
 from fastapi.testclient import TestClient
 from moto.server import ThreadedMotoServer

@@ -40,11 +40,6 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
 
-    # Shipping (Phase 5: flat/config-driven rate; BR-SHP-002's real
-    # location/weight-based calculation lands in Phase 6)
-    shipping_standard_rate: str = "80.00"
-    shipping_express_rate: str = "150.00"
-
     # Payments — provider selection lets tests swap in a fake gateway
     # the same way S3_ENDPOINT_URL swaps in moto for storage (see
     # tests/conftest.py). "sslcommerz" is the real, network-calling
@@ -55,6 +50,15 @@ class Settings(BaseSettings):
     sslcommerz_store_password: str = "qwerty"
     sslcommerz_api_base_url: str = "https://sandbox.sslcommerz.com"
     sslcommerz_is_live: bool = False
+
+    # Couriers (Phase 6) — same fake/real provider-selection pattern as
+    # payments above. Shipping *cost* is a database-backed ShippingRate
+    # lookup (BR-SHP-002), not a setting; this only configures the
+    # courier-booking integration.
+    courier_provider: str = "pathao"
+    pathao_api_base_url: str = "https://api-hermes.pathao.com"
+    pathao_client_id: str = "change-me-in-every-environment"
+    pathao_client_secret: str = "change-me-in-every-environment"
 
     # Observability
     sentry_dsn: str | None = None

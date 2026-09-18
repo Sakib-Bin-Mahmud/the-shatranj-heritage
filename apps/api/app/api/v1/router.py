@@ -15,7 +15,7 @@ from app.modules.orders.router import admin_router as orders_admin_router
 from app.modules.orders.router import checkout_router
 from app.modules.orders.router import router as orders_router
 from app.modules.payments.router import router as payments_router
-from app.modules.shipping.router import router as shipping_router
+from app.modules.shipping.router import admin_router as shipping_admin_router
 
 api_router = APIRouter()
 
@@ -32,7 +32,7 @@ for module_router in (
     orders_router,
     orders_admin_router,
     payments_router,
-    shipping_router,
+    shipping_admin_router,
     cms_router,
     admin_router,
     notifications_router,

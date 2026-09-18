@@ -12,10 +12,11 @@ app/
               Redis client, rate limiting, audit log, S3/MinIO storage
   modules/    One package per business domain. `auth`, `customers`
               (Phase 1), `catalog`, `inventory` (Phase 2), `cart`
-              (Phase 4), and `orders`, `payments` (Phase 5) have real
-              endpoints. The rest (shipping, cms, admin, notifications)
-              still expose a scaffold placeholder router; real endpoints
-              land as each module's implementation phase begins.
+              (Phase 4), `orders`, `payments` (Phase 5), and `shipping`
+              (Phase 6) have real endpoints. The rest (cms, admin,
+              notifications) still expose a scaffold placeholder router;
+              real endpoints land as each module's implementation phase
+              begins.
   api/v1/     Aggregates all module routers under /api/v1
 migrations/   Alembic, wired to app.core.database.Base.metadata
 scripts/      One-off CLI scripts (e.g. bootstrapping the first admin user)

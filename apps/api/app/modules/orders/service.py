@@ -6,42 +6,44 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.audit import record_audit_log
-from app.core.config import get_settings
 from app.core.responses import AppError
 from app.modules.cart import service as cart_service
 from app.modules.cart.models import Cart
-from app.modules.catalog.service import quantity_available
+from app.modules.catalog.models import ProductVariant
+from app.modules.catalog.service import effective_weight, quantity_available
 from app.modules.customers.models import Customer, CustomerAddress
 from app.modules.inventory.models import Inventory, InventoryTransaction
 from app.modules.orders.models import Order, OrderItem
 from app.modules.payments.models import Payment, Refund
 from app.modules.payments.providers import PaymentProvider
+from app.modules.shipping import service as shipping_service
+from app.modules.shipping.models import Shipment
+from app.modules.shipping.providers import CourierProvider
 
-# --- Shipping (Phase 5: flat/config-driven rate; BR-SHP-002's real
-# location/weight-based calculation lands in Phase 6) ------------------
-
-SHIPPING_METHOD_LABELS = {
-    "standard": ("Standard Delivery", "3-5 business days"),
-    "express": ("Express Delivery", "1-2 business days"),
-}
+# --- Cart weight (feeds BR-SHP-002's "Weight" factor) --------------------
 
 
-def _shipping_rate(method: str) -> Decimal:
-    settings = get_settings()
-    rates = {
-        "standard": Decimal(settings.shipping_standard_rate),
-        "express": Decimal(settings.shipping_express_rate),
-    }
-    return rates[method]
+async def _calculate_cart_weight(session: AsyncSession, cart: Cart) -> int:
+    variant_ids = [item.product_variant_id for item in cart.items]
+    if not variant_ids:
+        return 0
 
+    variants = await session.scalars(
+        select(ProductVariant)
+        .options(selectinload(ProductVariant.product))
+        .where(ProductVariant.id.in_(variant_ids))
+    )
+    variants_by_id = {v.id: v for v in variants}
 
-def shipping_options() -> list[dict[str, Any]]:
-    return [
-        {"method": method, "label": label, "rate": _shipping_rate(method), "estimated_days": days}
-        for method, (label, days) in SHIPPING_METHOD_LABELS.items()
-    ]
+    total = 0
+    for item in cart.items:
+        variant = variants_by_id.get(item.product_variant_id)
+        if variant:
+            total += effective_weight(variant, variant.product) * item.quantity
+    return total
 
 
 # --- Address resolution (US-CHK-002) ----------------------------------
@@ -92,14 +94,32 @@ async def _resolve_shipping_address(
 
 
 async def checkout_quote(
-    session: AsyncSession, *, cart: Cart, shipping_method: str
+    session: AsyncSession,
+    *,
+    cart: Cart,
+    customer: Customer | None,
+    address_id: uuid.UUID | None,
+    inline_address: dict[str, Any] | None,
+    shipping_method: str,
 ) -> dict[str, Any]:
+    """US-CHK-003/004. Real address- and weight-based shipping cost
+    (BR-SHP-002), not Phase 5's flat placeholder — "changes in address
+    update the shipping estimate" (US-SHP-001) falls out naturally
+    since this is recomputed from the given address on every call."""
     if not cart.items:
         raise AppError(status_code=422, code="EMPTY_CART", message="Your cart is empty.")
 
+    shipping_address = await _resolve_shipping_address(
+        session, customer=customer, address_id=address_id, inline_address=inline_address
+    )
     cart_data = await cart_service.build_cart_response(session, cart)
     subtotal = cart_data["subtotal"]
-    shipping_amount = _shipping_rate(shipping_method)
+    total_weight_grams = await _calculate_cart_weight(session, cart)
+    district = shipping_address["district"]
+
+    shipping_amount = await shipping_service.calculate_shipping(
+        session, district=district, method=shipping_method, total_weight_grams=total_weight_grams
+    )
     tax_amount = Decimal("0.00")
     discount_amount = Decimal("0.00")
     total_amount = subtotal + shipping_amount + tax_amount - discount_amount
@@ -110,7 +130,9 @@ async def checkout_quote(
         "discount_amount": discount_amount,
         "tax_amount": tax_amount,
         "total_amount": total_amount,
-        "shipping_options": shipping_options(),
+        "shipping_options": await shipping_service.shipping_options(
+            session, district=district, total_weight_grams=total_weight_grams
+        ),
     }
 
 
@@ -237,7 +259,13 @@ async def place_order(
 
     cart_data = await cart_service.build_cart_response(session, cart)
     subtotal = cart_data["subtotal"]
-    shipping_amount = _shipping_rate(shipping_method)
+    total_weight_grams = await _calculate_cart_weight(session, cart)
+    shipping_amount = await shipping_service.calculate_shipping(
+        session,
+        district=shipping_address["district"],
+        method=shipping_method,
+        total_weight_grams=total_weight_grams,
+    )
     tax_amount = Decimal("0.00")
     discount_amount = Decimal("0.00")
     total_amount = subtotal + shipping_amount + tax_amount - discount_amount
@@ -639,3 +667,54 @@ async def admin_create_refund(
     session.add(refund)
     await session.flush()
     return refund
+
+
+# --- Shipping (Phase 6) ---------------------------------------------------
+
+
+async def admin_assign_shipment(
+    session: AsyncSession,
+    *,
+    order: Order,
+    courier_name: str,
+    tracking_number: str | None,
+    estimated_delivery_date: date | None,
+    provider: CourierProvider,
+    admin_id: uuid.UUID,
+) -> Shipment:
+    """US-SHP-002. Only a `packed` order can be dispatched — assigning
+    the courier is what moves it to `shipped` (reusing
+    `admin_update_order_status` for that transition keeps one source
+    of truth for the order state machine, with this module only
+    deciding *when* to call it, not how the transition itself works).
+    """
+    if order.status != "packed":
+        raise AppError(
+            status_code=422,
+            code="INVALID_ORDER_STATE",
+            message="Only a packed order can be assigned a courier.",
+        )
+
+    shipment = await shipping_service.assign_courier(
+        session,
+        order_id=order.id,
+        courier_name=courier_name,
+        tracking_number=tracking_number,
+        estimated_delivery_date=estimated_delivery_date,
+        provider=provider,
+    )
+    await admin_update_order_status(session, order, "shipped", admin_id)
+    return shipment
+
+
+def build_shipment_response(shipment: Shipment) -> dict[str, Any]:
+    return {
+        "id": shipment.id,
+        "order_id": shipment.order_id,
+        "courier_name": shipment.courier_name,
+        "tracking_number": shipment.tracking_number,
+        "status": shipment.status,
+        "estimated_delivery_date": shipment.estimated_delivery_date,
+        "shipped_at": shipment.shipped_at,
+        "delivered_at": shipment.delivered_at,
+    }

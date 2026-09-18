@@ -155,13 +155,15 @@ def test_checkout_quote_computes_totals(
 
     response = client.post(
         "/api/v1/checkout/quote",
-        json={"address": inline_address(), "shipping_method": "express"},
+        json={"address": inline_address(district="Dhaka"), "shipping_method": "express"},
     )
     assert response.status_code == 200, response.text
     data = response.json()["data"]
     assert data["subtotal"] == f"{float(base_price) * 2:.2f}"
-    assert data["shipping_amount"] == "150.00"
-    assert data["total_amount"] == f"{float(base_price) * 2 + 150:.2f}"
+    # dhaka/express base rate covers up to 1000g; 2 items with no
+    # recorded weight default to 500g each, exactly at the base.
+    assert data["shipping_amount"] == "120.00"
+    assert data["total_amount"] == f"{float(base_price) * 2 + 120:.2f}"
     assert {opt["method"] for opt in data["shipping_options"]} == {"standard", "express"}
 
 

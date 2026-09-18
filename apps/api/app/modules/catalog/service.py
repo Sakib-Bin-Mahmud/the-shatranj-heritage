@@ -171,6 +171,21 @@ def effective_price(variant: ProductVariant, product: Product) -> Decimal:
     return variant.price_override if variant.price_override is not None else product.base_price
 
 
+# Phase 6: neither the variant nor the product is required to record a
+# weight (both fields are optional, per Phase 2), but shipping cost
+# calculation needs a number for every line item — this is the
+# fallback for "we don't actually know," not a claim that it's typical.
+DEFAULT_ITEM_WEIGHT_GRAMS = 500
+
+
+def effective_weight(variant: ProductVariant, product: Product) -> int:
+    if variant.weight_grams is not None:
+        return variant.weight_grams
+    if product.weight_grams is not None:
+        return product.weight_grams
+    return DEFAULT_ITEM_WEIGHT_GRAMS
+
+
 def quantity_available(inventory: Inventory | None) -> int:
     if not inventory:
         return 0
