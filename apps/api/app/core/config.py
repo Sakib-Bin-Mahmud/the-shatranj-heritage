@@ -1,6 +1,22 @@
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# NFR-SEC-007 (secrets management): these fields ship with well-known
+# placeholder/sample values so local dev and tests work with zero setup.
+# Settings' own validator below refuses to boot in production if any of
+# them are still set to these values, so a forgotten override fails
+# closed at startup instead of silently running with a guessable JWT
+# signing key or webhook secret.
+_PRODUCTION_UNSAFE_DEFAULTS = {
+    "jwt_secret_key": "change-me-in-every-environment",
+    "payment_webhook_secret": "change-me-in-every-environment",
+    "pathao_client_id": "change-me-in-every-environment",
+    "pathao_client_secret": "change-me-in-every-environment",
+    "sslcommerz_store_password": "qwerty",
+    "s3_secret_key": "minioadmin",
+}
 
 
 class Settings(BaseSettings):
@@ -63,6 +79,22 @@ class Settings(BaseSettings):
     # Observability
     sentry_dsn: str | None = None
     log_level: str = "INFO"
+
+    @model_validator(mode="after")
+    def _reject_placeholder_secrets_in_production(self) -> "Settings":
+        if self.environment == "production":
+            insecure = [
+                name
+                for name, placeholder in _PRODUCTION_UNSAFE_DEFAULTS.items()
+                if getattr(self, name) == placeholder
+            ]
+            if insecure:
+                raise ValueError(
+                    "Refusing to start with ENVIRONMENT=production while these settings "
+                    f"still hold their insecure sample values: {', '.join(sorted(insecure))}. "
+                    "Set real values via environment variables."
+                )
+        return self
 
 
 @lru_cache

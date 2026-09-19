@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type FormEvent } from "react";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
+import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
 
 function ResetPasswordForm() {
+  const { dict } = useDictionary();
+  const t = dict.auth.resetPassword;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState(searchParams.get("token") ?? "");
@@ -27,11 +30,7 @@ function ResetPasswordForm() {
       setSuccess(true);
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
-      setError(
-        err instanceof ApiClientError
-          ? err.message
-          : "Could not reset password.",
-      );
+      setError(err instanceof ApiClientError ? err.message : t.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -39,10 +38,10 @@ function ResetPasswordForm() {
 
   return (
     <div className={styles.page}>
-      <h1>Reset password</h1>
+      <h1>{t.heading}</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <label>
-          Reset token
+          {t.tokenLabel}
           <input
             type="text"
             required
@@ -52,29 +51,34 @@ function ResetPasswordForm() {
         </label>
 
         <label>
-          New password
+          {t.newPasswordLabel}
           <input
             type="password"
             required
             minLength={8}
+            autoComplete="new-password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
         </label>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
         {success && (
-          <p className={styles.success}>
-            Password reset. Redirecting to login…
+          <p className={styles.success} role="status">
+            {t.successMessage}
           </p>
         )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? "Resetting…" : "Reset password"}
+          {submitting ? t.submitting : t.submit}
         </button>
       </form>
       <p className={styles.hint}>
-        <Link href="/login">Back to login</Link>
+        <Link href="/login">{dict.common.backToLogin}</Link>
       </p>
     </div>
   );

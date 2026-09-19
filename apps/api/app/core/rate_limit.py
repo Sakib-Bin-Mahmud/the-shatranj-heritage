@@ -9,10 +9,13 @@ from app.core.responses import AppError
 def rate_limit(key: str, limit: int, window_seconds: int) -> Callable:
     """Fixed-window rate limiter dependency, per NFR-SEC-006.
 
-    Applied to auth endpoints named as rate-limited in
-    docs/API Specification.md §2 ("Rate Limiting"): login, register,
-    forgot-password. Keyed by client IP + `key` so each endpoint has its
-    own budget.
+    Applied to the auth endpoints docs/API Specification.md §2 ("Rate
+    Limiting") names as rate-limited (login, register, forgot-password),
+    plus admin login, password reset, checkout quoting, and order
+    placement — added in Phase 8's rate-limiting review, since an
+    unauthenticated or guest-accessible write endpoint left unlimited is
+    a DoS/abuse surface regardless of whether the spec calls it "auth".
+    Keyed by client IP + `key` so each endpoint has its own budget.
     """
 
     async def dependency(request: Request) -> None:

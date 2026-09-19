@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
+import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
 
 export default function ForgotPasswordPage() {
+  const { dict } = useDictionary();
+  const t = dict.auth.forgotPassword;
   const [identifier, setIdentifier] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [debugToken, setDebugToken] = useState<string | null>(null);
@@ -26,19 +29,16 @@ export default function ForgotPasswordPage() {
           body: { identifier },
         },
       );
-      setMessage(
-        "If that account exists, password reset instructions have been sent.",
-      );
+      setMessage(t.successMessage);
       if (data?.debug_reset_token) {
-        // Stopgap until Phase 7 wires real email/SMS delivery — see
-        // apps/api/app/modules/auth/router.py. Only ever present when the
-        // API runs with DEBUG=true.
+        // Stopgap until a real email/SMS vendor is wired behind the
+        // notification service — see
+        // apps/api/app/modules/notifications/providers.py. Only ever
+        // present when the API runs with DEBUG=true.
         setDebugToken(data.debug_reset_token);
       }
     } catch (err) {
-      setError(
-        err instanceof ApiClientError ? err.message : "Something went wrong.",
-      );
+      setError(err instanceof ApiClientError ? err.message : t.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -46,40 +46,49 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Forgot password</h1>
+      <h1>{t.heading}</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <label>
-          Email or mobile number
+          {t.identifierLabel}
           <input
             type="text"
             required
+            autoComplete="username"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
           />
         </label>
 
-        {error && <p className={styles.error}>{error}</p>}
-        {message && <p className={styles.success}>{message}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
+        {message && (
+          <p className={styles.success} role="status">
+            {message}
+          </p>
+        )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? "Sending…" : "Send reset instructions"}
+          {submitting ? t.submitting : t.submit}
         </button>
       </form>
 
       {debugToken && (
         <p className={styles.hint}>
-          Dev mode — no email/SMS provider yet:{" "}
+          {t.devModeHint}{" "}
           <Link
             href={`/reset-password?token=${encodeURIComponent(debugToken)}`}
           >
-            reset your password
+            {t.resetLink}
           </Link>
           .
         </p>
       )}
 
       <p className={styles.hint}>
-        <Link href="/login">Back to login</Link>
+        <Link href="/login">{dict.common.backToLogin}</Link>
       </p>
     </div>
   );

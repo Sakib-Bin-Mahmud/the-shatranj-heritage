@@ -4,6 +4,7 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import get_logger
+from app.core.metrics import notifications_failed_total
 from app.modules.notifications.models import NotificationLog
 from app.modules.notifications.providers import NotificationChannel, get_notification_channel
 
@@ -85,6 +86,9 @@ async def _send(
             "notification_send_failed", template_code=template_code, recipient=recipient
         )
         status = "failed"
+
+    if status == "failed":
+        notifications_failed_total.labels(channel=channel, template_code=template_code).inc()
 
     session.add(
         NotificationLog(

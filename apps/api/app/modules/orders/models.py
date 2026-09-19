@@ -7,6 +7,7 @@ from sqlalchemy import (
     CheckConstraint,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     String,
@@ -50,6 +51,14 @@ class Order(UUIDPrimaryKeyMixin, TimestampMixin, Base):
             "customer_id IS NOT NULL OR guest_email IS NOT NULL OR guest_phone IS NOT NULL",
             name="ck_orders_customer_or_guest_contact",
         ),
+        # Both list_customer_orders (customer order history) and
+        # admin_list_orders (optionally filtered by status) filter on
+        # one of these columns and always sort by placed_at DESC — a
+        # composite index per filter column serves the query directly,
+        # per ERD §6 ("Order lookup, customer order history, admin
+        # filtering").
+        Index("ix_orders_customer_id_placed_at", "customer_id", "placed_at"),
+        Index("ix_orders_status_placed_at", "status", "placed_at"),
     )
 
     order_number: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)

@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ApiClientError } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
+import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
 
 type IdentifierMode = "email" | "mobile";
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const { dict } = useDictionary();
+  const t = dict.auth.register;
   const router = useRouter();
 
   const [mode, setMode] = useState<IdentifierMode>("email");
@@ -33,9 +36,7 @@ export default function RegisterPage() {
       });
       router.push("/account");
     } catch (err) {
-      setError(
-        err instanceof ApiClientError ? err.message : "Registration failed.",
-      );
+      setError(err instanceof ApiClientError ? err.message : t.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -43,62 +44,67 @@ export default function RegisterPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Create an account</h1>
+      <h1>{t.heading}</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <label>
-          Full name
+          {t.fullNameLabel}
           <input
             type="text"
             required
+            autoComplete="name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
           />
         </label>
 
         <label>
-          Register with
+          {t.registerWithLabel}
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as IdentifierMode)}
           >
-            <option value="email">Email</option>
-            <option value="mobile">Mobile number</option>
+            <option value="email">{t.optionEmail}</option>
+            <option value="mobile">{t.optionMobile}</option>
           </select>
         </label>
 
         <label>
-          {mode === "email" ? "Email address" : "Mobile number"}
+          {mode === "email" ? t.emailLabel : t.mobileLabel}
           <input
             type={mode === "email" ? "email" : "tel"}
             required
-            placeholder={mode === "mobile" ? "01XXXXXXXXX" : undefined}
+            autoComplete={mode === "email" ? "email" : "tel"}
+            placeholder={mode === "mobile" ? t.mobilePlaceholder : undefined}
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
           />
         </label>
 
         <label>
-          Password
+          {dict.common.password}
           <input
             type="password"
             required
             minLength={8}
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        <p className={styles.hint}>
-          At least 8 characters, with a letter and a digit.
-        </p>
+        <p className={styles.hint}>{t.passwordHint}</p>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? "Creating account…" : "Create account"}
+          {submitting ? t.submitting : t.submit}
         </button>
       </form>
       <p className={styles.hint}>
-        Already have an account? <Link href="/login">Log in</Link>
+        {t.haveAccount} <Link href="/login">{dict.common.logIn}</Link>
       </p>
     </div>
   );

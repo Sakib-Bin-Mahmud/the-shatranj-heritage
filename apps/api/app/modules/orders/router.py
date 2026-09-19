@@ -4,6 +4,7 @@ from fastapi import APIRouter, Cookie, Depends, Header, Query, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
+from app.core.rate_limit import rate_limit
 from app.core.responses import success_envelope
 from app.modules.auth.dependencies import (
     AdminPrincipal,
@@ -43,7 +44,10 @@ def _order_detail_response(data: dict) -> dict:
 # --- Checkout (US-CHK-001..004) -----------------------------------------
 
 
-@checkout_router.post("/quote")
+@checkout_router.post(
+    "/quote",
+    dependencies=[Depends(rate_limit("checkout_quote", limit=30, window_seconds=60))],
+)
 async def get_checkout_quote(
     payload: CheckoutQuoteRequest,
     response: Response,
@@ -69,7 +73,11 @@ async def get_checkout_quote(
 # --- Order placement (US-CHK-006) ---------------------------------------
 
 
-@router.post("", status_code=201)
+@router.post(
+    "",
+    status_code=201,
+    dependencies=[Depends(rate_limit("place_order", limit=20, window_seconds=60))],
+)
 async def place_order(
     payload: PlaceOrderRequest,
     request: Request,

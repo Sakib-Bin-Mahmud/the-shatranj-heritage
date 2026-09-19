@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -56,13 +56,19 @@ class InventoryTransaction(UUIDPrimaryKeyMixin, Base):
             "change_type IN ('restock', 'sale', 'return', 'damage', 'adjustment')",
             name="ck_inventory_transactions_change_type",
         ),
+        # Every read of this table filters by variant then sorts by
+        # created_at (stock history, low-stock/slow-moving reporting) —
+        # a composite index serves that directly and, since
+        # product_variant_id leads it, still serves a plain
+        # variant-only filter (leftmost-prefix rule), so no separate
+        # single-column index is needed alongside it.
+        Index("ix_inventory_transactions_variant_created_at", "product_variant_id", "created_at"),
     )
 
     product_variant_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("product_variants.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
     change_type: Mapped[str] = mapped_column(String(20), nullable=False)
     quantity_delta: Mapped[int] = mapped_column(Integer, nullable=False)

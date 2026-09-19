@@ -19,3 +19,4 @@ boto3==1.43.96
 sentry-sdk[fastapi]==2.69.2
 structlog==26.1.0
 httpx==0.28.1
+prometheus-fastapi-instrumentator==8.1.0
