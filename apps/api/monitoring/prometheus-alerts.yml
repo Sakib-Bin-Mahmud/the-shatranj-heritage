@@ -1,0 +1,122 @@
+# Phase 8 (NFR-MON-002): alerting rules for payment failures and low
+# stock, plus general API health, against the metrics this app exposes
+# at /metrics (business counters/gauges defined in app/core/metrics.py;
+# http_* metrics come from prometheus-fastapi-instrumentator).
+#
+# Not deployed anywhere in this repo's environments — there is no
+# Prometheus/Alertmanager instance to load it into here. This is the
+# rules file a real deployment's Prometheus server would load via
+# `rule_files:` in prometheus.yml, and Alertmanager would need routing
+# configured separately to actually deliver these (e.g. to Slack/
+# PagerDuty/email) — that routing is deployment-specific and documented
+# in DEPLOYMENT.md rather than baked in here.
+groups:
+  - name: shatranj-heritage-api
+    rules:
+      - alert: PaymentWebhookFailureRateHigh
+        expr: |
+          (
+            sum(rate(payment_webhook_results_total{result=~"failed|signature_invalid"}[5m]))
+            /
+            sum(rate(payment_webhook_results_total[5m]))
+          ) > 0.1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "More than 10% of payment webhook deliveries are failing"
+          description: >-
+            Over the last 5 minutes, more than 10% of processed payment
+            webhooks resulted in 'failed' or 'signature_invalid'. This
+            can mean the payment gateway's IPN config drifted (wrong
+            webhook secret) or a real spike in declined payments —
+            check payment_webhook_results_total by result and the
+            gateway's own dashboard.
+
+      - alert: PaymentWebhookNoTraffic
+        expr: |
+          sum(rate(payment_webhook_results_total[30m])) == 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No payment webhooks processed in the last 30 minutes"
+          description: >-
+            Either there's genuinely been no order activity, or the
+            gateway can no longer reach this service's webhook
+            endpoint. Cross-check against orders_placed_total for
+            online payment methods before paging.
+
+      - alert: LowStockVariantsPresent
+        expr: low_stock_variants > 0
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $value }} product variant(s) at or below reorder threshold"
+          description: >-
+            US-INV-002/RPT-002: at least one variant has stayed at or
+            below its reorder threshold for an hour. See
+            GET /admin/reports/inventory for the affected SKUs.
+
+      - alert: LowStockVariantsCritical
+        expr: low_stock_variants > 10
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $value }} product variants at or below reorder threshold"
+          description: >-
+            A large and sustained number of variants are low on stock
+            at once — likely a restocking process failure or a demand
+            spike across the catalog, not an isolated SKU issue.
+
+      - alert: NotificationFailureRateHigh
+        expr: |
+          sum(rate(notifications_failed_total[15m])) > 0.5
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Notification channel failing repeatedly"
+          description: >-
+            NFR-AVL-003 means a broken notification channel never
+            blocks orders/payments, but customers still aren't getting
+            their emails/SMS. Check notifications_failed_total by
+            channel/template_code and the LoggingNotificationChannel's
+            logs for the underlying error.
+
+      - alert: ApiServerErrorRateHigh
+        expr: |
+          (
+            sum(rate(http_requests_total{status="5xx"}[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "More than 5% of API responses are 5xx"
+          description: >-
+            NFR-AVL: sustained 5xx rate above 5% over 5 minutes. Check
+            Sentry (SENTRY_DSN) for the specific exceptions and the
+            app's structured logs for the failing handler.
+
+      - alert: ApiP95LatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, handler)
+          ) > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 API latency above 2s on {{ $labels.handler }}"
+          description: >-
+            NFR-PER-001..004 targets public reads <500ms and checkout
+            <2s; a handler sitting above 2s at p95 for 10 minutes is
+            worth investigating (N+1 query regression, missing index,
+            or an upstream dependency — payment/courier provider —
+            slowing down).

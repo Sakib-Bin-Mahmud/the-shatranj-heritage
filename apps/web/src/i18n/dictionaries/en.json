@@ -1,7 +1,18 @@
 {
   "common": {
     "siteName": "The Shatranj Heritage",
-    "tagline": "Bangladesh's first dedicated e-commerce platform for chess."
+    "tagline": "Bangladesh's first dedicated e-commerce platform for chess.",
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "password": "Password",
+    "backToLogin": "Back to login",
+    "logIn": "Log in",
+    "register": "Register",
+    "logOut": "Log out",
+    "account": "Account"
   },
   "home": {
     "heading": "The Shatranj Heritage",
@@ -9,5 +20,94 @@
     "apiStatusLabel": "API status",
     "apiStatusOk": "Connected",
     "apiStatusError": "Unavailable"
+  },
+  "nav": {
+    "localeToggleToEnglish": "English",
+    "localeToggleToBangla": "বাংলা"
+  },
+  "auth": {
+    "register": {
+      "heading": "Create an account",
+      "fullNameLabel": "Full name",
+      "registerWithLabel": "Register with",
+      "optionEmail": "Email",
+      "optionMobile": "Mobile number",
+      "emailLabel": "Email address",
+      "mobileLabel": "Mobile number",
+      "mobilePlaceholder": "01XXXXXXXXX",
+      "passwordHint": "At least 8 characters, with a letter and a digit.",
+      "submitting": "Creating account…",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "genericError": "Registration failed."
+    },
+    "login": {
+      "heading": "Log in",
+      "identifierLabel": "Email or mobile number",
+      "submitting": "Logging in…",
+      "forgotLink": "Forgot your password?",
+      "newHere": "New here?",
+      "createAccountLink": "Create an account",
+      "genericError": "Login failed."
+    },
+    "forgotPassword": {
+      "heading": "Forgot password",
+      "identifierLabel": "Email or mobile number",
+      "submitting": "Sending…",
+      "submit": "Send reset instructions",
+      "successMessage": "If that account exists, password reset instructions have been sent.",
+      "genericError": "Something went wrong.",
+      "devModeHint": "Dev mode — no email/SMS provider yet:",
+      "resetLink": "reset your password"
+    },
+    "resetPassword": {
+      "heading": "Reset password",
+      "tokenLabel": "Reset token",
+      "newPasswordLabel": "New password",
+      "submitting": "Resetting…",
+      "submit": "Reset password",
+      "successMessage": "Password reset. Redirecting to login…",
+      "genericError": "Could not reset password."
+    }
+  },
+  "account": {
+    "heading": "My account",
+    "statusLabel": "Status",
+    "loadError": "Could not load addresses.",
+    "profile": {
+      "heading": "Profile",
+      "preferredLanguageLabel": "Preferred language",
+      "optionEnglish": "English",
+      "optionBangla": "বাংলা",
+      "submit": "Save profile",
+      "successMessage": "Profile updated.",
+      "genericError": "Could not update profile."
+    },
+    "addresses": {
+      "heading": "Delivery addresses",
+      "loading": "Loading addresses…",
+      "empty": "No saved addresses yet.",
+      "defaultBadge": "Default",
+      "addButton": "Add address",
+      "form": {
+        "labelOptional": "Label (optional)",
+        "labelPlaceholder": "Home, Office…",
+        "recipientNameLabel": "Recipient name",
+        "phoneLabel": "Phone",
+        "addressLine1Label": "Address line 1",
+        "addressLine2Label": "Address line 2 (optional)",
+        "cityLabel": "City",
+        "districtLabel": "District",
+        "postalCodeLabel": "Postal code (optional)",
+        "addressTypeLabel": "Address type",
+        "optionShipping": "Shipping",
+        "optionBilling": "Billing",
+        "optionBoth": "Both",
+        "setDefaultLabel": "Set as default address",
+        "addSubmitLabel": "Add address",
+        "saveSubmitLabel": "Save address",
+        "genericError": "Could not save this address."
+      }
+    }
   }
 }

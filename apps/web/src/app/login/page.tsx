@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ApiClientError } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
+import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { dict } = useDictionary();
+  const t = dict.auth.login;
   const router = useRouter();
 
   const [identifier, setIdentifier] = useState("");
@@ -24,7 +27,7 @@ export default function LoginPage() {
       await login({ identifier, password });
       router.push("/account");
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : "Login failed.");
+      setError(err instanceof ApiClientError ? err.message : t.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -32,39 +35,45 @@ export default function LoginPage() {
 
   return (
     <div className={styles.page}>
-      <h1>Log in</h1>
+      <h1>{t.heading}</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <label>
-          Email or mobile number
+          {t.identifierLabel}
           <input
             type="text"
             required
+            autoComplete="username"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
           />
         </label>
 
         <label>
-          Password
+          {dict.common.password}
           <input
             type="password"
             required
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? "Logging in…" : "Log in"}
+          {submitting ? t.submitting : dict.common.logIn}
         </button>
       </form>
       <p className={styles.hint}>
-        <Link href="/forgot-password">Forgot your password?</Link>
+        <Link href="/forgot-password">{t.forgotLink}</Link>
       </p>
       <p className={styles.hint}>
-        New here? <Link href="/register">Create an account</Link>
+        {t.newHere} <Link href="/register">{t.createAccountLink}</Link>
       </p>
     </div>
   );

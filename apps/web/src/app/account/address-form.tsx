@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useDictionary } from "@/i18n/dictionary-context";
 import formStyles from "@/components/form.module.css";
 
 export type AddressInput = {
@@ -42,6 +43,8 @@ export function AddressForm({
   onSubmit: (input: AddressInput) => Promise<void>;
   onCancel?: () => void;
 }) {
+  const { dict } = useDictionary();
+  const t = dict.account.addresses.form;
   const [values, setValues] = useState<AddressInput>({
     ...emptyAddress,
     ...initial,
@@ -63,7 +66,7 @@ export function AddressForm({
     try {
       await onSubmit(values);
     } catch {
-      setError("Could not save this address.");
+      setError(t.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -72,69 +75,76 @@ export function AddressForm({
   return (
     <form className={formStyles.form} onSubmit={handleSubmit}>
       <label>
-        Label (optional)
+        {t.labelOptional}
         <input
           value={values.label}
           onChange={(e) => update("label", e.target.value)}
-          placeholder="Home, Office…"
+          placeholder={t.labelPlaceholder}
         />
       </label>
       <label>
-        Recipient name
+        {t.recipientNameLabel}
         <input
           required
+          autoComplete="name"
           value={values.recipient_name}
           onChange={(e) => update("recipient_name", e.target.value)}
         />
       </label>
       <label>
-        Phone
+        {t.phoneLabel}
         <input
           required
+          autoComplete="tel"
           value={values.phone}
           onChange={(e) => update("phone", e.target.value)}
         />
       </label>
       <label>
-        Address line 1
+        {t.addressLine1Label}
         <input
           required
+          autoComplete="address-line1"
           value={values.address_line1}
           onChange={(e) => update("address_line1", e.target.value)}
         />
       </label>
       <label>
-        Address line 2 (optional)
+        {t.addressLine2Label}
         <input
+          autoComplete="address-line2"
           value={values.address_line2}
           onChange={(e) => update("address_line2", e.target.value)}
         />
       </label>
       <label>
-        City
+        {t.cityLabel}
         <input
           required
+          autoComplete="address-level2"
           value={values.city}
           onChange={(e) => update("city", e.target.value)}
         />
       </label>
       <label>
-        District
+        {t.districtLabel}
         <input
           required
+          autoComplete="address-level1"
           value={values.district}
           onChange={(e) => update("district", e.target.value)}
         />
       </label>
       <label>
-        Postal code (optional)
+        {t.postalCodeLabel}
         <input
+          autoComplete="postal-code"
           value={values.postal_code}
           onChange={(e) => update("postal_code", e.target.value)}
         />
       </label>
       <label>
-        Address type
+        {t.addressTypeLabel}
         <select
           value={values.address_type}
           onChange={(e) =>
@@ -144,9 +154,9 @@ export function AddressForm({
             )
           }
         >
-          <option value="shipping">Shipping</option>
-          <option value="billing">Billing</option>
-          <option value="both">Both</option>
+          <option value="shipping">{t.optionShipping}</option>
+          <option value="billing">{t.optionBilling}</option>
+          <option value="both">{t.optionBoth}</option>
         </select>
       </label>
       <label>
@@ -155,18 +165,22 @@ export function AddressForm({
           checked={values.is_default}
           onChange={(e) => update("is_default", e.target.checked)}
         />{" "}
-        Set as default address
+        {t.setDefaultLabel}
       </label>
 
-      {error && <p className={formStyles.error}>{error}</p>}
+      {error && (
+        <p className={formStyles.error} role="alert">
+          {error}
+        </p>
+      )}
 
       <div style={{ display: "flex", gap: 8 }}>
         <button type="submit" disabled={submitting}>
-          {submitting ? "Saving…" : submitLabel}
+          {submitting ? dict.common.saving : submitLabel}
         </button>
         {onCancel && (
           <button type="button" onClick={onCancel} disabled={submitting}>
-            Cancel
+            {dict.common.cancel}
           </button>
         )}
       </div>

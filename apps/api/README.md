@@ -34,6 +34,58 @@ still be bootstrapped via this CLI script:
 python -m scripts.create_admin_user --email admin@example.com --role super_admin
 ```
 
+## Backup & Restore (NFR-DR-001..003)
+
+`scripts/backup_database.sh` and `scripts/restore_database.sh` wrap
+`pg_dump`/`pg_restore` in custom format (compressed, dependency-order-
+safe regardless of table order). Both read connection info from
+`DATABASE_URL` (falling back to the local dev default), stripping the
+`+asyncpg` driver suffix `pg_dump`/`pg_restore` don't understand.
+
+Take a backup:
+
+```bash
+./scripts/backup_database.sh [output_dir]   # default: ./backups
+```
+
+Restore one (**destructive** — drops and recreates the `public` schema
+first):
+
+```bash
+./scripts/restore_database.sh <backup_file>          # prompts for confirmation
+./scripts/restore_database.sh <backup_file> --yes    # for scripted/CI use
+```
+
+Verify a backup by restoring it into a disposable database (never the
+one you can't afford to lose) and confirming `alembic check` reports no
+drift and the app boots against it — that's exactly the drill this was
+tested with while building it: back up, drop the schema, restore,
+confirm row counts and `alembic current` match pre-backup state.
+
+In production this script should run on a schedule (cron, a CI
+scheduled job, or your hosting platform's managed-Postgres backup
+feature if it has one) with `output_dir` pointed at off-host storage —
+a backup that lives on the same disk as the database it backs up
+doesn't survive the failure modes that matter (disk loss, host
+termination). Retention/off-host upload isn't implemented here since it
+depends entirely on where this gets deployed.
+
+## Observability
+
+- **Metrics**: `GET /metrics` exposes Prometheus text format —
+  request-level metrics (latency, count by path/method/status) via
+  `prometheus-fastapi-instrumentator`, plus business counters/gauges
+  defined in `app/core/metrics.py` (`orders_placed_total`,
+  `payment_webhook_results_total`, `notifications_failed_total`,
+  `low_stock_variants`). `monitoring/prometheus-alerts.yml` has
+  matching Prometheus alerting rules (payment failure rate, low stock,
+  API error rate/latency) — not deployed anywhere in this repo, since
+  there's no Prometheus/Alertmanager instance in these environments,
+  but ready for a real deployment's Prometheus to load via
+  `rule_files:`.
+- **Errors**: set `SENTRY_DSN` to enable Sentry (`app/main.py` only
+  calls `sentry_sdk.init()` when it's set).
+
 ## Known gotchas
 
 - `bcrypt` is pinned to `4.0.1` in `requirements.txt`. `passlib==1.7.4`

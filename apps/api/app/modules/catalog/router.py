@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import cache_delete_prefix, cache_get_or_set
 from app.core.database import get_db_session
 from app.core.responses import success_envelope
 from app.core.storage import delete_image_url, upload_image_file
@@ -28,6 +29,28 @@ from app.modules.catalog.schemas import (
 router = APIRouter(tags=["Catalog"])
 admin_router = APIRouter(prefix="/admin", tags=["Admin - Catalog"])
 
+# SRS Part 3 §14: cache-aside Redis caching for catalog/category public
+# reads. Categories change rarely (admin-driven), so a longer TTL plus
+# invalidation-on-write is safe. Product detail includes live,
+# inventory-derived stock fields, so it gets a short TTL instead of
+# write-path invalidation — bounding staleness without new coupling
+# from the inventory module back into catalog. Either way, browsing
+# staleness never affects order correctness: place_order always
+# re-checks live, row-locked inventory regardless of what a cached
+# page displayed.
+CATEGORY_CACHE_PREFIX = "cache:categories:"
+PRODUCT_DETAIL_CACHE_PREFIX = "cache:products:slug:"
+CATEGORY_CACHE_TTL_SECONDS = 300
+PRODUCT_DETAIL_CACHE_TTL_SECONDS = 30
+
+
+async def _invalidate_category_cache() -> None:
+    await cache_delete_prefix(CATEGORY_CACHE_PREFIX)
+
+
+async def _invalidate_product_cache() -> None:
+    await cache_delete_prefix(PRODUCT_DETAIL_CACHE_PREFIX)
+
 
 async def _product_detail(session: AsyncSession, product: Product) -> dict:
     return ProductDetail(
@@ -46,7 +69,7 @@ async def _product_detail(session: AsyncSession, product: Product) -> dict:
         is_featured=product.is_featured,
         variants=await catalog_service.build_variant_responses(session, product),
         images=[ImageResponse.model_validate(i) for i in product.images],
-    ).model_dump()
+    ).model_dump(mode="json")
 
 
 # --- Public: categories -----------------------------------------------
@@ -55,18 +78,28 @@ async def _product_detail(session: AsyncSession, product: Product) -> dict:
 @router.get("/categories")
 async def list_categories(session: AsyncSession = Depends(get_db_session)) -> dict:
     """US-CAT-003."""
-    categories = await catalog_service.list_categories(session)
-    tree = catalog_service.build_category_tree(categories)
-    return success_envelope(
-        data=[CategoryTreeResponse.model_validate(c).model_dump() for c in tree]
-    )
+
+    async def _load() -> list[dict]:
+        categories = await catalog_service.list_categories(session)
+        tree = catalog_service.build_category_tree(categories)
+        return [CategoryTreeResponse.model_validate(c).model_dump(mode="json") for c in tree]
+
+    data = await cache_get_or_set(f"{CATEGORY_CACHE_PREFIX}tree", CATEGORY_CACHE_TTL_SECONDS, _load)
+    return success_envelope(data=data)
 
 
 @router.get("/categories/{slug}")
 async def get_category(slug: str, session: AsyncSession = Depends(get_db_session)) -> dict:
     """US-CAT-003."""
-    category = await catalog_service.get_category_by_slug_or_404(session, slug)
-    return success_envelope(data=CategoryResponse.model_validate(category).model_dump())
+
+    async def _load() -> dict:
+        category = await catalog_service.get_category_by_slug_or_404(session, slug)
+        return CategoryResponse.model_validate(category).model_dump(mode="json")
+
+    data = await cache_get_or_set(
+        f"{CATEGORY_CACHE_PREFIX}slug:{slug}", CATEGORY_CACHE_TTL_SECONDS, _load
+    )
+    return success_envelope(data=data)
 
 
 # --- Public: products ----------------------------------------------------
@@ -128,8 +161,15 @@ async def list_products(
 @router.get("/products/{slug}")
 async def get_product(slug: str, session: AsyncSession = Depends(get_db_session)) -> dict:
     """US-CAT-002."""
-    product = await catalog_service.get_public_product_by_slug_or_404(session, slug)
-    return success_envelope(data=await _product_detail(session, product))
+
+    async def _load() -> dict:
+        product = await catalog_service.get_public_product_by_slug_or_404(session, slug)
+        return await _product_detail(session, product)
+
+    data = await cache_get_or_set(
+        f"{PRODUCT_DETAIL_CACHE_PREFIX}{slug}", PRODUCT_DETAIL_CACHE_TTL_SECONDS, _load
+    )
+    return success_envelope(data=data)
 
 
 @router.get("/products/{product_id}/related")
@@ -163,6 +203,7 @@ async def admin_create_category(
     """FR-ADM-001."""
     category = await catalog_service.create_category(session, payload)
     await session.commit()
+    await _invalidate_category_cache()
     return success_envelope(data=CategoryResponse.model_validate(category).model_dump())
 
 
@@ -177,6 +218,7 @@ async def admin_update_category(
     """FR-ADM-001."""
     category = await catalog_service.update_category(session, category_id, payload)
     await session.commit()
+    await _invalidate_category_cache()
     return success_envelope(data=CategoryResponse.model_validate(category).model_dump())
 
 
@@ -191,6 +233,7 @@ async def admin_deactivate_category(
     would fail at the database level anyway once any product uses it."""
     category = await catalog_service.deactivate_category(session, category_id)
     await session.commit()
+    await _invalidate_category_cache()
     return success_envelope(data=CategoryResponse.model_validate(category).model_dump())
 
 
@@ -270,6 +313,7 @@ async def admin_create_product(
     """FR-CAT-001, BR-PRO-001."""
     product = await catalog_service.create_product(session, payload)
     await session.commit()
+    await _invalidate_product_cache()
     return success_envelope(data=await _product_detail(session, product))
 
 
@@ -284,6 +328,7 @@ async def admin_update_product(
     """FR-CAT-002."""
     product = await catalog_service.update_product(session, product_id, payload)
     await session.commit()
+    await _invalidate_product_cache()
     return success_envelope(data=await _product_detail(session, product))
 
 
@@ -296,6 +341,7 @@ async def admin_archive_product(
     """FR-CAT-003."""
     product = await catalog_service.archive_product(session, product_id)
     await session.commit()
+    await _invalidate_product_cache()
     return success_envelope(data=await _product_detail(session, product))
 
 
@@ -315,6 +361,7 @@ async def admin_create_variant(
     """FR-CAT-005."""
     await catalog_service.create_variant(session, product_id, payload)
     await session.commit()
+    await _invalidate_product_cache()
     product = await catalog_service.get_product_or_404(session, product_id)
     return success_envelope(data=await _product_detail(session, product))
 
@@ -332,6 +379,7 @@ async def admin_update_variant(
     """FR-CAT-005."""
     await catalog_service.update_variant(session, product_id, variant_id, payload)
     await session.commit()
+    await _invalidate_product_cache()
     product = await catalog_service.get_product_or_404(session, product_id)
     return success_envelope(data=await _product_detail(session, product))
 
@@ -348,6 +396,7 @@ async def admin_archive_variant(
     items) that must remain intact."""
     await catalog_service.archive_variant(session, product_id, variant_id)
     await session.commit()
+    await _invalidate_product_cache()
     product = await catalog_service.get_product_or_404(session, product_id)
     return success_envelope(data=await _product_detail(session, product))
 
@@ -379,6 +428,7 @@ async def admin_add_image(
         product_variant_id=product_variant_id,
     )
     await session.commit()
+    await _invalidate_product_cache()
     product = await catalog_service.get_product_or_404(session, product_id)
     return success_envelope(data=await _product_detail(session, product))
 
@@ -394,5 +444,6 @@ async def admin_delete_image(
     url = await catalog_service.delete_image(session, product_id, image_id)
     await session.commit()
     delete_image_url(url)
+    await _invalidate_product_cache()
     product = await catalog_service.get_product_or_404(session, product_id)
     return success_envelope(data=await _product_detail(session, product))

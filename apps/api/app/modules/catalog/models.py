@@ -138,6 +138,15 @@ class ProductVariant(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "product_variants"
     __table_args__ = (
         CheckConstraint("status IN ('active', 'archived')", name="ck_product_variants_status"),
+        # Per ERD §6 ("GIN on attributes" for attribute-based
+        # filtering). Note this doesn't accelerate the current
+        # `attributes["material"].astext.ilike(...)` substring filter
+        # in catalog/service.py (GIN's jsonb_ops supports containment/
+        # existence operators, not arbitrary substring match) — that
+        # would need a separate trigram index if it becomes a real
+        # workload. This index is what makes a future `attributes @>
+        # {...}` containment filter usable without a sequential scan.
+        Index("ix_product_variants_attributes", "attributes", postgresql_using="gin"),
     )
 
     product_id: Mapped[uuid.UUID] = mapped_column(

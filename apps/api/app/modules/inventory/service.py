@@ -3,9 +3,33 @@ import uuid
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.metrics import low_stock_variants
 from app.core.responses import AppError
 from app.modules.catalog.models import Product, ProductVariant
 from app.modules.inventory.models import Inventory, InventoryTransaction
+
+
+async def refresh_low_stock_gauge(session: AsyncSession) -> int:
+    """NFR-MON-002 (alerting for low stock): recomputes the count of
+    variants at or below their reorder threshold and publishes it as a
+    Prometheus gauge. Called periodically from the app lifespan (see
+    main.py) rather than on every inventory write, since it's a
+    monitoring signal, not something any request path needs read-your-
+    writes consistency on.
+    """
+    count = (
+        await session.scalar(
+            select(func.count())
+            .select_from(Inventory)
+            .where(
+                (Inventory.quantity_on_hand - Inventory.quantity_reserved)
+                <= Inventory.reorder_threshold
+            )
+        )
+        or 0
+    )
+    low_stock_variants.set(count)
+    return count
 
 
 async def get_inventory_or_404(session: AsyncSession, product_variant_id: uuid.UUID) -> Inventory:

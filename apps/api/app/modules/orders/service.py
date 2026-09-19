@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.audit import record_audit_log
+from app.core.metrics import orders_placed_total
 from app.core.responses import AppError
 from app.modules.cart import service as cart_service
 from app.modules.cart.models import Cart
@@ -282,24 +283,34 @@ async def place_order(
     discount_amount = Decimal("0.00")
     total_amount = subtotal + shipping_amount + tax_amount - discount_amount
 
-    # Lock every affected inventory row up front and validate before
-    # reserving anything, so a shortfall on item 3 of 3 never leaves
-    # items 1-2 partially reserved.
-    locked_inventory: dict[uuid.UUID, Inventory] = {}
+    # Lock every affected inventory row in one round trip, ordered by
+    # product_variant_id, and validate before reserving anything, so a
+    # shortfall on item 3 of 3 never leaves items 1-2 partially
+    # reserved. The ORDER BY matters as much as the batching: two
+    # concurrent checkouts sharing overlapping variants but iterating
+    # `cart.items` in different orders would otherwise take FOR UPDATE
+    # locks in different orders too, which is a textbook deadlock (each
+    # transaction waiting on a row the other already holds). Locking in
+    # one query with a fixed row order makes every transaction acquire
+    # locks in the same global sequence, so that can't happen.
+    variant_ids = [item.product_variant_id for item in cart.items]
+    locked_rows = await session.scalars(
+        select(Inventory)
+        .where(Inventory.product_variant_id.in_(variant_ids))
+        .order_by(Inventory.product_variant_id)
+        .with_for_update()
+    )
+    locked_inventory: dict[uuid.UUID, Inventory] = {
+        inv.product_variant_id: inv for inv in locked_rows
+    }
     for item in cart.items:
-        inventory = await session.scalar(
-            select(Inventory)
-            .where(Inventory.product_variant_id == item.product_variant_id)
-            .with_for_update()
-        )
-        available = quantity_available(inventory)
+        available = quantity_available(locked_inventory.get(item.product_variant_id))
         if item.quantity > available:
             raise AppError(
                 status_code=422,
                 code="INSUFFICIENT_STOCK",
                 message=f"Only {available} unit(s) available for one of the items in your cart.",
             )
-        locked_inventory[item.product_variant_id] = inventory
 
     for item in cart.items:
         locked_inventory[item.product_variant_id].quantity_reserved += item.quantity
@@ -368,6 +379,7 @@ async def place_order(
             "currency": order.currency,
         },
     )
+    orders_placed_total.labels(payment_method=payment_method).inc()
     return order, payment, redirect_url
 
 

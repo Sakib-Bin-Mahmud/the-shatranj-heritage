@@ -506,9 +506,13 @@ def test_inventory_transaction_history_and_low_stock_filter(
     ).json()["data"]
     assert history["meta"]["total"] == 2
 
-    low_stock = client.get("/api/v1/admin/inventory?low_stock=true", headers=inv_headers).json()[
-        "data"
-    ]
+    # limit=100: other tests in the suite create their own low-stock
+    # variants, so this must not assume its own lands on the default
+    # first page of 20 when the full suite runs more than once against
+    # the same (non-freshly-migrated) database.
+    low_stock = client.get(
+        "/api/v1/admin/inventory", headers=inv_headers, params={"low_stock": True, "limit": 100}
+    ).json()["data"]
     assert any(item["product_variant_id"] == variant_id for item in low_stock["items"])
 
 

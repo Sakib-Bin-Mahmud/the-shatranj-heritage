@@ -157,7 +157,10 @@ async def forgot_password(
     )
 
 
-@router.post("/reset-password")
+@router.post(
+    "/reset-password",
+    dependencies=[Depends(rate_limit("auth_reset_password", limit=10, window_seconds=60))],
+)
 async def reset_password(
     payload: ResetPasswordRequest, session: AsyncSession = Depends(get_db_session)
 ) -> dict:
