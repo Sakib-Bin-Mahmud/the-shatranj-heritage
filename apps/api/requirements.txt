@@ -1,0 +1,22 @@
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+pydantic==2.13.5
+email-validator==2.3.0
+pydantic-settings==2.15.0
+SQLAlchemy==2.0.54
+asyncpg==0.31.0
+psycopg2-binary==2.9.13
+alembic==1.20.0
+redis==8.1.0
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+# Pinned below passlib's own last-tested version: passlib 1.7.4 predates
+# bcrypt 4.1's removal of the `__about__` module it version-sniffs, which
+# otherwise breaks every hash/verify call. See apps/api/README.md.
+bcrypt==4.0.1
+python-multipart==0.0.32
+boto3==1.43.96
+sentry-sdk[fastapi]==2.69.2
+structlog==26.1.0
+httpx==0.28.1
+prometheus-fastapi-instrumentator==8.1.0

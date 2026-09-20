@@ -1,0 +1,113 @@
+{
+  "common": {
+    "siteName": "দ্য শতরঞ্জ হেরিটেজ",
+    "tagline": "বাংলাদেশের প্রথম দাবা-কেন্দ্রিক ই-কমার্স প্ল্যাটফর্ম।",
+    "loading": "লোড হচ্ছে…",
+    "saving": "সংরক্ষণ করা হচ্ছে…",
+    "cancel": "বাতিল",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "password": "পাসওয়ার্ড",
+    "backToLogin": "লগইন পাতায় ফিরে যান",
+    "logIn": "লগইন",
+    "register": "নিবন্ধন",
+    "logOut": "লগআউট",
+    "account": "অ্যাকাউন্ট"
+  },
+  "home": {
+    "heading": "দ্য শতরঞ্জ হেরিটেজ",
+    "subheading": "দাবা বিশ্বের জন্য বাণিজ্য, সম্প্রদায়, কারুশিল্প এবং শিক্ষা।",
+    "apiStatusLabel": "API অবস্থা",
+    "apiStatusOk": "সংযুক্ত",
+    "apiStatusError": "অনুপলব্ধ"
+  },
+  "nav": {
+    "localeToggleToEnglish": "English",
+    "localeToggleToBangla": "বাংলা"
+  },
+  "auth": {
+    "register": {
+      "heading": "অ্যাকাউন্ট তৈরি করুন",
+      "fullNameLabel": "পূর্ণ নাম",
+      "registerWithLabel": "যেভাবে নিবন্ধন করবেন",
+      "optionEmail": "ইমেইল",
+      "optionMobile": "মোবাইল নম্বর",
+      "emailLabel": "ইমেইল ঠিকানা",
+      "mobileLabel": "মোবাইল নম্বর",
+      "mobilePlaceholder": "01XXXXXXXXX",
+      "passwordHint": "কমপক্ষে ৮ অক্ষর, একটি অক্ষর ও একটি সংখ্যাসহ।",
+      "submitting": "অ্যাকাউন্ট তৈরি হচ্ছে…",
+      "submit": "অ্যাকাউন্ট তৈরি করুন",
+      "haveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+      "genericError": "নিবন্ধন ব্যর্থ হয়েছে।"
+    },
+    "login": {
+      "heading": "লগইন",
+      "identifierLabel": "ইমেইল বা মোবাইল নম্বর",
+      "submitting": "লগইন করা হচ্ছে…",
+      "forgotLink": "পাসওয়ার্ড ভুলে গেছেন?",
+      "newHere": "নতুন এসেছেন?",
+      "createAccountLink": "অ্যাকাউন্ট তৈরি করুন",
+      "genericError": "লগইন ব্যর্থ হয়েছে।"
+    },
+    "forgotPassword": {
+      "heading": "পাসওয়ার্ড ভুলে গেছেন",
+      "identifierLabel": "ইমেইল বা মোবাইল নম্বর",
+      "submitting": "পাঠানো হচ্ছে…",
+      "submit": "রিসেট নির্দেশনা পাঠান",
+      "successMessage": "যদি এই অ্যাকাউন্টটি থাকে, তাহলে পাসওয়ার্ড রিসেট করার নির্দেশনা পাঠানো হয়েছে।",
+      "genericError": "কিছু একটা ভুল হয়েছে।",
+      "devModeHint": "ডেভ মোড — এখনো কোনো ইমেইল/এসএমএস প্রোভাইডার নেই:",
+      "resetLink": "আপনার পাসওয়ার্ড রিসেট করুন"
+    },
+    "resetPassword": {
+      "heading": "পাসওয়ার্ড রিসেট করুন",
+      "tokenLabel": "রিসেট টোকেন",
+      "newPasswordLabel": "নতুন পাসওয়ার্ড",
+      "submitting": "রিসেট করা হচ্ছে…",
+      "submit": "পাসওয়ার্ড রিসেট করুন",
+      "successMessage": "পাসওয়ার্ড রিসেট হয়েছে। লগইন পাতায় নিয়ে যাওয়া হচ্ছে…",
+      "genericError": "পাসওয়ার্ড রিসেট করা যায়নি।"
+    }
+  },
+  "account": {
+    "heading": "আমার অ্যাকাউন্ট",
+    "statusLabel": "অবস্থা",
+    "loadError": "ঠিকানাগুলো লোড করা যায়নি।",
+    "profile": {
+      "heading": "প্রোফাইল",
+      "preferredLanguageLabel": "পছন্দের ভাষা",
+      "optionEnglish": "English",
+      "optionBangla": "বাংলা",
+      "submit": "প্রোফাইল সংরক্ষণ করুন",
+      "successMessage": "প্রোফাইল হালনাগাদ হয়েছে।",
+      "genericError": "প্রোফাইল হালনাগাদ করা যায়নি।"
+    },
+    "addresses": {
+      "heading": "ডেলিভারি ঠিকানা",
+      "loading": "ঠিকানা লোড হচ্ছে…",
+      "empty": "এখনও কোনো ঠিকানা সংরক্ষিত নেই।",
+      "defaultBadge": "ডিফল্ট",
+      "addButton": "ঠিকানা যোগ করুন",
+      "form": {
+        "labelOptional": "লেবেল (ঐচ্ছিক)",
+        "labelPlaceholder": "বাসা, অফিস…",
+        "recipientNameLabel": "প্রাপকের নাম",
+        "phoneLabel": "ফোন নম্বর",
+        "addressLine1Label": "ঠিকানা লাইন ১",
+        "addressLine2Label": "ঠিকানা লাইন ২ (ঐচ্ছিক)",
+        "cityLabel": "শহর",
+        "districtLabel": "জেলা",
+        "postalCodeLabel": "পোস্টাল কোড (ঐচ্ছিক)",
+        "addressTypeLabel": "ঠিকানার ধরন",
+        "optionShipping": "শিপিং",
+        "optionBilling": "বিলিং",
+        "optionBoth": "উভয়",
+        "setDefaultLabel": "ডিফল্ট ঠিকানা হিসেবে নির্ধারণ করুন",
+        "addSubmitLabel": "ঠিকানা যোগ করুন",
+        "saveSubmitLabel": "ঠিকানা সংরক্ষণ করুন",
+        "genericError": "এই ঠিকানাটি সংরক্ষণ করা যায়নি।"
+      }
+    }
+  }
+}
