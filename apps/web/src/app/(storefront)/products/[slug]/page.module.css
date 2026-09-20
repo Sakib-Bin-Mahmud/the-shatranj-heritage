@@ -1,0 +1,133 @@
+.page {
+  /* See products/page.module.css .layout for why width:100% is needed
+     alongside margin:auto here — body is a flex container. */
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 48rem) {
+  .top {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mainImageWrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--surface-1);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mainImagePlaceholder {
+  font-size: 4rem;
+  color: var(--surface-2);
+}
+
+.thumbRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.thumb {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: var(--surface-1);
+  cursor: pointer;
+  padding: 0;
+}
+
+.thumbActive {
+  border-color: var(--color-accent);
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.sku {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.variantSelectors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quantityRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.quantityRow > :first-child {
+  max-width: 6rem;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.related {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1.75rem;
+}

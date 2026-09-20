@@ -25,7 +25,62 @@
     "localeToggleToEnglish": "English",
     "localeToggleToBangla": "বাংলা",
     "shop": "Shop",
-    "cart": "Cart"
+    "cart": "Cart",
+    "searchPlaceholder": "Search products…",
+    "searchButton": "Search"
+  },
+  "catalog": {
+    "filters": {
+      "heading": "Filters",
+      "searchLabel": "Search",
+      "categoryLabel": "Category",
+      "allCategories": "All categories",
+      "priceMinLabel": "Min price",
+      "priceMaxLabel": "Max price",
+      "materialLabel": "Material",
+      "materialPlaceholder": "Rosewood, marble…",
+      "inStockOnlyLabel": "In stock only",
+      "featuredOnlyLabel": "Featured only",
+      "sortLabel": "Sort by",
+      "sortRelevance": "Relevance",
+      "sortPriceAsc": "Price: low to high",
+      "sortPriceDesc": "Price: high to low",
+      "sortNewest": "Newest",
+      "sortBestSelling": "Best selling",
+      "sortRating": "Rating",
+      "sortAlphabetical": "Alphabetical",
+      "applyButton": "Apply",
+      "clearButton": "Clear filters"
+    },
+    "listing": {
+      "heading": "The Collection",
+      "resultsCount": "{count} pieces found",
+      "noResultsHeading": "No pieces match your search",
+      "noResultsBody": "Try different filters, or explore these instead.",
+      "suggestedCategoriesHeading": "Browse categories",
+      "suggestedProductsHeading": "Featured pieces"
+    },
+    "stock": {
+      "inStock": "In stock",
+      "lowStock": "Low stock",
+      "outOfStock": "Out of stock"
+    },
+    "product": {
+      "priceLabel": "Price",
+      "quantityLabel": "Quantity",
+      "addToCartButton": "Add to cart",
+      "addingToCart": "Adding…",
+      "addedToCart": "Added to cart.",
+      "addToCartError": "Could not add this to your cart.",
+      "outOfStockButton": "Out of stock",
+      "relatedHeading": "You may also like",
+      "skuLabel": "SKU",
+      "descriptionHeading": "Description",
+      "unavailableVariant": "This combination isn't available."
+    },
+    "category": {
+      "backToAll": "All products"
+    }
   },
   "auth": {
     "register": {

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { StorefrontNav } from "@/components/storefront-nav";
 
 export default function StorefrontLayout({
@@ -8,7 +8,9 @@ export default function StorefrontLayout({
 }) {
   return (
     <>
-      <StorefrontNav />
+      <Suspense fallback={null}>
+        <StorefrontNav />
+      </Suspense>
       {children}
     </>
   );

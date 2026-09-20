@@ -1,0 +1,33 @@
+.tree {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  color: inherit;
+}
+
+.link:hover {
+  background: var(--surface-1);
+}
+
+.active {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.children {
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}

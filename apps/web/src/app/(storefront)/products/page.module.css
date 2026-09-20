@@ -1,0 +1,97 @@
+.layout {
+  /* `margin: 0 auto` on a flex item (body is display:flex) suppresses
+     the default cross-axis stretch, so it sizes to shrink-wrapped grid
+     content instead of the viewport — width: 100% keeps it filling the
+     available space, with max-width still capping it on wide screens. */
+  width: 100%;
+  display: grid;
+  grid-template-columns: 16rem 1fr;
+  gap: 2.5rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 60rem) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filterHeading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.priceRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.priceRow > * {
+  flex: 1;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.resultsCount {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1.75rem;
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.suggestionsHeading {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.suggestionsCategoryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

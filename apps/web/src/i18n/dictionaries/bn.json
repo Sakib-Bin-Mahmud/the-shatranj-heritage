@@ -25,7 +25,62 @@
     "localeToggleToEnglish": "English",
     "localeToggleToBangla": "বাংলা",
     "shop": "কেনাকাটা",
-    "cart": "কার্ট"
+    "cart": "কার্ট",
+    "searchPlaceholder": "পণ্য খুঁজুন…",
+    "searchButton": "খুঁজুন"
+  },
+  "catalog": {
+    "filters": {
+      "heading": "ফিল্টার",
+      "searchLabel": "খুঁজুন",
+      "categoryLabel": "ক্যাটাগরি",
+      "allCategories": "সব ক্যাটাগরি",
+      "priceMinLabel": "সর্বনিম্ন মূল্য",
+      "priceMaxLabel": "সর্বোচ্চ মূল্য",
+      "materialLabel": "উপাদান",
+      "materialPlaceholder": "রোজউড, মার্বেল…",
+      "inStockOnlyLabel": "শুধু স্টকে থাকা",
+      "featuredOnlyLabel": "শুধু বিশেষ পণ্য",
+      "sortLabel": "সাজান",
+      "sortRelevance": "প্রাসঙ্গিকতা",
+      "sortPriceAsc": "মূল্য: কম থেকে বেশি",
+      "sortPriceDesc": "মূল্য: বেশি থেকে কম",
+      "sortNewest": "নতুন",
+      "sortBestSelling": "সর্বাধিক বিক্রিত",
+      "sortRating": "রেটিং",
+      "sortAlphabetical": "বর্ণানুক্রমিক",
+      "applyButton": "প্রয়োগ করুন",
+      "clearButton": "ফিল্টার মুছুন"
+    },
+    "listing": {
+      "heading": "সংগ্রহ",
+      "resultsCount": "{count}টি পণ্য পাওয়া গেছে",
+      "noResultsHeading": "আপনার অনুসন্ধানের সাথে মিলে এমন কিছু পাওয়া যায়নি",
+      "noResultsBody": "ভিন্ন ফিল্টার ব্যবহার করুন, অথবা এগুলো দেখুন।",
+      "suggestedCategoriesHeading": "ক্যাটাগরি দেখুন",
+      "suggestedProductsHeading": "বিশেষ পণ্য"
+    },
+    "stock": {
+      "inStock": "স্টকে আছে",
+      "lowStock": "সীমিত স্টক",
+      "outOfStock": "স্টক নেই"
+    },
+    "product": {
+      "priceLabel": "মূল্য",
+      "quantityLabel": "পরিমাণ",
+      "addToCartButton": "কার্টে যোগ করুন",
+      "addingToCart": "যোগ করা হচ্ছে…",
+      "addedToCart": "কার্টে যোগ করা হয়েছে।",
+      "addToCartError": "এটি কার্টে যোগ করা যায়নি।",
+      "outOfStockButton": "স্টক নেই",
+      "relatedHeading": "আপনার পছন্দ হতে পারে",
+      "skuLabel": "SKU",
+      "descriptionHeading": "বিবরণ",
+      "unavailableVariant": "এই সমন্বয়টি উপলব্ধ নেই।"
+    },
+    "category": {
+      "backToAll": "সব পণ্য"
+    }
   },
   "auth": {
     "register": {
