@@ -1,0 +1,18 @@
+version: 2
+
+# GitGuardian flags "Generic Password" matches in two categories of
+# files that are intentionally public and never contain a real secret:
+#
+# 1. Local-dev/CI default credentials, documented as such since Phase 0
+#    (docker-compose.yml, .env.example) — e.g. POSTGRES_PASSWORD=shatranj,
+#    S3 keys defaulting to MinIO's own published "minioadmin"/"minioadmin".
+#    These only ever reach an ephemeral local Postgres/MinIO container.
+# 2. Hardcoded test-fixture passwords (apps/api/tests/**) used to create
+#    throwaway accounts against a freshly migrated, disposable test
+#    database — never a real account, never outside CI/local dev.
+secret:
+  ignored_paths:
+    - "docker-compose.yml"
+    - ".env.example"
+    - "apps/api/.env.example"
+    - "apps/api/tests/**"

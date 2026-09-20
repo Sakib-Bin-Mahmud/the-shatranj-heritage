@@ -26,7 +26,9 @@ function readStoredLocale(): Locale {
   if (typeof window === "undefined") return defaultLocale;
   try {
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    return locales.includes(stored as Locale) ? (stored as Locale) : defaultLocale;
+    return locales.includes(stored as Locale)
+      ? (stored as Locale)
+      : defaultLocale;
   } catch {
     return defaultLocale;
   }
