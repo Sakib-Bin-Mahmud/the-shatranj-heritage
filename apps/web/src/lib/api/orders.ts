@@ -162,6 +162,15 @@ export function cancelMyOrder(
   );
 }
 
+export function getGuestOrder(
+  orderNumber: string,
+  contact: string,
+): Promise<OrderDetail> {
+  return apiFetch<OrderDetail>(
+    `/orders/guest/${encodeURIComponent(orderNumber)}?contact=${encodeURIComponent(contact)}`,
+  );
+}
+
 export function getMyOrderShipment(
   orderNumber: string,
   accessToken?: string | null,

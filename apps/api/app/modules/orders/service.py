@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.audit import record_audit_log
+from app.core.config import get_settings
 from app.core.metrics import orders_placed_total
 from app.core.responses import AppError
 from app.modules.cart import service as cart_service
@@ -204,13 +205,18 @@ async def _initiate_payment(
         await session.flush()
         return payment, None
 
+    frontend_url = get_settings().frontend_base_url
+    confirmation_url = f"{frontend_url}/checkout/confirmation?order={order.order_number}"
     result = await provider.initiate(
         order_number=order.order_number,
         amount=order.total_amount,
         currency=order.currency,
-        success_url=f"{base_url}/checkout/success",
-        fail_url=f"{base_url}/checkout/failed",
-        cancel_url=f"{base_url}/checkout/cancelled",
+        # These three are browser redirects, so they must point at the
+        # frontend (there's no page to land on here) — only the IPN
+        # callback below is a server-to-server call back into this API.
+        success_url=f"{confirmation_url}&status=success",
+        fail_url=f"{confirmation_url}&status=failed",
+        cancel_url=f"{confirmation_url}&status=cancelled",
         ipn_url=f"{base_url}/api/v1/payments/webhook/sslcommerz",
     )
     payment = Payment(
@@ -576,6 +582,25 @@ async def get_customer_order_or_404(
 ) -> Order:
     order = await session.scalar(
         select(Order).where(Order.order_number == order_number, Order.customer_id == customer_id)
+    )
+    if not order:
+        raise AppError(status_code=404, code="NOT_FOUND", message="Order not found.")
+    return order
+
+
+async def get_guest_order_or_404(session: AsyncSession, order_number: str, contact: str) -> Order:
+    """Phase F3: the guest-checkout equivalent of
+    `get_customer_order_or_404` — there's no account to authenticate
+    against, so `contact` (the same email/phone supplied at checkout)
+    stands in as the shared secret. Scoped to guest orders only
+    (`customer_id IS NULL`): a customer's order always requires the
+    real customer-authenticated endpoint instead."""
+    order = await session.scalar(
+        select(Order).where(
+            Order.order_number == order_number,
+            Order.customer_id.is_(None),
+            (Order.guest_email == contact) | (Order.guest_phone == contact),
+        )
     )
     if not order:
         raise AppError(status_code=404, code="NOT_FOUND", message="Order not found.")

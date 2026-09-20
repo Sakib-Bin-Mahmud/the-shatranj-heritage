@@ -82,6 +82,84 @@
       "backToAll": "All products"
     }
   },
+  "cart": {
+    "heading": "Your cart",
+    "emptyHeading": "Your cart is empty",
+    "emptyAction": "Browse the collection",
+    "quantityLabel": "Quantity",
+    "removeButton": "Remove",
+    "unavailableLabel": "No longer available",
+    "priceEach": "each",
+    "subtotalLabel": "Subtotal",
+    "shippingLabel": "Estimated shipping",
+    "taxLabel": "Estimated tax",
+    "discountLabel": "Discount",
+    "totalLabel": "Total",
+    "checkoutButton": "Proceed to checkout",
+    "removeError": "Could not remove this item.",
+    "updateError": "Could not update the quantity."
+  },
+  "checkout": {
+    "steps": {
+      "address": "Address",
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "review": "Review"
+    },
+    "backButton": "Back",
+    "continueButton": "Continue",
+    "address": {
+      "heading": "Delivery address",
+      "savedHeading": "Choose a saved address",
+      "useNewButton": "Use a new address",
+      "guestHeading": "Contact & delivery address",
+      "guestEmailLabel": "Email address",
+      "guestPhoneLabel": "Mobile number (optional if email given)",
+      "guestHint": "We'll use this to send your order confirmation and let you look it up later."
+    },
+    "shipping": {
+      "heading": "Shipping method",
+      "standardLabel": "Standard",
+      "expressLabel": "Express",
+      "estimatedDaysLabel": "Estimated delivery",
+      "quoteError": "Could not calculate shipping for this address."
+    },
+    "payment": {
+      "heading": "Payment method",
+      "optionBkash": "bKash",
+      "optionNagad": "Nagad",
+      "optionRocket": "Rocket",
+      "optionCard": "Credit/debit card",
+      "optionCod": "Cash on delivery"
+    },
+    "review": {
+      "heading": "Review your order",
+      "addressHeading": "Delivery address",
+      "shippingHeading": "Shipping",
+      "paymentHeading": "Payment method",
+      "itemsHeading": "Items",
+      "placeOrderButton": "Place order",
+      "placingOrder": "Placing order…",
+      "orderError": "Could not place your order. Please try again."
+    }
+  },
+  "orderConfirmation": {
+    "confirmingHeading": "Confirming your payment…",
+    "confirmingBody": "This can take a few moments — please don't close this page.",
+    "successHeading": "Order confirmed",
+    "successBody": "Thank you — your order has been placed successfully.",
+    "failedHeading": "Payment failed",
+    "failedBody": "Your payment could not be completed. You can try again from your order.",
+    "cancelledHeading": "Payment cancelled",
+    "cancelledBody": "You cancelled the payment. Your order is saved and awaiting payment.",
+    "codHeading": "Order placed",
+    "codBody": "Your order has been placed and will be paid for on delivery.",
+    "orderNumberLabel": "Order number",
+    "totalLabel": "Total",
+    "notFoundHeading": "We couldn't find that order",
+    "continueShoppingButton": "Continue shopping",
+    "viewOrdersButton": "View my orders"
+  },
   "auth": {
     "register": {
       "heading": "Create an account",

@@ -142,6 +142,30 @@ async def list_my_orders(
     return success_envelope(data={"items": items, "meta": _pagination_meta(page, limit, total)})
 
 
+@router.get(
+    "/guest/{order_number}",
+    dependencies=[Depends(rate_limit("guest_order_lookup", limit=20, window_seconds=60))],
+)
+async def get_guest_order(
+    order_number: str,
+    contact: str = Query(min_length=1),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Phase F3 (frontend): the guest-checkout equivalent of
+    `get_my_order` below. There's no account to authenticate a guest
+    against post-checkout, so the confirmation page instead supplies
+    the same email or phone number given at checkout as a shared
+    secret; scoped to guest orders only (`get_guest_order_or_404`
+    never matches a customer's order, whatever contact is supplied).
+    Rate-limited like the other guest-accessible write endpoints
+    (checkout quote, order placement) since it's an unauthenticated
+    read keyed on a guessable order number.
+    """
+    order = await orders_service.get_guest_order_or_404(session, order_number, contact)
+    detail = await orders_service.build_order_detail(session, order)
+    return success_envelope(data=_order_detail_response(detail))
+
+
 @router.get("/{order_number}")
 async def get_my_order(
     order_number: str,

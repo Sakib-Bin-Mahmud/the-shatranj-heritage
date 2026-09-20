@@ -82,6 +82,84 @@
       "backToAll": "সব পণ্য"
     }
   },
+  "cart": {
+    "heading": "আপনার কার্ট",
+    "emptyHeading": "আপনার কার্ট খালি",
+    "emptyAction": "সংগ্রহ ব্রাউজ করুন",
+    "quantityLabel": "পরিমাণ",
+    "removeButton": "সরান",
+    "unavailableLabel": "আর উপলব্ধ নেই",
+    "priceEach": "প্রতিটি",
+    "subtotalLabel": "সাবটোটাল",
+    "shippingLabel": "আনুমানিক শিপিং",
+    "taxLabel": "আনুমানিক কর",
+    "discountLabel": "ছাড়",
+    "totalLabel": "মোট",
+    "checkoutButton": "চেকআউট করুন",
+    "removeError": "এই আইটেমটি সরানো যায়নি।",
+    "updateError": "পরিমাণ হালনাগাদ করা যায়নি।"
+  },
+  "checkout": {
+    "steps": {
+      "address": "ঠিকানা",
+      "shipping": "শিপিং",
+      "payment": "পেমেন্ট",
+      "review": "পর্যালোচনা"
+    },
+    "backButton": "পিছনে",
+    "continueButton": "এগিয়ে যান",
+    "address": {
+      "heading": "ডেলিভারি ঠিকানা",
+      "savedHeading": "একটি সংরক্ষিত ঠিকানা বেছে নিন",
+      "useNewButton": "নতুন ঠিকানা ব্যবহার করুন",
+      "guestHeading": "যোগাযোগ ও ডেলিভারি ঠিকানা",
+      "guestEmailLabel": "ইমেইল ঠিকানা",
+      "guestPhoneLabel": "মোবাইল নম্বর (ইমেইল দেওয়া থাকলে ঐচ্ছিক)",
+      "guestHint": "আপনার অর্ডার নিশ্চিতকরণ পাঠাতে এবং পরে খুঁজে বের করতে এটি ব্যবহার করা হবে।"
+    },
+    "shipping": {
+      "heading": "শিপিং পদ্ধতি",
+      "standardLabel": "স্ট্যান্ডার্ড",
+      "expressLabel": "এক্সপ্রেস",
+      "estimatedDaysLabel": "আনুমানিক ডেলিভারি",
+      "quoteError": "এই ঠিকানার জন্য শিপিং খরচ হিসাব করা যায়নি।"
+    },
+    "payment": {
+      "heading": "পেমেন্ট পদ্ধতি",
+      "optionBkash": "বিকাশ",
+      "optionNagad": "নগদ",
+      "optionRocket": "রকেট",
+      "optionCard": "ক্রেডিট/ডেবিট কার্ড",
+      "optionCod": "ক্যাশ অন ডেলিভারি"
+    },
+    "review": {
+      "heading": "আপনার অর্ডার পর্যালোচনা করুন",
+      "addressHeading": "ডেলিভারি ঠিকানা",
+      "shippingHeading": "শিপিং",
+      "paymentHeading": "পেমেন্ট পদ্ধতি",
+      "itemsHeading": "আইটেম",
+      "placeOrderButton": "অর্ডার করুন",
+      "placingOrder": "অর্ডার করা হচ্ছে…",
+      "orderError": "আপনার অর্ডার করা যায়নি। আবার চেষ্টা করুন।"
+    }
+  },
+  "orderConfirmation": {
+    "confirmingHeading": "আপনার পেমেন্ট নিশ্চিত করা হচ্ছে…",
+    "confirmingBody": "এতে কিছুটা সময় লাগতে পারে — দয়া করে এই পাতাটি বন্ধ করবেন না।",
+    "successHeading": "অর্ডার নিশ্চিত হয়েছে",
+    "successBody": "ধন্যবাদ — আপনার অর্ডারটি সফলভাবে করা হয়েছে।",
+    "failedHeading": "পেমেন্ট ব্যর্থ হয়েছে",
+    "failedBody": "আপনার পেমেন্ট সম্পন্ন করা যায়নি। আপনি আপনার অর্ডার থেকে আবার চেষ্টা করতে পারেন।",
+    "cancelledHeading": "পেমেন্ট বাতিল হয়েছে",
+    "cancelledBody": "আপনি পেমেন্ট বাতিল করেছেন। আপনার অর্ডার সংরক্ষিত আছে এবং পেমেন্টের অপেক্ষায়।",
+    "codHeading": "অর্ডার করা হয়েছে",
+    "codBody": "আপনার অর্ডার করা হয়েছে এবং ডেলিভারির সময় পরিশোধ করতে হবে।",
+    "orderNumberLabel": "অর্ডার নম্বর",
+    "totalLabel": "মোট",
+    "notFoundHeading": "আমরা এই অর্ডারটি খুঁজে পাইনি",
+    "continueShoppingButton": "কেনাকাটা চালিয়ে যান",
+    "viewOrdersButton": "আমার অর্ডার দেখুন"
+  },
   "auth": {
     "register": {
       "heading": "অ্যাকাউন্ট তৈরি করুন",

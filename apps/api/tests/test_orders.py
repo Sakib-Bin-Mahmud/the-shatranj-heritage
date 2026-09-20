@@ -219,6 +219,92 @@ def test_guest_cod_order_places_and_reserves_stock(
     assert [t["change_type"] for t in ledger] == ["restock"]
 
 
+def test_guest_can_look_up_own_order_by_contact(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    client.cookies.clear()
+    variant, _ = setup_stocked_variant(
+        client, inventory_manager_credentials, content_manager_credentials, stock=10
+    )
+    add_to_cart(client, variant["id"], 1)
+    guest_email = unique_email()
+
+    placed = client.post(
+        "/api/v1/orders",
+        json={
+            "address": inline_address(),
+            "shipping_method": "standard",
+            "payment_method": "cod",
+            "guest_email": guest_email,
+        },
+        headers={"Idempotency-Key": str(uuid.uuid4())},
+    )
+    assert placed.status_code == 201, placed.text
+    order_number = placed.json()["data"]["order"]["order_number"]
+
+    lookup = client.get(f"/api/v1/orders/guest/{order_number}", params={"contact": guest_email})
+    assert lookup.status_code == 200, lookup.text
+    assert lookup.json()["data"]["order_number"] == order_number
+
+
+def test_guest_order_lookup_rejects_wrong_contact(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    client.cookies.clear()
+    variant, _ = setup_stocked_variant(
+        client, inventory_manager_credentials, content_manager_credentials, stock=10
+    )
+    add_to_cart(client, variant["id"], 1)
+
+    placed = client.post(
+        "/api/v1/orders",
+        json={
+            "address": inline_address(),
+            "shipping_method": "standard",
+            "payment_method": "cod",
+            "guest_email": unique_email(),
+        },
+        headers={"Idempotency-Key": str(uuid.uuid4())},
+    )
+    assert placed.status_code == 201, placed.text
+    order_number = placed.json()["data"]["order"]["order_number"]
+
+    lookup = client.get(f"/api/v1/orders/guest/{order_number}", params={"contact": unique_email()})
+    assert lookup.status_code == 404, lookup.text
+
+
+def test_guest_order_lookup_never_matches_customer_order(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    """A customer's own order has `customer_id` set and no guest
+    contact, so it must never be reachable through the guest lookup
+    endpoint regardless of what `contact` is supplied."""
+    client.cookies.clear()
+    variant, _ = setup_stocked_variant(
+        client, inventory_manager_credentials, content_manager_credentials, stock=10
+    )
+    email = unique_email()
+    register = client.post(
+        "/api/v1/auth/register",
+        json={"email": email, "password": "Passw0rd1", "full_name": "Guest Lookup Test"},
+    )
+    assert register.status_code == 201, register.text
+    access_token = register.json()["data"]["access_token"]
+    customer_headers = auth_headers(access_token)
+
+    add_to_cart(client, variant["id"], 1, headers=customer_headers)
+    placed = client.post(
+        "/api/v1/orders",
+        json={"address": inline_address(), "shipping_method": "standard", "payment_method": "cod"},
+        headers={**customer_headers, "Idempotency-Key": str(uuid.uuid4())},
+    )
+    assert placed.status_code == 201, placed.text
+    order_number = placed.json()["data"]["order"]["order_number"]
+
+    lookup = client.get(f"/api/v1/orders/guest/{order_number}", params={"contact": email})
+    assert lookup.status_code == 404, lookup.text
+
+
 def test_guest_order_requires_contact_info(
     client: TestClient, inventory_manager_credentials, content_manager_credentials
 ):
