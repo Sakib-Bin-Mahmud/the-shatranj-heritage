@@ -1,0 +1,85 @@
+/*
+ * "The Enchanted Chess Hall" — Harry Potter-inspired (not literal-IP)
+ * theme for marketing/homepage surfaces only. Scoped under
+ * [data-theme="enchanted"], set by the Marketing layout — never applied
+ * globally, so catalog/cart/checkout/account/admin stay in the
+ * functional token set (tokens.css).
+ *
+ * See the reviewed design concept:
+ * https://claude.ai/artifact/SMuAVhoF6vj1dYwtpskoab
+ */
+
+[data-theme="enchanted"] {
+  --background: var(--eh-obsidian);
+  --foreground: var(--eh-parchment);
+
+  --eh-obsidian: #0e0e12;
+  --eh-charcoal: #1a1a20;
+  --eh-parchment: #f1e6c8;
+  --eh-parchment-dim: #cfc2a0;
+  --eh-gold: #c9a24b;
+  --eh-gold-bright: #e6c470;
+  --eh-emerald: #1f6d4c;
+  --eh-emerald-bright: #2f9468;
+  --eh-oxblood: #5c1a1a;
+  --eh-oxblood-bright: #7a2424;
+
+  --color-accent: var(--eh-gold);
+  --color-accent-foreground: var(--eh-obsidian);
+  --border-color: #3a3730;
+  --focus-ring: var(--eh-gold-bright);
+
+  /* These resolve through next/font's generated variables (set on the
+     Marketing layout's wrapper element), which is what actually loads
+     the self-hosted font assets — a literal font-family string here
+     would silently fall back to the browser default instead. */
+  --eh-font-display: var(--font-cinzel-decorative), "Cinzel", serif;
+  --eh-font-heading: var(--font-cinzel), serif;
+  --eh-font-body: var(--font-eb-garamond), serif;
+
+  --eh-glow-candlelight: radial-gradient(
+    circle at 50% 0%,
+    rgba(201, 162, 75, 0.18),
+    transparent 60%
+  );
+}
+
+[data-theme="enchanted"] {
+  background: var(--eh-obsidian);
+  color: var(--eh-parchment);
+  font-family: var(--eh-font-body);
+}
+
+[data-theme="enchanted"] h1,
+[data-theme="enchanted"] h2,
+[data-theme="enchanted"] h3 {
+  font-family: var(--eh-font-heading);
+  letter-spacing: 0.02em;
+  color: var(--eh-gold-bright);
+}
+
+[data-theme="enchanted"] a {
+  color: var(--eh-gold);
+}
+
+[data-theme="enchanted"] a:hover {
+  color: var(--eh-gold-bright);
+}
+
+/* Filigree divider — a reusable hairline with a chess-glyph accent,
+   used to separate homepage sections without new markup per section. */
+[data-theme="enchanted"] .eh-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--eh-gold);
+  margin: 3rem 0;
+}
+
+[data-theme="enchanted"] .eh-divider::before,
+[data-theme="enchanted"] .eh-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--eh-gold), transparent);
+}

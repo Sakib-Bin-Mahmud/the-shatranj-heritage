@@ -23,7 +23,9 @@
   },
   "nav": {
     "localeToggleToEnglish": "English",
-    "localeToggleToBangla": "বাংলা"
+    "localeToggleToBangla": "বাংলা",
+    "shop": "কেনাকাটা",
+    "cart": "কার্ট"
   },
   "auth": {
     "register": {

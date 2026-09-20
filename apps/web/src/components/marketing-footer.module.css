@@ -1,0 +1,16 @@
+.footer {
+  margin-top: auto;
+  padding: 2rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--eh-charcoal);
+  color: var(--eh-parchment-dim);
+  font-family: var(--eh-font-body);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.glyphRow {
+  color: var(--eh-gold);
+  letter-spacing: 0.5em;
+  margin-bottom: 0.75rem;
+}

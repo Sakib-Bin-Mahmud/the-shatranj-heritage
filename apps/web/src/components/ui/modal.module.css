@@ -1,0 +1,40 @@
+.dialog {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 0;
+  max-width: 32rem;
+  width: calc(100vw - 2rem);
+  background: var(--surface-0);
+  color: var(--foreground);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
+.body {
+  padding: 1.25rem;
+}

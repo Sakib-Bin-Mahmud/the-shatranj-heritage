@@ -23,7 +23,9 @@
   },
   "nav": {
     "localeToggleToEnglish": "English",
-    "localeToggleToBangla": "বাংলা"
+    "localeToggleToBangla": "বাংলা",
+    "shop": "Shop",
+    "cart": "Cart"
   },
   "auth": {
     "register": {

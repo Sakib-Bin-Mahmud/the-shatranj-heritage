@@ -1,0 +1,34 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--eh-charcoal);
+  background-image: var(--eh-glow-candlelight);
+}
+
+.brand {
+  font-family: var(--eh-font-display);
+  font-size: 1.375rem;
+  color: var(--eh-gold-bright);
+  letter-spacing: 0.03em;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-family: var(--eh-font-heading);
+  font-size: 0.95rem;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}

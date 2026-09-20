@@ -18,15 +18,17 @@ type FetchOptions = {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   accessToken?: string | null;
+  headers?: Record<string, string>;
 };
 
 export async function apiFetch<T>(
   path: string,
   options: FetchOptions = {},
 ): Promise<T> {
-  const { method = "GET", body, accessToken } = options;
+  const { method = "GET", body, accessToken, headers: extraHeaders } = options;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    ...extraHeaders,
   };
   if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
@@ -37,6 +39,11 @@ export async function apiFetch<T>(
     response = await fetch(`${apiBaseUrl}/api/v1${path}`, {
       method,
       headers,
+      // The API runs on a different origin in dev (NEXT_PUBLIC_API_URL),
+      // so the guest cart session cookie (see lib/api/cart.ts) needs
+      // "include" explicitly — the fetch default omits credentials on
+      // cross-origin requests.
+      credentials: "include",
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
