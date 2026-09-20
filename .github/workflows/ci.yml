@@ -60,11 +60,11 @@ jobs:
       - name: Format check (ruff format)
         run: ruff format --check .
 
+      - name: Apply Alembic migrations
+        run: alembic upgrade head
+
       - name: Run tests
         run: pytest -q
-
-      - name: Verify Alembic migrations apply cleanly
-        run: alembic upgrade head
 
       - name: Export OpenAPI schema
         run: |
