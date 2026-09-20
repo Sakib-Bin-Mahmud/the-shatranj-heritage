@@ -13,20 +13,26 @@
   --background: var(--eh-obsidian);
   --foreground: var(--eh-parchment);
 
-  --eh-obsidian: #0e0e12;
-  --eh-charcoal: #1a1a20;
-  --eh-parchment: #f1e6c8;
-  --eh-parchment-dim: #cfc2a0;
-  --eh-gold: #c9a24b;
-  --eh-gold-bright: #e6c470;
-  --eh-emerald: #1f6d4c;
-  --eh-emerald-bright: #2f9468;
-  --eh-oxblood: #5c1a1a;
-  --eh-oxblood-bright: #7a2424;
+  /* Exact palette from the reviewed design concept
+     (https://claude.ai/artifact/SMuAVhoF6vj1dYwtpskoab, Homepage
+     artboard) — keep these in sync with that canvas, not
+     approximations of it. */
+  --eh-obsidian: #17130f;
+  --eh-charcoal: #1c1610;
+  --eh-parchment: #f1e6d2;
+  --eh-parchment-dim: #a89c88;
+  --eh-parchment-text: #2a2118;
+  --eh-parchment-text-dim: #5a4d38;
+  --eh-body-on-dark: #c7bba3;
+  --eh-gold: #c9a35f;
+  --eh-gold-bright: #e0bd7d;
+  --eh-emerald: #1e4a38;
+  --eh-emerald-text: #cfe0d5;
+  --eh-oxblood: #6f2b32;
 
   --color-accent: var(--eh-gold);
   --color-accent-foreground: var(--eh-obsidian);
-  --border-color: #3a3730;
+  --border-color: rgba(201, 163, 95, 0.4);
   --focus-ring: var(--eh-gold-bright);
 
   /* These resolve through next/font's generated variables (set on the

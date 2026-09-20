@@ -1,0 +1,11 @@
+.page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.body {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+}

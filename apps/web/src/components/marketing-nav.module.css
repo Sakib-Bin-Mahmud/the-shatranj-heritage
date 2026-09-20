@@ -4,24 +4,25 @@
   justify-content: space-between;
   gap: 1.5rem;
   padding: 1.25rem 2rem;
-  border-bottom: 1px solid var(--border-color);
   background: var(--eh-charcoal);
-  background-image: var(--eh-glow-candlelight);
+  border-bottom: 1px solid rgba(201, 163, 95, 0.15);
 }
 
 .brand {
-  font-family: var(--eh-font-display);
-  font-size: 1.375rem;
-  color: var(--eh-gold-bright);
-  letter-spacing: 0.03em;
+  font-family: var(--eh-font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--eh-parchment) !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  font-family: var(--eh-font-heading);
-  font-size: 0.95rem;
+  gap: 1.75rem;
+  font-family: var(--eh-font-body);
+  font-size: 1rem;
 }
 
 .linkButton {
@@ -31,4 +32,22 @@
   color: inherit;
   cursor: pointer;
   padding: 0;
+}
+
+.cta {
+  font-family: var(--eh-font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--eh-obsidian) !important;
+  background: var(--eh-gold);
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  transition: background-color 0.15s ease;
+}
+
+.cta:hover {
+  background: var(--eh-gold-bright);
+  color: var(--eh-obsidian) !important;
 }

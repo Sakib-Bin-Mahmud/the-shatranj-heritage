@@ -1,16 +1,69 @@
 .footer {
   margin-top: auto;
-  padding: 2rem;
-  border-top: 1px solid var(--border-color);
-  background: var(--eh-charcoal);
-  color: var(--eh-parchment-dim);
-  font-family: var(--eh-font-body);
-  font-size: 0.9rem;
-  text-align: center;
+  background: var(--eh-obsidian);
+  border-top: 1px solid rgba(201, 163, 95, 0.1);
 }
 
-.glyphRow {
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2.5rem;
+  padding: clamp(2rem, 6vw, 3.5rem) clamp(1.5rem, 6vw, 6rem);
+}
+
+.brandColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.brand {
+  font-family: var(--eh-font-heading);
+  font-size: 1.1rem;
+  color: var(--eh-parchment);
+  letter-spacing: 0.03em;
+}
+
+.tagline {
+  font-family: var(--eh-font-body);
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--eh-parchment-dim);
+}
+
+.linkColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.columnLabel {
+  font-family: var(--eh-font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   color: var(--eh-gold);
-  letter-spacing: 0.5em;
-  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.footerLink {
+  font-family: var(--eh-font-body);
+  font-size: 0.875rem;
+  color: var(--eh-parchment) !important;
+}
+
+.footerLink:hover {
+  color: var(--eh-gold-bright) !important;
+}
+
+.copyright {
+  margin: 0;
+  padding: 1.25rem clamp(1.5rem, 6vw, 6rem);
+  border-top: 1px solid rgba(201, 163, 95, 0.1);
+  background: #141009;
+  text-align: center;
+  font-family: var(--eh-font-body);
+  font-size: 0.8rem;
+  color: #7a705f;
 }

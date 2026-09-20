@@ -12,17 +12,19 @@ export function MarketingNav() {
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.brand}>
-        ♔ {dict.common.siteName}
+        {dict.common.siteName}
       </Link>
       <nav className={styles.nav}>
         {status === "authenticated" ? (
-          <Link href="/account">
+          <Link href="/account" className={styles.cta}>
             {customer?.full_name ?? dict.common.account}
           </Link>
         ) : (
           <>
             <Link href="/login">{dict.common.logIn}</Link>
-            <Link href="/register">{dict.common.register}</Link>
+            <Link href="/register" className={styles.cta}>
+              {dict.common.register}
+            </Link>
           </>
         )}
         <button
