@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
@@ -8,15 +9,32 @@ import { useDictionary } from "@/i18n/dictionary-context";
 import formStyles from "@/components/form.module.css";
 import { AddressForm, type AddressInput } from "./address-form";
 import { ProfileForm } from "./profile-form";
+import { OrdersTab } from "./orders-tab";
 import styles from "./page.module.css";
 
 type Address = AddressInput & { id: string; customer_id: string };
+type Tab = "profile" | "addresses" | "orders";
 
 export default function AccountPage() {
+  return (
+    <Suspense fallback={null}>
+      <AccountPageContent />
+    </Suspense>
+  );
+}
+
+function AccountPageContent() {
   const { status, customer, accessToken, refreshProfile } = useAuth();
   const { dict } = useDictionary();
   const t = dict.account;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab");
+  const [tab, setTab] = useState<Tab>(
+    initialTab === "addresses" || initialTab === "orders"
+      ? initialTab
+      : "profile",
+  );
 
   const [addresses, setAddresses] = useState<Address[] | null>(null);
   const [addressesError, setAddressesError] = useState<string | null>(null);
@@ -95,6 +113,11 @@ export default function AccountPage() {
     );
   }
 
+  function handleTabChange(next: Tab) {
+    setTab(next);
+    router.replace(`/account?tab=${next}`, { scroll: false });
+  }
+
   return (
     <div className={styles.page}>
       <section className={styles.section}>
@@ -105,87 +128,121 @@ export default function AccountPage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t.profile.heading}</h2>
-        <ProfileForm
-          customer={customer}
-          accessToken={accessToken}
-          onSaved={() => refreshProfile()}
-        />
-      </section>
+      <nav className={styles.tabs} aria-label="Account sections">
+        <button
+          type="button"
+          className={`${styles.tab} ${tab === "profile" ? styles.tabActive : ""}`}
+          onClick={() => handleTabChange("profile")}
+        >
+          {t.tabs.profile}
+        </button>
+        <button
+          type="button"
+          className={`${styles.tab} ${tab === "addresses" ? styles.tabActive : ""}`}
+          onClick={() => handleTabChange("addresses")}
+        >
+          {t.tabs.addresses}
+        </button>
+        <button
+          type="button"
+          className={`${styles.tab} ${tab === "orders" ? styles.tabActive : ""}`}
+          onClick={() => handleTabChange("orders")}
+        >
+          {t.tabs.orders}
+        </button>
+      </nav>
 
-      <section className={styles.section}>
-        <h2>{t.addresses.heading}</h2>
-        {addressesError && (
-          <p className={formStyles.error} role="alert">
-            {addressesError}
-          </p>
-        )}
-
-        {addresses === null ? (
-          <p role="status">{t.addresses.loading}</p>
-        ) : addresses.length === 0 && !addingAddress ? (
-          <p>{t.addresses.empty}</p>
-        ) : (
-          <ul className={styles.addressList}>
-            {addresses.map((address) =>
-              editingAddressId === address.id ? (
-                <li key={address.id} className={styles.addressCard}>
-                  <AddressForm
-                    initial={address}
-                    submitLabel={t.addresses.form.saveSubmitLabel}
-                    onSubmit={(input) => handleUpdateAddress(address.id, input)}
-                    onCancel={() => setEditingAddressId(null)}
-                  />
-                </li>
-              ) : (
-                <li key={address.id} className={styles.addressCard}>
-                  {address.is_default && (
-                    <span className={styles.defaultBadge}>
-                      {t.addresses.defaultBadge}
-                    </span>
-                  )}
-                  <strong>{address.recipient_name}</strong>
-                  <span>{address.phone}</span>
-                  <span>
-                    {address.address_line1}
-                    {address.address_line2 ? `, ${address.address_line2}` : ""}
-                  </span>
-                  <span>
-                    {address.city}, {address.district} {address.postal_code}
-                  </span>
-                  <div className={styles.addressActions}>
-                    <button
-                      type="button"
-                      onClick={() => setEditingAddressId(address.id)}
-                    >
-                      {dict.common.edit}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteAddress(address.id)}
-                    >
-                      {dict.common.delete}
-                    </button>
-                  </div>
-                </li>
-              ),
-            )}
-          </ul>
-        )}
-
-        {addingAddress ? (
-          <AddressForm
-            submitLabel={t.addresses.form.addSubmitLabel}
-            onSubmit={handleAddAddress}
-            onCancel={() => setAddingAddress(false)}
+      {tab === "profile" && (
+        <section className={styles.section}>
+          <h2>{t.profile.heading}</h2>
+          <ProfileForm
+            customer={customer}
+            accessToken={accessToken}
+            onSaved={() => refreshProfile()}
           />
-        ) : (
-          <button type="button" onClick={() => setAddingAddress(true)}>
-            {t.addresses.addButton}
-          </button>
-        )}
-      </section>
+        </section>
+      )}
+
+      {tab === "orders" && <OrdersTab accessToken={accessToken} />}
+
+      {tab === "addresses" && (
+        <section className={styles.section}>
+          <h2>{t.addresses.heading}</h2>
+          {addressesError && (
+            <p className={formStyles.error} role="alert">
+              {addressesError}
+            </p>
+          )}
+
+          {addresses === null ? (
+            <p role="status">{t.addresses.loading}</p>
+          ) : addresses.length === 0 && !addingAddress ? (
+            <p>{t.addresses.empty}</p>
+          ) : (
+            <ul className={styles.addressList}>
+              {addresses.map((address) =>
+                editingAddressId === address.id ? (
+                  <li key={address.id} className={styles.addressCard}>
+                    <AddressForm
+                      initial={address}
+                      submitLabel={t.addresses.form.saveSubmitLabel}
+                      onSubmit={(input) =>
+                        handleUpdateAddress(address.id, input)
+                      }
+                      onCancel={() => setEditingAddressId(null)}
+                    />
+                  </li>
+                ) : (
+                  <li key={address.id} className={styles.addressCard}>
+                    {address.is_default && (
+                      <span className={styles.defaultBadge}>
+                        {t.addresses.defaultBadge}
+                      </span>
+                    )}
+                    <strong>{address.recipient_name}</strong>
+                    <span>{address.phone}</span>
+                    <span>
+                      {address.address_line1}
+                      {address.address_line2
+                        ? `, ${address.address_line2}`
+                        : ""}
+                    </span>
+                    <span>
+                      {address.city}, {address.district} {address.postal_code}
+                    </span>
+                    <div className={styles.addressActions}>
+                      <button
+                        type="button"
+                        onClick={() => setEditingAddressId(address.id)}
+                      >
+                        {dict.common.edit}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteAddress(address.id)}
+                      >
+                        {dict.common.delete}
+                      </button>
+                    </div>
+                  </li>
+                ),
+              )}
+            </ul>
+          )}
+
+          {addingAddress ? (
+            <AddressForm
+              submitLabel={t.addresses.form.addSubmitLabel}
+              onSubmit={handleAddAddress}
+              onCancel={() => setAddingAddress(false)}
+            />
+          ) : (
+            <button type="button" onClick={() => setAddingAddress(true)}>
+              {t.addresses.addButton}
+            </button>
+          )}
+        </section>
+      )}
     </div>
   );
 }

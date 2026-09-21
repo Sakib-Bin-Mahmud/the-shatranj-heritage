@@ -243,6 +243,64 @@
         "saveSubmitLabel": "ঠিকানা সংরক্ষণ করুন",
         "genericError": "এই ঠিকানাটি সংরক্ষণ করা যায়নি।"
       }
+    },
+    "tabs": {
+      "profile": "প্রোফাইল",
+      "addresses": "ঠিকানা",
+      "orders": "অর্ডার"
+    },
+    "orders": {
+      "heading": "অর্ডারের ইতিহাস",
+      "emptyHeading": "এখনও কোনো অর্ডার নেই",
+      "emptyAction": "কেনাকাটা শুরু করুন",
+      "loadError": "আপনার অর্ডারগুলো লোড করা যায়নি।",
+      "columnOrder": "অর্ডার",
+      "columnDate": "তারিখ",
+      "columnStatus": "অবস্থা",
+      "columnTotal": "মোট",
+      "viewButton": "দেখুন"
+    },
+    "orderStatus": {
+      "pending": "অপেক্ষমাণ",
+      "awaiting_payment": "পেমেন্টের অপেক্ষায়",
+      "confirmed": "নিশ্চিত হয়েছে",
+      "packed": "প্যাক করা হয়েছে",
+      "shipped": "পাঠানো হয়েছে",
+      "delivered": "ডেলিভার হয়েছে",
+      "cancelled": "বাতিল হয়েছে",
+      "returned": "ফেরত দেওয়া হয়েছে",
+      "refunded": "টাকা ফেরত দেওয়া হয়েছে"
+    },
+    "orderDetail": {
+      "backButton": "অর্ডারে ফিরে যান",
+      "heading": "অর্ডার",
+      "notFound": "অর্ডার পাওয়া যায়নি।",
+      "loadError": "এই অর্ডারটি লোড করা যায়নি।",
+      "placedOnLabel": "অর্ডার করা হয়েছে",
+      "itemsHeading": "পণ্যসমূহ",
+      "shippingAddressHeading": "ডেলিভারি ঠিকানা",
+      "paymentHeading": "পেমেন্ট",
+      "paymentStatusLabel": "পেমেন্টের অবস্থা",
+      "trackingHeading": "শিপমেন্ট ট্র্যাকিং",
+      "trackingCourierLabel": "কুরিয়ার",
+      "trackingNumberLabel": "ট্র্যাকিং নম্বর",
+      "trackingStatusLabel": "অবস্থা",
+      "trackingEtaLabel": "প্রত্যাশিত ডেলিভারি",
+      "noTrackingYet": "এখনও ট্র্যাকিং তথ্য পাওয়া যায়নি।",
+      "cancelHeading": "এই অর্ডারটি বাতিল করুন",
+      "cancelBody": "শিপ হওয়ার আগে আপনি এই অর্ডারটি বাতিল করতে পারেন। ইতিমধ্যে পেমেন্ট করা হয়ে থাকলে স্বয়ংক্রিয়ভাবে রিফান্ডের অনুরোধ করা হবে।",
+      "cancelButton": "অর্ডার বাতিল করুন",
+      "cancelConfirmTitle": "এই অর্ডারটি বাতিল করবেন?",
+      "cancelConfirmBody": "এটি আর ফিরিয়ে নেওয়া যাবে না। ইতিমধ্যে পেমেন্ট করা হয়ে থাকলে রিফান্ডের অনুরোধ করা হবে।",
+      "cancelConfirmButton": "হ্যাঁ, অর্ডার বাতিল করুন",
+      "cancelDismissButton": "অর্ডার রাখুন",
+      "cancelSuccessMessage": "আপনার অর্ডারটি বাতিল করা হয়েছে।",
+      "cancelError": "এই অর্ডারটি বাতিল করা যায়নি।",
+      "notCancellableExplanation": "এই অর্ডারটি আর বাতিল করা যাবে না — এটি ইতিমধ্যে পাঠানো হয়েছে অথবা আগেই বাতিল হয়ে গেছে।",
+      "retryHeading": "আপনার পেমেন্ট সম্পন্ন করুন",
+      "retryBody": "আপনার শেষ পেমেন্ট প্রচেষ্টাটি সম্পন্ন হয়নি। আবার চেষ্টা করতে একটি পেমেন্ট পদ্ধতি বেছে নিন।",
+      "retryButton": "পেমেন্ট আবার চেষ্টা করুন",
+      "retryError": "নতুন পেমেন্ট প্রচেষ্টা শুরু করা যায়নি।"
     }
   }
 }

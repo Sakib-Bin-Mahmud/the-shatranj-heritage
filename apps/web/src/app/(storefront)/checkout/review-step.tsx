@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDictionary } from "@/i18n/dictionary-context";
-import type { Dictionary } from "@/i18n/get-dictionary";
 import { listMyAddresses } from "@/lib/api/customers";
 import {
   placeOrder,
@@ -15,6 +14,7 @@ import {
   resetIdempotencyKey,
 } from "@/lib/idempotency";
 import { setGuestOrderContact } from "@/lib/guest-order-contact";
+import { paymentMethodLabel } from "@/lib/payment-method-labels";
 import { Alert, Button } from "@/components/ui";
 import type { Cart } from "@/lib/api/cart";
 import type { AddressSelection } from "./address-step";
@@ -123,7 +123,7 @@ export function ReviewStep({
 
       <div className={styles.reviewSection}>
         <span className={styles.reviewSectionHeading}>{t.paymentHeading}</span>
-        <span>{paymentMethodLabels(dict)[paymentMethod]}</span>
+        <span>{paymentMethodLabel(dict, paymentMethod)}</span>
       </div>
 
       <div className={styles.reviewSection}>
@@ -188,17 +188,4 @@ export function ReviewStep({
       </div>
     </div>
   );
-}
-
-function paymentMethodLabels(
-  dict: Dictionary,
-): Record<PlaceOrderRequest["payment_method"], string> {
-  const t = dict.checkout.payment;
-  return {
-    bkash: t.optionBkash,
-    nagad: t.optionNagad,
-    rocket: t.optionRocket,
-    card: t.optionCard,
-    cod: t.optionCod,
-  };
 }

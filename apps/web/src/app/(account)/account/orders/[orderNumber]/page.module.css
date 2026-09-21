@@ -1,0 +1,99 @@
+.page {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.backLink {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  width: fit-content;
+}
+
+.headingRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.placedOn {
+  margin-top: -1rem;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.reviewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.reviewSectionHeading {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.reviewItemRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--surface-1);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.retryOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.optionCard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.optionCardSelected {
+  border-color: var(--color-accent);
+  background: var(--surface-1);
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

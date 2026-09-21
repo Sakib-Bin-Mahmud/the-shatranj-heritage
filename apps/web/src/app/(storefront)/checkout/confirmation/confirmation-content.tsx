@@ -101,10 +101,12 @@ export function ConfirmationContent() {
         )}
       </div>
 
-      {/* "View my orders" lands here once Phase F4 (Order Tracking)
-          ships an actual order-history page — linking to it now would
-          be a dead end. */}
       <div className={styles.actions}>
+        {isAuthenticated && order && (
+          <Link href={`/account/orders/${order.order_number}`}>
+            <Button>{t.viewOrdersButton}</Button>
+          </Link>
+        )}
         <Link href="/products">
           <Button variant="secondary">{t.continueShoppingButton}</Button>
         </Link>

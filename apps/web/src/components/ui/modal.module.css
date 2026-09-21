@@ -1,4 +1,9 @@
 .dialog {
+  /* The global `* { margin: 0 }` reset (globals.css) has equal-or-higher
+     author-stylesheet precedence than the UA `dialog:modal { margin:
+     auto }` rule that centers a native <dialog>, so without this the
+     dialog opens pinned to the top-left of the viewport. */
+  margin: auto;
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   padding: 0;

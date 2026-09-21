@@ -243,6 +243,64 @@
         "saveSubmitLabel": "Save address",
         "genericError": "Could not save this address."
       }
+    },
+    "tabs": {
+      "profile": "Profile",
+      "addresses": "Addresses",
+      "orders": "Orders"
+    },
+    "orders": {
+      "heading": "Order history",
+      "emptyHeading": "No orders yet",
+      "emptyAction": "Start shopping",
+      "loadError": "Could not load your orders.",
+      "columnOrder": "Order",
+      "columnDate": "Date",
+      "columnStatus": "Status",
+      "columnTotal": "Total",
+      "viewButton": "View"
+    },
+    "orderStatus": {
+      "pending": "Pending",
+      "awaiting_payment": "Awaiting payment",
+      "confirmed": "Confirmed",
+      "packed": "Packed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned",
+      "refunded": "Refunded"
+    },
+    "orderDetail": {
+      "backButton": "Back to orders",
+      "heading": "Order",
+      "notFound": "Order not found.",
+      "loadError": "Could not load this order.",
+      "placedOnLabel": "Placed on",
+      "itemsHeading": "Items",
+      "shippingAddressHeading": "Shipping address",
+      "paymentHeading": "Payment",
+      "paymentStatusLabel": "Payment status",
+      "trackingHeading": "Shipment tracking",
+      "trackingCourierLabel": "Courier",
+      "trackingNumberLabel": "Tracking number",
+      "trackingStatusLabel": "Status",
+      "trackingEtaLabel": "Estimated delivery",
+      "noTrackingYet": "Tracking information isn't available yet.",
+      "cancelHeading": "Cancel this order",
+      "cancelBody": "You can cancel this order before it ships. If you already paid, a refund will be requested automatically.",
+      "cancelButton": "Cancel order",
+      "cancelConfirmTitle": "Cancel this order?",
+      "cancelConfirmBody": "This can't be undone. If you already paid, a refund will be requested.",
+      "cancelConfirmButton": "Yes, cancel order",
+      "cancelDismissButton": "Keep order",
+      "cancelSuccessMessage": "Your order has been cancelled.",
+      "cancelError": "Could not cancel this order.",
+      "notCancellableExplanation": "This order can no longer be cancelled — it has already shipped or was already cancelled.",
+      "retryHeading": "Finish your payment",
+      "retryBody": "Your last payment attempt didn't go through. Choose a payment method to try again.",
+      "retryButton": "Retry payment",
+      "retryError": "Could not start a new payment attempt."
     }
   }
 }

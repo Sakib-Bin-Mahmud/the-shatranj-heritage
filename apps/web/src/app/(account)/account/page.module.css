@@ -14,6 +14,30 @@
   gap: 12px;
 }
 
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 4px;
+  margin-bottom: -1px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.65;
+}
+
+.tabActive {
+  opacity: 1;
+  border-bottom-color: #111;
+}
+
 .addressList {
   display: flex;
   flex-direction: column;
@@ -58,6 +82,14 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  .tabs {
+    border-bottom-color: #333;
+  }
+
+  .tabActive {
+    border-bottom-color: #eee;
+  }
+
   .addressCard {
     border-color: #333;
   }
