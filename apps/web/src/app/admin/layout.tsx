@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { AdminShell } from "@/components/admin-sidebar-nav";
+import { AdminAuthProvider } from "@/lib/admin-auth-context";
 
-// RBAC enforcement (redirecting non-staff away, gating nav links by
-// permission) lands in Phase F5 alongside admin auth — this shell only
-// establishes the visual/structural layout per Phase F0's scope.
+// Only the auth context lives here — /admin/login has no sidebar, and
+// the internal design-preview page needs neither auth nor the shell.
+// The sidebar chrome and its auth gate live in admin/(shell)/layout.tsx,
+// applied only to the routes that need it.
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <AdminShell>{children}</AdminShell>;
+  return <AdminAuthProvider>{children}</AdminAuthProvider>;
 }
