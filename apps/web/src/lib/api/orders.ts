@@ -92,10 +92,14 @@ export type OrderDetail = {
 };
 
 export type ShipmentInfo = {
-  courier_name: string;
-  tracking_number: string;
+  id: string;
+  order_id: string;
+  courier_name: string | null;
+  tracking_number: string | null;
   status: string;
   estimated_delivery_date: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
 };
 
 export function getCheckoutQuote(
@@ -178,5 +182,98 @@ export function getMyOrderShipment(
   return apiFetch<ShipmentInfo>(
     `/orders/${encodeURIComponent(orderNumber)}/shipment`,
     { accessToken },
+  );
+}
+
+// --- Admin -------------------------------------------------------------
+
+export function adminListOrders(
+  params: { status?: string; page?: number; limit?: number } = {},
+  accessToken?: string | null,
+): Promise<Paginated<OrderSummary>> {
+  const search = new URLSearchParams();
+  if (params.status) search.set("status", params.status);
+  if (params.page) search.set("page", String(params.page));
+  if (params.limit) search.set("limit", String(params.limit));
+  const query = search.toString();
+  return apiFetch<Paginated<OrderSummary>>(
+    `/admin/orders${query ? `?${query}` : ""}`,
+    { accessToken },
+  );
+}
+
+export function adminGetOrder(
+  orderId: string,
+  accessToken?: string | null,
+): Promise<OrderDetail> {
+  return apiFetch<OrderDetail>(`/admin/orders/${encodeURIComponent(orderId)}`, {
+    accessToken,
+  });
+}
+
+export function adminUpdateOrderStatus(
+  orderId: string,
+  status: string,
+  accessToken?: string | null,
+): Promise<OrderDetail> {
+  return apiFetch<OrderDetail>(
+    `/admin/orders/${encodeURIComponent(orderId)}/status`,
+    { method: "PATCH", body: { status }, accessToken },
+  );
+}
+
+export type RefundResult = {
+  id: string;
+  order_id: string;
+  payment_id: string;
+  amount: string;
+  status: string;
+  reason: string | null;
+};
+
+export function adminCreateRefund(
+  orderId: string,
+  input: { payment_id: string; amount: string; reason?: string | null },
+  accessToken?: string | null,
+): Promise<RefundResult> {
+  return apiFetch<RefundResult>(
+    `/admin/orders/${encodeURIComponent(orderId)}/refund`,
+    { method: "POST", body: input, accessToken },
+  );
+}
+
+export function adminGetShipment(
+  orderId: string,
+  accessToken?: string | null,
+): Promise<ShipmentInfo> {
+  return apiFetch<ShipmentInfo>(
+    `/admin/orders/${encodeURIComponent(orderId)}/shipment`,
+    { accessToken },
+  );
+}
+
+export function adminAssignShipment(
+  orderId: string,
+  input: {
+    courier_name: string;
+    tracking_number?: string | null;
+    estimated_delivery_date?: string | null;
+  },
+  accessToken?: string | null,
+): Promise<ShipmentInfo> {
+  return apiFetch<ShipmentInfo>(
+    `/admin/orders/${encodeURIComponent(orderId)}/shipment`,
+    { method: "POST", body: input, accessToken },
+  );
+}
+
+export function adminUpdateShipmentStatus(
+  shipmentId: string,
+  status: "dispatched" | "in_transit" | "delivered" | "failed",
+  accessToken?: string | null,
+): Promise<ShipmentInfo> {
+  return apiFetch<ShipmentInfo>(
+    `/admin/shipments/${encodeURIComponent(shipmentId)}/status`,
+    { method: "PATCH", body: { status }, accessToken },
   );
 }

@@ -72,16 +72,15 @@ const NAV_GROUPS: {
   {
     label: "Commerce",
     links: [
+      // Shipping (courier assignment, delivery progression) lives inside
+      // each order's own detail page rather than as its own section —
+      // see app/admin/(shell)/orders/[orderId]/shipment-section.tsx —
+      // so there is no separate "/admin/shipping" route to link here.
       { href: "/admin/orders", label: "Orders", permission: "orders.read" },
       {
         href: "/admin/customers",
         label: "Customers",
         permission: "customers.read",
-      },
-      {
-        href: "/admin/shipping",
-        label: "Shipping",
-        permission: "orders.write",
       },
     ],
   },

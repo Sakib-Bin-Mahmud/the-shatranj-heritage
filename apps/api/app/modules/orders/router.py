@@ -280,6 +280,19 @@ async def admin_request_refund(
     )
 
 
+@admin_router.get("/{order_id}/shipment", dependencies=[Depends(require_permission("orders.read"))])
+async def admin_get_shipment(
+    order_id: uuid.UUID, session: AsyncSession = Depends(get_db_session)
+) -> dict:
+    """US-SHP-003/004. Without this, an order_manager has no way to see
+    an order's current shipment (courier, tracking, status) after the
+    page that assigned it — every other shipment endpoint only returns
+    one as the side effect of changing it."""
+    order = await orders_service.get_order_or_404(session, order_id)
+    shipment = await shipping_service.get_shipment_by_order_or_404(session, order.id)
+    return success_envelope(data=orders_service.build_shipment_response(shipment))
+
+
 @admin_router.post("/{order_id}/shipment", status_code=201)
 async def admin_assign_shipment(
     order_id: uuid.UUID,

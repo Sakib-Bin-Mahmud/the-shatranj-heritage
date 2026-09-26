@@ -15,6 +15,7 @@ import { initiatePayment } from "@/lib/api/payments";
 import { ApiClientError } from "@/lib/api-client";
 import { orderStatusLabel, orderStatusTone } from "@/lib/order-status";
 import { paymentMethodLabel } from "@/lib/payment-method-labels";
+import { addressLine } from "@/lib/format-address";
 import { Alert, Badge, Button, Modal, Skeleton } from "@/components/ui";
 import styles from "./page.module.css";
 
@@ -27,19 +28,6 @@ const CANCELLABLE_STATUSES = new Set([
 
 const RETRY_METHODS = ["bkash", "nagad", "rocket", "card"] as const;
 type RetryMethod = (typeof RETRY_METHODS)[number];
-
-function addressLine(address: Record<string, unknown>): string {
-  const get = (key: string) =>
-    typeof address[key] === "string" ? (address[key] as string) : "";
-  return [
-    get("address_line1"),
-    get("address_line2"),
-    get("city"),
-    get("district"),
-  ]
-    .filter(Boolean)
-    .join(", ");
-}
 
 export function OrderDetailContent() {
   const params = useParams<{ orderNumber: string }>();

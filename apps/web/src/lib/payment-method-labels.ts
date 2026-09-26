@@ -11,3 +11,19 @@ export function paymentMethodLabel(dict: Dictionary, method: string): string {
   };
   return labels[method] ?? method;
 }
+
+// English-only lookup for the Admin Portal, which is not wired to
+// DictionaryProvider (see admin-sidebar-nav.tsx) so it never renders in
+// Bangla even if a staff member's browser has a persisted "bn" locale
+// from browsing the storefront as a customer.
+const PAYMENT_METHOD_LABELS_EN: Record<string, string> = {
+  bkash: "bKash",
+  nagad: "Nagad",
+  rocket: "Rocket",
+  card: "Card",
+  cod: "Cash on Delivery",
+};
+
+export function paymentMethodLabelEn(method: string): string {
+  return PAYMENT_METHOD_LABELS_EN[method] ?? method;
+}
