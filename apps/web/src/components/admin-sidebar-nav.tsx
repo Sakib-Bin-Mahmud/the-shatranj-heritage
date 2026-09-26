@@ -20,9 +20,30 @@ import styles from "./admin-sidebar-nav.module.css";
 // module's router.py `require_permission(...)`), so this list is a
 // visibility mirror of real access, not a separate access-control
 // decision.
+type NavLink = {
+  href: string;
+  label: string;
+  // A link with more than one code is visible if the admin has ANY of
+  // them (e.g. Content covers both category management and CMS pages,
+  // gated on separate permission codes that content_manager holds
+  // together but which are, in principle, independently grantable).
+  permission?: string | string[];
+};
+
+function linkVisible(
+  link: NavLink,
+  hasPermission: (code: string) => boolean,
+): boolean {
+  if (!link.permission) return true;
+  const codes = Array.isArray(link.permission)
+    ? link.permission
+    : [link.permission];
+  return codes.some(hasPermission);
+}
+
 const NAV_GROUPS: {
   label: string;
-  links: { href: string; label: string; permission?: string }[];
+  links: NavLink[];
 }[] = [
   {
     label: "Overview",
@@ -44,7 +65,7 @@ const NAV_GROUPS: {
       {
         href: "/admin/content",
         label: "Content",
-        permission: "categories.write",
+        permission: ["categories.write", "cms.write"],
       },
     ],
   },
@@ -97,9 +118,7 @@ export function accessibleLinks(
 ): { href: string; label: string }[] {
   return NAV_GROUPS.flatMap((group) =>
     group.links.filter(
-      (link) =>
-        link.href !== "/admin" &&
-        (!link.permission || hasPermission(link.permission)),
+      (link) => link.href !== "/admin" && linkVisible(link, hasPermission),
     ),
   );
 }
@@ -120,8 +139,8 @@ function AdminSidebar() {
       </Link>
       <nav className={styles.nav}>
         {NAV_GROUPS.map((group) => {
-          const visibleLinks = group.links.filter(
-            (link) => !link.permission || hasPermission(link.permission),
+          const visibleLinks = group.links.filter((link) =>
+            linkVisible(link, hasPermission),
           );
           if (visibleLinks.length === 0) return null;
           return (

@@ -3,6 +3,7 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
   type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
 } from "react";
 import styles from "./field.module.css";
 
@@ -105,6 +106,41 @@ export function SelectField({
         >
           {children}
         </select>
+      )}
+    </FieldWrapper>
+  );
+}
+
+export type TextareaFieldProps = Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "id"
+> & {
+  label: string;
+  hint?: string;
+  error?: string;
+  id?: string;
+};
+
+export function TextareaField({
+  label,
+  hint,
+  error,
+  id,
+  className,
+  rows = 6,
+  ...rest
+}: TextareaFieldProps) {
+  return (
+    <FieldWrapper label={label} hint={hint} error={error} id={id}>
+      {(fieldId, describedBy) => (
+        <textarea
+          id={fieldId}
+          rows={rows}
+          className={[styles.control, className].filter(Boolean).join(" ")}
+          aria-invalid={error ? "true" : undefined}
+          aria-describedby={describedBy}
+          {...rest}
+        />
       )}
     </FieldWrapper>
   );

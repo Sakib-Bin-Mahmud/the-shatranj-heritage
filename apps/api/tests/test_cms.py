@@ -101,6 +101,47 @@ def test_publishing_a_page_sets_published_at(
     assert unpublished["published_at"] is None
 
 
+def test_admin_get_page_returns_body_for_draft(
+    client: TestClient, content_manager_credentials
+) -> None:
+    """The public GET /content/pages/{slug} 404s on a draft, so the
+    admin edit form needs its own way to fetch one's full body."""
+    headers = auth_headers(admin_token(client, content_manager_credentials))
+    suffix = uuid.uuid4().hex[:8]
+    page = client.post(
+        "/api/v1/admin/content/pages",
+        headers=headers,
+        json={
+            "slug": f"draft-detail-{suffix}",
+            "title": "Draft Detail",
+            "body": "Only visible to staff.",
+            "is_published": False,
+        },
+    ).json()["data"]
+
+    response = client.get(f"/api/v1/admin/content/pages/{page['id']}", headers=headers)
+    assert response.status_code == 200, response.text
+    data = response.json()["data"]
+    assert data["body"] == "Only visible to staff."
+    assert data["is_published"] is False
+
+
+def test_admin_get_page_requires_cms_permission(
+    client: TestClient, content_manager_credentials, customer_support_credentials
+) -> None:
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    suffix = uuid.uuid4().hex[:8]
+    page = client.post(
+        "/api/v1/admin/content/pages",
+        headers=content_headers,
+        json={"slug": f"gated-{suffix}", "title": "Gated", "body": "Body."},
+    ).json()["data"]
+
+    support_headers = auth_headers(admin_token(client, customer_support_credentials))
+    response = client.get(f"/api/v1/admin/content/pages/{page['id']}", headers=support_headers)
+    assert response.status_code == 403
+
+
 def test_duplicate_slug_rejected(client: TestClient, content_manager_credentials) -> None:
     headers = auth_headers(admin_token(client, content_manager_credentials))
     suffix = uuid.uuid4().hex[:8]

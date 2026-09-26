@@ -26,8 +26,12 @@ export async function apiFetch<T>(
   options: FetchOptions = {},
 ): Promise<T> {
   const { method = "GET", body, accessToken, headers: extraHeaders } = options;
+  const isFormData = body instanceof FormData;
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    // FormData (multipart image uploads) must NOT get an explicit
+    // Content-Type — the browser sets one with the multipart boundary
+    // itself, and overriding it here would drop that boundary.
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...extraHeaders,
   };
   if (accessToken) {
@@ -44,7 +48,11 @@ export async function apiFetch<T>(
       // "include" explicitly — the fetch default omits credentials on
       // cross-origin requests.
       credentials: "include",
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: isFormData
+        ? body
+        : body !== undefined
+          ? JSON.stringify(body)
+          : undefined,
     });
   } catch {
     throw new ApiClientError(

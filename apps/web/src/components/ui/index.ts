@@ -2,9 +2,11 @@ export { Button, type ButtonProps } from "./button";
 export {
   TextField,
   SelectField,
+  TextareaField,
   CheckboxField,
   type TextFieldProps,
   type SelectFieldProps,
+  type TextareaFieldProps,
   type CheckboxFieldProps,
 } from "./field";
 export { Card, type CardProps } from "./card";

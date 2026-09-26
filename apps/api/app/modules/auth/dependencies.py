@@ -87,3 +87,22 @@ def require_permission(code: str) -> Callable:
         return admin
 
     return checker
+
+
+def require_any_permission(*codes: str) -> Callable:
+    """For a read that more than one role legitimately needs — e.g.
+    listing categories, which only `categories.write` can create/edit,
+    but which `products.write` also needs read access to in order to
+    assign a product to one. Write endpoints stay on the single-code
+    `require_permission` so only the owning role can mutate."""
+
+    async def checker(admin: AdminPrincipal = Depends(get_current_admin)) -> AdminPrincipal:
+        if not any(code in admin.permissions for code in codes):
+            raise AppError(
+                status_code=403,
+                code="FORBIDDEN",
+                message="You do not have permission to perform this action.",
+            )
+        return admin
+
+    return checker
