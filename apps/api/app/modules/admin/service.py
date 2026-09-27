@@ -13,7 +13,11 @@ from app.modules.shipping.models import ShippingRate
 
 
 async def _get_roles_by_names(session: AsyncSession, role_names: list[str]) -> list[Role]:
-    roles = list(await session.scalars(select(Role).where(Role.name.in_(role_names))))
+    roles = list(
+        await session.scalars(
+            select(Role).where(Role.name.in_(role_names)).options(selectinload(Role.permissions))
+        )
+    )
     found_names = {role.name for role in roles}
     missing = set(role_names) - found_names
     if missing:
@@ -87,6 +91,19 @@ async def assign_roles(
     previous_roles = sorted(role.name for role in staff.roles)
 
     roles = await _get_roles_by_names(session, role_names)
+
+    if staff_id == actor_id:
+        granted = {permission.code for role in roles for permission in role.permissions}
+        if "staff.manage" not in granted:
+            raise AppError(
+                status_code=400,
+                code="SELF_LOCKOUT_FORBIDDEN",
+                message=(
+                    "You cannot remove your own staff.manage permission — this would "
+                    "lock you out of staff management with no way to undo it."
+                ),
+            )
+
     staff.roles = roles
     await session.flush()
 
