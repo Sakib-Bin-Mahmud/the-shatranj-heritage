@@ -22,6 +22,16 @@ export function orderStatusLabel(dict: Dictionary, status: string): string {
   return labels[status] ?? status;
 }
 
+export function paymentStatusLabel(dict: Dictionary, status: string): string {
+  const labels = dict.account.paymentStatus as Record<string, string>;
+  return labels[status] ?? status;
+}
+
+export function shipmentStatusLabel(dict: Dictionary, status: string): string {
+  const labels = dict.account.shipmentStatus as Record<string, string>;
+  return labels[status] ?? status;
+}
+
 // Admin-only: the subset of app/modules/orders/service.py's own
 // VALID_TRANSITIONS worth exposing as a direct "change status" action.
 // "shipped" and "delivered" are deliberately left out even though the

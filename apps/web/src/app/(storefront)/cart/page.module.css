@@ -38,6 +38,7 @@
 }
 
 .imageWrap {
+  position: relative;
   width: 5rem;
   height: 5rem;
   border-radius: 0.375rem;

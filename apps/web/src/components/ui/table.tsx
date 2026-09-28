@@ -9,6 +9,10 @@ export type SortDirection = "asc" | "desc";
 export type TableColumn<T> = {
   key: string;
   header: string;
+  // For a column whose header is purely visual noise for sighted users
+  // (an actions column with no text label) — keeps the header text for
+  // screen readers without printing it in the row.
+  srOnlyHeader?: boolean;
   sortable?: boolean;
   render: (row: T) => ReactNode;
 };
@@ -18,6 +22,8 @@ export type TableProps<T> = {
   rows: T[];
   rowKey: (row: T) => string;
   isLoading?: boolean;
+  loadingLabel?: string;
+  caption?: string;
   emptyTitle?: string;
   emptyDescription?: string;
   sort?: { key: string; direction: SortDirection };
@@ -34,6 +40,8 @@ export function Table<T>({
   rows,
   rowKey,
   isLoading,
+  loadingLabel = "Loading…",
+  caption,
   emptyTitle = "Nothing here yet",
   emptyDescription,
   sort,
@@ -50,7 +58,8 @@ export function Table<T>({
   return (
     <div className={styles.wrapper}>
       <div className={styles.tableScroll}>
-        <table className={styles.table}>
+        <table className={styles.table} aria-busy={isLoading || undefined}>
+          {caption && <caption className="visually-hidden">{caption}</caption>}
           <thead>
             <tr>
               {columns.map((column) => (
@@ -71,12 +80,16 @@ export function Table<T>({
                       onClick={() => toggleSort(column)}
                     >
                       {column.header}
-                      {sort?.key === column.key
-                        ? sort.direction === "asc"
-                          ? "▲"
-                          : "▼"
-                        : ""}
+                      <span aria-hidden="true">
+                        {sort?.key === column.key
+                          ? sort.direction === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
+                      </span>
                     </button>
+                  ) : column.srOnlyHeader ? (
+                    <span className="visually-hidden">{column.header}</span>
                   ) : (
                     column.header
                   )}
@@ -105,6 +118,12 @@ export function Table<T>({
           </tbody>
         </table>
       </div>
+
+      {isLoading && (
+        <span role="status" className="visually-hidden">
+          {loadingLabel}
+        </span>
+      )}
 
       {!isLoading && rows.length === 0 && (
         <EmptyState title={emptyTitle} description={emptyDescription} />

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useDictionary } from "@/i18n/dictionary-context";
 import { Badge, type BadgeTone } from "@/components/ui";
@@ -25,10 +26,11 @@ export function ProductCard({ product }: { product: ProductSummary }) {
     <Link href={`/products/${product.slug}`} className={styles.card}>
       <div className={styles.imageWrap}>
         {product.primary_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.primary_image_url}
-            alt={product.name}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className={styles.image}
           />
         ) : (

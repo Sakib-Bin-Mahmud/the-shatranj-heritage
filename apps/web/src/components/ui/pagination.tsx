@@ -14,9 +14,12 @@ export function Pagination({
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
+  const atFirstPage = page <= 1;
+  const atLastPage = page >= totalPages;
+
   return (
     <nav className={styles.pagination} aria-label="Pagination">
-      <span>
+      <span role="status" aria-live="polite">
         Page {page} of {totalPages}
       </span>
       <div className={styles.controls}>
@@ -24,8 +27,10 @@ export function Pagination({
           type="button"
           variant="secondary"
           size="sm"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
+          aria-disabled={atFirstPage}
+          onClick={() => {
+            if (!atFirstPage) onPageChange(page - 1);
+          }}
         >
           Previous
         </Button>
@@ -33,8 +38,10 @@ export function Pagination({
           type="button"
           variant="secondary"
           size="sm"
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
+          aria-disabled={atLastPage}
+          onClick={() => {
+            if (!atLastPage) onPageChange(page + 1);
+          }}
         >
           Next
         </Button>

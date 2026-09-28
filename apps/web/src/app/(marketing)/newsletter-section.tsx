@@ -2,11 +2,14 @@
 
 import { useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { subscribeToNewsletter } from "@/lib/api/newsletter";
 import { ApiClientError } from "@/lib/api-client";
 import styles from "./home.module.css";
 
 export function NewsletterSection() {
+  const { dict } = useDictionary();
+  const t = dict.home;
   const [email, setEmail] = useState("");
   const mutation = useMutation({
     mutationFn: (value: string) => subscribeToNewsletter(value),
@@ -19,18 +22,15 @@ export function NewsletterSection() {
 
   return (
     <section className={styles.newsletter}>
-      <h2 className={styles.newsletterHeading}>Join the Circle</h2>
-      <p className={styles.newsletterBody}>
-        New collections, artisan stories, and quiet announcements — sent rarely,
-        and never without reason.
-      </p>
+      <h2 className={styles.newsletterHeading}>{t.newsletterHeading}</h2>
+      <p className={styles.newsletterBody}>{t.newsletterBody}</p>
 
       {mutation.isSuccess ? (
         <p
           className={`${styles.newsletterFeedback} ${styles.newsletterFeedbackSuccess}`}
           role="status"
         >
-          You&rsquo;re in. Welcome to the circle.
+          {t.newsletterSuccessMessage}
         </p>
       ) : (
         <form className={styles.newsletterForm} onSubmit={handleSubmit}>
@@ -38,13 +38,14 @@ export function NewsletterSection() {
             htmlFor="newsletter-email"
             className={styles.newsletterVisuallyHiddenLabel}
           >
-            Email address
+            {dict.auth.register.emailLabel}
           </label>
           <input
             id="newsletter-email"
             type="email"
             required
-            placeholder="your@email.com"
+            autoComplete="email"
+            placeholder={t.newsletterPlaceholder}
             className={styles.newsletterInput}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -54,7 +55,9 @@ export function NewsletterSection() {
             className={styles.newsletterSubmit}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Subscribing…" : "Subscribe"}
+            {mutation.isPending
+              ? t.newsletterSubmitting
+              : t.newsletterSubmitButton}
           </button>
         </form>
       )}
@@ -66,7 +69,7 @@ export function NewsletterSection() {
         >
           {mutation.error instanceof ApiClientError
             ? mutation.error.message
-            : "Something went wrong. Please try again."}
+            : dict.common.genericError}
         </p>
       )}
     </section>

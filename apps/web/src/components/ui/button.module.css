@@ -16,7 +16,8 @@
     opacity 0.15s ease;
 }
 
-.button:disabled {
+.button:disabled,
+.button[aria-disabled="true"] {
   cursor: not-allowed;
   opacity: 0.55;
 }
@@ -31,7 +32,7 @@
   color: var(--color-accent-foreground);
 }
 
-.primary:not(:disabled):hover {
+.primary:not(:disabled):not([aria-disabled="true"]):hover {
   opacity: 0.9;
 }
 
@@ -41,7 +42,7 @@
   border-color: var(--border-color);
 }
 
-.secondary:not(:disabled):hover {
+.secondary:not(:disabled):not([aria-disabled="true"]):hover {
   background: var(--surface-2);
 }
 
@@ -50,7 +51,7 @@
   color: #fff;
 }
 
-.danger:not(:disabled):hover {
+.danger:not(:disabled):not([aria-disabled="true"]):hover {
   opacity: 0.9;
 }
 
@@ -59,7 +60,7 @@
   color: var(--foreground);
 }
 
-.ghost:not(:disabled):hover {
+.ghost:not(:disabled):not([aria-disabled="true"]):hover {
   background: var(--surface-1);
 }
 

@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import { defaultLocale, locales, type Locale } from "./config";
 import { getDictionary, type Dictionary } from "./get-dictionary";
 import enDictionary from "./dictionaries/en.json";
@@ -52,6 +53,14 @@ export function DictionaryProvider({ children }: { children: ReactNode }) {
   // post-hydration, not in this initializer.
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
   const [dict, setDict] = useState<Dictionary>(enDictionary);
+  const pathname = usePathname();
+  // The Admin Portal is English-only by design (see
+  // admin-sidebar-nav.tsx) and is never wired to useDictionary() for its
+  // own strings, but it still renders under this same root layout/
+  // provider — without this, a staff member who last browsed the
+  // storefront in Bangla would leave `<html lang="bn">` stuck while
+  // every visible admin string is English, misleading assistive tech.
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
     const stored = readStoredLocale();
@@ -74,10 +83,12 @@ export function DictionaryProvider({ children }: { children: ReactNode }) {
   // WCAG 3.1.1 (Language of Page): the server-rendered shell always
   // ships `lang="en"` (see layout.tsx — a Server Component has no
   // access to this client-only locale preference), so keep it in sync
-  // here once a locale is actually known/changed.
+  // here once a locale is actually known/changed. Admin routes are
+  // always English regardless of the storefront's own locale (see
+  // isAdminRoute above).
   useEffect(() => {
-    document.documentElement.lang = locale;
-  }, [locale]);
+    document.documentElement.lang = isAdminRoute ? defaultLocale : locale;
+  }, [locale, isAdminRoute]);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);

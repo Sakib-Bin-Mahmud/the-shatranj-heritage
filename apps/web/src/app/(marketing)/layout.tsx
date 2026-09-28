@@ -28,8 +28,11 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       className={`${cinzel.variable} ${cinzelDecorative.variable} ${ebGaramond.variable}`}
       style={{ display: "flex", flexDirection: "column", minHeight: "100%" }}
     >
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <MarketingNav />
-      {children}
+      <main id="main">{children}</main>
       <MarketingFooter />
     </div>
   );

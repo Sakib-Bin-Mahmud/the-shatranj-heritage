@@ -124,11 +124,15 @@ function AccountPageContent() {
         <h1>{t.heading}</h1>
         <p>
           {customer.email ?? customer.mobile_number} · {t.statusLabel}:{" "}
-          {customer.status}
+          {(customer.status &&
+            (dict.account.customerStatus as Record<string, string>)[
+              customer.status
+            ]) ??
+            customer.status}
         </p>
       </section>
 
-      <nav className={styles.tabs} aria-label="Account sections">
+      <nav className={styles.tabs} aria-label={t.sectionsNav}>
         <button
           type="button"
           className={`${styles.tab} ${tab === "profile" ? styles.tabActive : ""}`}

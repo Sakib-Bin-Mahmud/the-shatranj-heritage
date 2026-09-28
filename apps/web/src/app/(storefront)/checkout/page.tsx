@@ -68,7 +68,7 @@ export default function CheckoutPage() {
 
   return (
     <div className={styles.page}>
-      <nav className={styles.stepper} aria-label="Checkout steps">
+      <nav className={styles.stepper} aria-label={dict.checkout.stepsNav}>
         {STEPS.map((s, index) => (
           <span
             key={s}

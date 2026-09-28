@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDictionary } from "@/i18n/dictionary-context";
@@ -136,10 +137,12 @@ export function ProductDetailClient({
         <div className={styles.gallery}>
           <div className={styles.mainImageWrap}>
             {activeImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={activeImage.url}
                 alt={activeImage.alt_text ?? product.name}
+                fill
+                sizes="(max-width: 640px) 100vw, 50vw"
+                priority
                 className={styles.mainImage}
               />
             ) : (
@@ -156,10 +159,18 @@ export function ProductDetailClient({
                   type="button"
                   className={`${styles.thumb} ${index === activeImageIndex ? styles.thumbActive : ""}`}
                   onClick={() => setActiveImageIndex(index)}
-                  aria-label={`View image ${index + 1}`}
+                  aria-label={dict.catalog.product.viewImageLabel.replace(
+                    "{index}",
+                    String(index + 1),
+                  )}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={image.url} alt="" className={styles.thumbImage} />
+                  <Image
+                    src={image.url}
+                    alt=""
+                    fill
+                    sizes="4rem"
+                    className={styles.thumbImage}
+                  />
                 </button>
               ))}
             </div>

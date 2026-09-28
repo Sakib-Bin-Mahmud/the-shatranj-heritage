@@ -90,6 +90,11 @@
   background: var(--surface-2);
 }
 
+.navLink[aria-current="page"] {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
 .content {
   flex: 1;
   min-width: 0;

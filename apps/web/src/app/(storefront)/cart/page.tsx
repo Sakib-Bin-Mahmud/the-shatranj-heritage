@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -79,10 +80,11 @@ export default function CartPage() {
             <div key={item.id} className={styles.item}>
               <div className={styles.imageWrap}>
                 {item.primary_image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={item.primary_image_url}
-                    alt={item.product_name ?? ""}
+                    alt=""
+                    fill
+                    sizes="5rem"
                     className={styles.image}
                   />
                 ) : (

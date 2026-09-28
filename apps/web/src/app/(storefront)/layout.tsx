@@ -8,10 +8,13 @@ export default function StorefrontLayout({
 }) {
   return (
     <>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <Suspense fallback={null}>
         <StorefrontNav />
       </Suspense>
-      {children}
+      <main id="main">{children}</main>
     </>
   );
 }

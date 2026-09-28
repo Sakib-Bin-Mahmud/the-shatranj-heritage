@@ -12,14 +12,43 @@
     "logIn": "লগইন",
     "register": "নিবন্ধন",
     "logOut": "লগআউট",
-    "account": "অ্যাকাউন্ট"
+    "account": "অ্যাকাউন্ট",
+    "genericError": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+    "footerSupport": "সহায়তা",
+    "allRightsReserved": "সর্বস্বত্ব সংরক্ষিত।",
+    "pagination": {
+      "label": "পৃষ্ঠা নেভিগেশন",
+      "pageOf": "পৃষ্ঠা {page}, মোট {totalPages}",
+      "previous": "পূর্ববর্তী",
+      "next": "পরবর্তী"
+    }
   },
   "home": {
-    "heading": "দ্য শতরঞ্জ হেরিটেজ",
-    "subheading": "দাবা বিশ্বের জন্য বাণিজ্য, সম্প্রদায়, কারুশিল্প এবং শিক্ষা।",
-    "apiStatusLabel": "API অবস্থা",
-    "apiStatusOk": "সংযুক্ত",
-    "apiStatusError": "অনুপলব্ধ"
+    "eyebrow": "একটি জাদুকরী সংগ্রহ",
+    "heroHeading": "জাদুকরী দাবা মহলে প্রবেশ করুন",
+    "heroSubheading": "নিপুণ কারিগরদের হাতে তৈরি দাবার সেট, খেলাটির চেয়েও পুরনো গল্পে বাঁধা — বাংলাদেশের প্রথম উৎসর্গীকৃত দাবার আবাস।",
+    "heroCta": "সংগ্রহ দেখুন",
+    "artisanPortraitLabel": "[কারিগরের প্রতিকৃতি]",
+    "mastersEyebrow": "কারুশিল্পের গুরুরা",
+    "mastersQuote": "প্রতিটি বোর্ডে লুকিয়ে থাকে শতাধিক ছোট সিদ্ধান্ত — কাঠের বুনন, ওজন, হাতে ধরা নাইটের ভারসাম্য।",
+    "mastersAttribution": "— আব্দুল করিম, প্রধান কাঠশিল্পী, ঢাকা",
+    "mastersBadgeLabel": "বাংলাদেশে হাতে তৈরি",
+    "oathTitle1": "খাঁটি কারুকার্য",
+    "oathBody1": "প্রতিটি সেট হাতে তৈরি — কোনো দুটি বোর্ড কখনও একরকম হয় না।",
+    "oathTitle2": "বাংলাদেশের ঐতিহ্য",
+    "oathBody2": "স্থানীয় কারিগর কর্মশালার সাথে বিশ্বাসের ভিত্তিতে গড়ে তোলা, প্রজন্মের পর প্রজন্ম।",
+    "oathTitle3": "প্রত্যয়িত মান",
+    "oathBody3": "প্রতিটি সেট আপনার দরজায় পৌঁছানোর আগে পরীক্ষিত ও নিশ্চিত।",
+    "collectionEyebrow": "মহান সংগ্রহ",
+    "collectionTitle": "বোর্ডের যোগ্য নিদর্শন",
+    "collectionEmpty": "নতুন সামগ্রী তালিকাভুক্ত করা হচ্ছে — শীঘ্রই আবার দেখুন।",
+    "viewPieceLink": "সামগ্রীটি দেখুন →",
+    "newsletterHeading": "বৃত্তে যোগ দিন",
+    "newsletterBody": "নতুন সংগ্রহ, কারিগরদের গল্প, আর মাঝে মাঝে দেওয়া ঘোষণা — খুব কম পাঠানো হয়, আর কারণ ছাড়া কখনও নয়।",
+    "newsletterPlaceholder": "your@email.com",
+    "newsletterSubmitting": "সাবস্ক্রাইব করা হচ্ছে…",
+    "newsletterSubmitButton": "সাবস্ক্রাইব করুন",
+    "newsletterSuccessMessage": "আপনি যুক্ত হয়েছেন। বৃত্তে স্বাগতম।"
   },
   "nav": {
     "localeToggleToEnglish": "English",
@@ -76,10 +105,12 @@
       "relatedHeading": "আপনার পছন্দ হতে পারে",
       "skuLabel": "SKU",
       "descriptionHeading": "বিবরণ",
-      "unavailableVariant": "এই সমন্বয়টি উপলব্ধ নেই।"
+      "unavailableVariant": "এই সমন্বয়টি উপলব্ধ নেই।",
+      "viewImageLabel": "ছবি {index} দেখুন"
     },
     "category": {
-      "backToAll": "সব পণ্য"
+      "backToAll": "সব পণ্য",
+      "emptyHeading": "এই বিভাগে এখনও কোনো পণ্য নেই"
     }
   },
   "cart": {
@@ -141,7 +172,8 @@
       "placeOrderButton": "অর্ডার করুন",
       "placingOrder": "অর্ডার করা হচ্ছে…",
       "orderError": "আপনার অর্ডার করা যায়নি। আবার চেষ্টা করুন।"
-    }
+    },
+    "stepsNav": "চেকআউট ধাপ"
   },
   "orderConfirmation": {
     "confirmingHeading": "আপনার পেমেন্ট নিশ্চিত করা হচ্ছে…",
@@ -301,6 +333,30 @@
       "retryBody": "আপনার শেষ পেমেন্ট প্রচেষ্টাটি সম্পন্ন হয়নি। আবার চেষ্টা করতে একটি পেমেন্ট পদ্ধতি বেছে নিন।",
       "retryButton": "পেমেন্ট আবার চেষ্টা করুন",
       "retryError": "নতুন পেমেন্ট প্রচেষ্টা শুরু করা যায়নি।"
-    }
+    },
+    "paymentStatus": {
+      "pending": "অপেক্ষমাণ",
+      "successful": "সফল",
+      "failed": "ব্যর্থ",
+      "refunded": "টাকা ফেরত দেওয়া হয়েছে",
+      "cancelled": "বাতিল হয়েছে"
+    },
+    "shipmentStatus": {
+      "pending": "অপেক্ষমাণ",
+      "dispatched": "প্রেরিত",
+      "in_transit": "পরিবহনে আছে",
+      "delivered": "ডেলিভার হয়েছে",
+      "failed": "ব্যর্থ"
+    },
+    "customerStatus": {
+      "active": "সক্রিয়",
+      "inactive": "নিষ্ক্রিয়",
+      "suspended": "স্থগিত"
+    },
+    "sectionsNav": "অ্যাকাউন্ট বিভাগ"
+  },
+  "legal": {
+    "heading": "আইনি ও নীতিমালা",
+    "empty": "এখনও কোনো নীতিমালা প্রকাশিত হয়নি"
   }
 }

@@ -12,14 +12,43 @@
     "logIn": "Log in",
     "register": "Register",
     "logOut": "Log out",
-    "account": "Account"
+    "account": "Account",
+    "genericError": "Something went wrong. Please try again.",
+    "footerSupport": "Support",
+    "allRightsReserved": "All rights reserved.",
+    "pagination": {
+      "label": "Pagination",
+      "pageOf": "Page {page} of {totalPages}",
+      "previous": "Previous",
+      "next": "Next"
+    }
   },
   "home": {
-    "heading": "The Shatranj Heritage",
-    "subheading": "Commerce, community, craftsmanship, and education for the chess world.",
-    "apiStatusLabel": "API status",
-    "apiStatusOk": "Connected",
-    "apiStatusError": "Unavailable"
+    "eyebrow": "An Enchanted Collection",
+    "heroHeading": "Step Into the Enchanted Chess Hall",
+    "heroSubheading": "Handcrafted chess sets, carved by master artisans and bound in stories older than the game itself — Bangladesh’s first dedicated home for the noble game.",
+    "heroCta": "Explore the Collection",
+    "artisanPortraitLabel": "[Artisan Portrait]",
+    "mastersEyebrow": "Masters of the Craft",
+    "mastersQuote": "Every board holds a hundred small decisions — the grain, the weight, the balance of a knight in your hand.",
+    "mastersAttribution": "— Abdul Karim, Master Woodcarver, Dhaka",
+    "mastersBadgeLabel": "Handcrafted in Bangladesh",
+    "oathTitle1": "Authentic Craftsmanship",
+    "oathBody1": "Every piece is made by hand — no two boards are ever quite the same.",
+    "oathTitle2": "Heritage of Bangladesh",
+    "oathBody2": "Built in trust with local artisan workshops, generation after generation.",
+    "oathTitle3": "Certified Quality",
+    "oathBody3": "Each set is inspected and guaranteed before it ever reaches your door.",
+    "collectionEyebrow": "The Grand Collection",
+    "collectionTitle": "Relics Fit for the Board",
+    "collectionEmpty": "New pieces are being catalogued — check back soon.",
+    "viewPieceLink": "View piece →",
+    "newsletterHeading": "Join the Circle",
+    "newsletterBody": "New collections, artisan stories, and quiet announcements — sent rarely, and never without reason.",
+    "newsletterPlaceholder": "your@email.com",
+    "newsletterSubmitting": "Subscribing…",
+    "newsletterSubmitButton": "Subscribe",
+    "newsletterSuccessMessage": "You're in. Welcome to the circle."
   },
   "nav": {
     "localeToggleToEnglish": "English",
@@ -76,10 +105,12 @@
       "relatedHeading": "You may also like",
       "skuLabel": "SKU",
       "descriptionHeading": "Description",
-      "unavailableVariant": "This combination isn't available."
+      "unavailableVariant": "This combination isn't available.",
+      "viewImageLabel": "View image {index}"
     },
     "category": {
-      "backToAll": "All products"
+      "backToAll": "All products",
+      "emptyHeading": "No products in this category yet"
     }
   },
   "cart": {
@@ -141,7 +172,8 @@
       "placeOrderButton": "Place order",
       "placingOrder": "Placing order…",
       "orderError": "Could not place your order. Please try again."
-    }
+    },
+    "stepsNav": "Checkout steps"
   },
   "orderConfirmation": {
     "confirmingHeading": "Confirming your payment…",
@@ -301,6 +333,30 @@
       "retryBody": "Your last payment attempt didn't go through. Choose a payment method to try again.",
       "retryButton": "Retry payment",
       "retryError": "Could not start a new payment attempt."
-    }
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "successful": "Successful",
+      "failed": "Failed",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "shipmentStatus": {
+      "pending": "Pending",
+      "dispatched": "Dispatched",
+      "in_transit": "In transit",
+      "delivered": "Delivered",
+      "failed": "Failed"
+    },
+    "customerStatus": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended"
+    },
+    "sectionsNav": "Account sections"
+  },
+  "legal": {
+    "heading": "Legal & Policies",
+    "empty": "No policy pages published yet"
   }
 }

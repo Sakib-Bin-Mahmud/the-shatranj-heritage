@@ -75,23 +75,26 @@ export function ImageManager({ product }: { product: ProductDetail }) {
       {error && <Alert tone="danger">{error}</Alert>}
 
       <div className={styles.uploadRow}>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            setError(null);
-            uploadMutation.mutate(file);
-          }}
-        />
+        <label>
+          <span className="visually-hidden">Upload image</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setError(null);
+              uploadMutation.mutate(file);
+            }}
+          />
+        </label>
         <CheckboxField
           label="Set as primary"
           checked={isPrimary}
           onChange={(e) => setIsPrimary(e.target.checked)}
         />
-        {uploadMutation.isPending && <span>Uploading…</span>}
+        {uploadMutation.isPending && <span role="status">Uploading…</span>}
       </div>
     </div>
   );

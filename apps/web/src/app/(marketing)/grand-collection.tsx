@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { listProducts } from "@/lib/api/catalog";
@@ -8,7 +9,17 @@ import styles from "./home.module.css";
 // US-CAT / Phase F1: real featured products (`GET /products?featured=true`),
 // not the static category cards the design canvas mocked up with —
 // see docs/Frontend Implementation Plan.md Phase F1.
-export function GrandCollection() {
+export function GrandCollection({
+  eyebrow,
+  title,
+  emptyMessage,
+  viewPieceLabel,
+}: {
+  eyebrow: string;
+  title: string;
+  emptyMessage: string;
+  viewPieceLabel: string;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: ["products", { featured: true }],
     queryFn: () => listProducts({ featured: true, limit: 4 }),
@@ -19,19 +30,23 @@ export function GrandCollection() {
   return (
     <section className={styles.collection} id="grand-collection">
       <div className={styles.collectionHeading}>
-        <span className={styles.eyebrow}>The Grand Collection</span>
-        <h2 className={styles.collectionTitle}>Relics Fit for the Board</h2>
+        <span className={styles.eyebrow}>{eyebrow}</span>
+        <h2 className={styles.collectionTitle}>{title}</h2>
       </div>
 
+      {isLoading && (
+        <span role="status" className="visually-hidden">
+          Loading…
+        </span>
+      )}
+
       {!isLoading && products.length === 0 ? (
-        <p className={styles.collectionEmpty}>
-          New pieces are being catalogued — check back soon.
-        </p>
+        <p className={styles.collectionEmpty}>{emptyMessage}</p>
       ) : (
         <div className={styles.collectionGrid}>
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className={styles.productCard}>
+                <div key={i} className={styles.productCard} aria-hidden="true">
                   <div className={styles.productImageWrap} />
                 </div>
               ))
@@ -44,19 +59,25 @@ export function GrandCollection() {
                 >
                   <div className={styles.productImageWrap}>
                     {product.primary_image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={product.primary_image_url}
-                        alt={product.name}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
                         className={styles.productImage}
                       />
                     ) : (
-                      <span className={styles.productImagePlaceholder}>♞</span>
+                      <span
+                        className={styles.productImagePlaceholder}
+                        aria-hidden="true"
+                      >
+                        ♞
+                      </span>
                     )}
                   </div>
                   <span className={styles.productName}>{product.name}</span>
                   <p className={styles.productPrice}>৳{product.price}</p>
-                  <span className={styles.productLink}>View piece →</span>
+                  <span className={styles.productLink}>{viewPieceLabel}</span>
                 </Link>
               ))}
         </div>

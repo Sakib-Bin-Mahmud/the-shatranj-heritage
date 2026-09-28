@@ -6,6 +6,7 @@ import { useAdminAuth } from "@/lib/admin-auth-context";
 import { getInventoryReport, getSalesReport } from "@/lib/api/reports";
 import { accessibleLinks } from "@/components/admin-sidebar-nav";
 import { titleCase, titleCaseList } from "@/lib/text-format";
+import { formatAmount } from "@/lib/format-number";
 import {
   Alert,
   Badge,
@@ -108,11 +109,13 @@ export default function AdminDashboardPage() {
             <span className={styles.statValue}>{sales.total_orders}</span>
           </Card>
           <Card title="Total revenue">
-            <span className={styles.statValue}>৳{sales.total_revenue}</span>
+            <span className={styles.statValue}>
+              ৳{formatAmount(sales.total_revenue)}
+            </span>
           </Card>
           <Card title="Average order value">
             <span className={styles.statValue}>
-              ৳{sales.average_order_value}
+              ৳{formatAmount(sales.average_order_value)}
             </span>
           </Card>
         </div>

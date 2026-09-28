@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCategory, listProducts } from "@/lib/api/catalog";
 import { ApiClientError } from "@/lib/api-client";
-import { ProductCard } from "@/components/product-card";
-import { EmptyState } from "@/components/ui";
-import styles from "./page.module.css";
+import { CategoryDetailContent } from "./category-detail-content";
 
 type Params = { slug: string };
 type SearchParams = { page?: string };
@@ -57,44 +54,11 @@ export default async function CategoryDetailPage({
   });
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <Link href="/products">All products</Link>
-        <h1>{category.name}</h1>
-        {category.description && <p>{category.description}</p>}
-      </div>
-
-      {items.length === 0 ? (
-        <EmptyState title="No products in this category yet" />
-      ) : (
-        <>
-          <div className={styles.grid}>
-            {items.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-
-          {meta.total_pages > 1 && (
-            <nav className={styles.pagination} aria-label="Pagination">
-              <span>
-                Page {meta.page} of {meta.total_pages}
-              </span>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                {meta.page > 1 && (
-                  <Link href={`/categories/${slug}?page=${meta.page - 1}`}>
-                    Previous
-                  </Link>
-                )}
-                {meta.page < meta.total_pages && (
-                  <Link href={`/categories/${slug}?page=${meta.page + 1}`}>
-                    Next
-                  </Link>
-                )}
-              </div>
-            </nav>
-          )}
-        </>
-      )}
-    </div>
+    <CategoryDetailContent
+      category={category}
+      slug={slug}
+      items={items}
+      meta={meta}
+    />
   );
 }

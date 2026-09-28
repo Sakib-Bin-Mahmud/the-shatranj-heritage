@@ -56,7 +56,9 @@ async def get_sales_report(session: AsyncSession, *, from_date: date, to_date: d
         )
     ).one()
     average_order_value = (
-        (Decimal(total_revenue) / revenue_order_count) if revenue_order_count else Decimal("0.00")
+        (Decimal(total_revenue) / revenue_order_count).quantize(Decimal("0.01"))
+        if revenue_order_count
+        else Decimal("0.00")
     )
 
     return {

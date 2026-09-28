@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import styles from "./modal.module.css";
 
 export type ModalProps = {
@@ -14,6 +14,7 @@ export type ModalProps = {
 // to close, and a backdrop for free, without a new dependency.
 export function Modal({ open, onClose, title, children }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -26,11 +27,13 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
     <dialog
       ref={dialogRef}
       className={styles.dialog}
+      aria-labelledby={titleId}
       onClose={onClose}
-      onCancel={onClose}
     >
       <div className={styles.header}>
-        <span className={styles.title}>{title}</span>
+        <h2 id={titleId} className={styles.title}>
+          {title}
+        </h2>
         <button
           type="button"
           className={styles.closeButton}

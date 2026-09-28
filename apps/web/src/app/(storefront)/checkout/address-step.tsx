@@ -146,18 +146,18 @@ export function AddressStep({
               <TextField
                 label={t.guestEmailLabel}
                 type="email"
+                autoComplete="email"
                 value={guestEmail}
                 onChange={(e) => setGuestEmail(e.target.value)}
+                hint={t.guestHint}
               />
               <TextField
                 label={t.guestPhoneLabel}
                 type="tel"
+                autoComplete="tel"
                 value={guestPhone}
                 onChange={(e) => setGuestPhone(e.target.value)}
               />
-              <p style={{ fontSize: "0.85rem", opacity: 0.75 }}>
-                {t.guestHint}
-              </p>
             </>
           )}
 

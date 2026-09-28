@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useId, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { titleCaseList } from "@/lib/text-format";
 import styles from "./admin-sidebar-nav.module.css";
@@ -125,6 +125,8 @@ export function accessibleLinks(
 function AdminSidebar() {
   const { admin, permissions, hasPermission, logout } = useAdminAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const groupIdPrefix = useId();
 
   async function handleLogout() {
     await logout();
@@ -136,24 +138,39 @@ function AdminSidebar() {
       <Link href="/admin" className={styles.brand}>
         Shatranj Admin
       </Link>
-      <nav className={styles.nav}>
+      <nav className={styles.nav} aria-label="Admin">
         {NAV_GROUPS.map((group) => {
           const visibleLinks = group.links.filter((link) =>
             linkVisible(link, hasPermission),
           );
           if (visibleLinks.length === 0) return null;
+          const groupLabelId = `${groupIdPrefix}-${group.label}`;
           return (
-            <div key={group.label} className={styles.navGroup}>
-              <div className={styles.navGroupLabel}>{group.label}</div>
-              {visibleLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={styles.navLink}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div
+              key={group.label}
+              className={styles.navGroup}
+              role="group"
+              aria-labelledby={groupLabelId}
+            >
+              <div id={groupLabelId} className={styles.navGroupLabel}>
+                {group.label}
+              </div>
+              {visibleLinks.map((link) => {
+                const isActive =
+                  link.href === "/admin"
+                    ? pathname === link.href
+                    : pathname?.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={styles.navLink}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
           );
         })}
@@ -202,8 +219,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.shell}>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <AdminSidebar />
-      <div className={styles.content}>{children}</div>
+      <main id="main" className={styles.content}>
+        {children}
+      </main>
     </div>
   );
 }

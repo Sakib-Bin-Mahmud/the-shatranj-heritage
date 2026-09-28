@@ -13,7 +13,12 @@ import {
 } from "@/lib/api/orders";
 import { initiatePayment } from "@/lib/api/payments";
 import { ApiClientError } from "@/lib/api-client";
-import { orderStatusLabel, orderStatusTone } from "@/lib/order-status";
+import {
+  orderStatusLabel,
+  orderStatusTone,
+  paymentStatusLabel,
+  shipmentStatusLabel,
+} from "@/lib/order-status";
 import { paymentMethodLabel } from "@/lib/payment-method-labels";
 import { addressLine } from "@/lib/format-address";
 import { Alert, Badge, Button, Modal, Skeleton } from "@/components/ui";
@@ -183,7 +188,7 @@ export function OrderDetailContent() {
           <div key={payment.id} className={styles.reviewItemRow}>
             <span>{paymentMethodLabel(dict, payment.method)}</span>
             <span>
-              {t.paymentStatusLabel}: {payment.status}
+              {t.paymentStatusLabel}: {paymentStatusLabel(dict, payment.status)}
             </span>
           </div>
         ))}
@@ -201,7 +206,8 @@ export function OrderDetailContent() {
             {t.trackingNumberLabel}: {shipment.tracking_number}
           </span>
           <span>
-            {t.trackingStatusLabel}: {shipment.status}
+            {t.trackingStatusLabel}:{" "}
+            {shipmentStatusLabel(dict, shipment.status)}
           </span>
           {shipment.estimated_delivery_date && (
             <span>
@@ -262,13 +268,6 @@ export function OrderDetailContent() {
         ) : (
           <p>{t.notCancellableExplanation}</p>
         )}
-        {cancelMutation.isError && (
-          <Alert tone="danger">
-            {cancelMutation.error instanceof ApiClientError
-              ? cancelMutation.error.message
-              : t.cancelError}
-          </Alert>
-        )}
       </div>
 
       <Modal
@@ -277,6 +276,13 @@ export function OrderDetailContent() {
         title={t.cancelConfirmTitle}
       >
         <p>{t.cancelConfirmBody}</p>
+        {cancelMutation.isError && (
+          <Alert tone="danger">
+            {cancelMutation.error instanceof ApiClientError
+              ? cancelMutation.error.message
+              : t.cancelError}
+          </Alert>
+        )}
         <div className={styles.actionsRow}>
           <Button variant="ghost" onClick={() => setCancelOpen(false)}>
             {t.cancelDismissButton}
