@@ -96,8 +96,8 @@ export function CreateStaffModal({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <div className={styles.checkboxGrid}>
-          <span>Roles</span>
+        <fieldset className={styles.checkboxGrid}>
+          <legend>Roles</legend>
           {roles.map((role) => (
             <CheckboxField
               key={role.id}
@@ -106,7 +106,7 @@ export function CreateStaffModal({
               onChange={() => toggleRole(role.name)}
             />
           ))}
-        </div>
+        </fieldset>
         {mutation.isError && (
           <Alert tone="danger">
             {mutation.error instanceof ApiClientError

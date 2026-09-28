@@ -1,5 +1,6 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
@@ -106,6 +107,7 @@ const topProductColumns: TableColumn<TopSellingProduct>[] = [
 ];
 
 export default function AdminReportsPage() {
+  usePageTitle("Reports");
   const { accessToken } = useAdminAuth();
   const [tab, setTab] = useState<Tab>("sales");
   const [range, setRange] = useState<DateRange>(defaultRange);
@@ -168,18 +170,21 @@ export default function AdminReportsPage() {
     <div className={styles.page}>
       <h1>Reports</h1>
 
-      <nav className={styles.tabs}>
+      <div className={styles.tabs} role="tablist" aria-label="Report sections">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
+            role="tab"
+            id={`tab-${t.id}`}
+            aria-selected={tab === t.id}
             className={`${styles.tab} ${tab === t.id ? styles.tabActive : ""}`}
             onClick={() => setTab(t.id)}
           >
             {t.label}
           </button>
         ))}
-      </nav>
+      </div>
 
       {usesDateRange && <DateRangeFilter range={range} onChange={setRange} />}
 
@@ -192,23 +197,23 @@ export default function AdminReportsPage() {
           {sales.data && (
             <>
               <div className={styles.statGrid}>
-                <Card title="Total orders">
+                <Card title="Total orders" headingLevel="h2">
                   <span className={styles.statValue}>
                     {formatInt(sales.data.total_orders)}
                   </span>
                 </Card>
-                <Card title="Total revenue">
+                <Card title="Total revenue" headingLevel="h2">
                   <span className={styles.statValue}>
                     ৳{formatAmount(sales.data.total_revenue)}
                   </span>
                 </Card>
-                <Card title="Average order value">
+                <Card title="Average order value" headingLevel="h2">
                   <span className={styles.statValue}>
                     ৳{formatAmount(sales.data.average_order_value)}
                   </span>
                 </Card>
               </div>
-              <Card title="Orders by status">
+              <Card title="Orders by status" headingLevel="h2">
                 <ValueBarList
                   items={Object.entries(sales.data.orders_by_status).map(
                     ([status, count]) => ({
@@ -236,7 +241,7 @@ export default function AdminReportsPage() {
             <option value="week">Week</option>
             <option value="month">Month</option>
           </SelectField>
-          <Card title="Revenue over time">
+          <Card title="Revenue over time" headingLevel="h2">
             {revenue.isLoading && <Skeleton height="16rem" />}
             {revenue.isError && (
               <Alert tone="danger">Could not load the revenue report.</Alert>
@@ -264,17 +269,17 @@ export default function AdminReportsPage() {
           {customers.data && (
             <>
               <div className={styles.statGrid}>
-                <Card title="Total customers">
+                <Card title="Total customers" headingLevel="h2">
                   <span className={styles.statValue}>
                     {formatInt(customers.data.total_customers)}
                   </span>
                 </Card>
-                <Card title="New customers in range">
+                <Card title="New customers in range" headingLevel="h2">
                   <span className={styles.statValue}>
                     {formatInt(customers.data.new_customers)}
                   </span>
                 </Card>
-                <Card title="Repeat-customer rate">
+                <Card title="Repeat-customer rate" headingLevel="h2">
                   <Meter
                     label="Repeat customers"
                     percent={customers.data.repeat_customer_rate}
@@ -290,7 +295,7 @@ export default function AdminReportsPage() {
                 <option value="week">Week</option>
                 <option value="month">Month</option>
               </SelectField>
-              <Card title="Customer growth">
+              <Card title="Customer growth" headingLevel="h2">
                 <TimeSeriesChart
                   data={customers.data.growth.map((p) => ({
                     period: p.period,
@@ -321,7 +326,10 @@ export default function AdminReportsPage() {
           )}
           {inventory.data && (
             <>
-              <Card title={`Low stock (${inventory.data.low_stock.length})`}>
+              <Card
+                title={`Low stock (${inventory.data.low_stock.length})`}
+                headingLevel="h2"
+              >
                 <Table
                   columns={lowStockColumns}
                   rows={inventory.data.low_stock}
@@ -331,6 +339,7 @@ export default function AdminReportsPage() {
               </Card>
               <Card
                 title={`Slow moving (${inventory.data.slow_moving.length})`}
+                headingLevel="h2"
               >
                 <Table
                   columns={slowMovingColumns}
@@ -380,18 +389,18 @@ export default function AdminReportsPage() {
           {refunds.data && (
             <>
               <div className={styles.statGrid}>
-                <Card title="Total refunds">
+                <Card title="Total refunds" headingLevel="h2">
                   <span className={styles.statValue}>
                     {formatInt(refunds.data.total_refunds)}
                   </span>
                 </Card>
-                <Card title="Total refund amount">
+                <Card title="Total refund amount" headingLevel="h2">
                   <span className={styles.statValue}>
                     ৳{formatAmount(refunds.data.total_refund_amount)}
                   </span>
                 </Card>
               </div>
-              <Card title="Refunds by status">
+              <Card title="Refunds by status" headingLevel="h2">
                 <Table
                   columns={[
                     {

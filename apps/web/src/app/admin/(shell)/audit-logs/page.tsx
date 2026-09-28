@@ -1,7 +1,8 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { adminListAuditLogs, type AuditLogEntry } from "@/lib/api/audit";
 import { titleCase } from "@/lib/text-format";
@@ -19,6 +20,7 @@ const ENTITY_TYPES = [
 ];
 
 export default function AdminAuditLogsPage() {
+  usePageTitle("Audit Log");
   const { accessToken } = useAdminAuth();
   const [entityType, setEntityType] = useState("");
   const [page, setPage] = useState(1);
@@ -31,6 +33,7 @@ export default function AdminAuditLogsPage() {
         { entity_type: entityType || undefined, page, limit: PAGE_SIZE },
         accessToken,
       ),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<AuditLogEntry>[] = [
@@ -59,7 +62,11 @@ export default function AdminAuditLogsPage() {
       key: "actions",
       header: "",
       render: (e) => (
-        <Button variant="secondary" onClick={() => setViewing(e)}>
+        <Button
+          variant="secondary"
+          onClick={() => setViewing(e)}
+          aria-label={`View details for ${e.action} on ${titleCase(e.entity_type)} ${e.entity_id}`}
+        >
           View details
         </Button>
       ),

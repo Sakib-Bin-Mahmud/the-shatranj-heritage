@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useDictionary } from "@/i18n/dictionary-context";
 import { subscribeToNewsletter } from "@/lib/api/newsletter";
-import { ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage } from "@/lib/api-client";
 import styles from "./home.module.css";
 
 export function NewsletterSection() {
@@ -67,9 +67,7 @@ export function NewsletterSection() {
           className={`${styles.newsletterFeedback} ${styles.newsletterFeedbackError}`}
           role="alert"
         >
-          {mutation.error instanceof ApiClientError
-            ? mutation.error.message
-            : dict.common.genericError}
+          {apiErrorMessage(mutation.error, dict.common.genericError)}
         </p>
       )}
     </section>

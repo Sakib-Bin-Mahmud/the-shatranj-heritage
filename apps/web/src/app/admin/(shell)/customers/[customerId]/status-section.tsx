@@ -22,11 +22,16 @@ export function CustomerStatusSection({
     null,
   );
 
+  const [lastSuccessStatus, setLastSuccessStatus] = useState<
+    "active" | "suspended" | null
+  >(null);
+
   const mutation = useMutation({
     mutationFn: (status: "active" | "suspended") =>
       adminUpdateCustomerStatus(customer.id, status, accessToken),
-    onSuccess: () => {
+    onSuccess: (_, status) => {
       setConfirming(null);
+      setLastSuccessStatus(status);
       queryClient.invalidateQueries({
         queryKey: ["admin-customer", customer.id],
       });
@@ -37,13 +42,32 @@ export function CustomerStatusSection({
   return (
     <div className={styles.section}>
       <span className={styles.sectionHeading}>Account status</span>
+      {lastSuccessStatus && (
+        <Alert tone="success">
+          {lastSuccessStatus === "suspended"
+            ? "Account suspended."
+            : "Account reactivated."}
+        </Alert>
+      )}
       <div className={styles.actionsRow}>
         {customer.status === "active" ? (
-          <Button variant="danger" onClick={() => setConfirming("suspended")}>
+          <Button
+            variant="danger"
+            onClick={() => {
+              setLastSuccessStatus(null);
+              setConfirming("suspended");
+            }}
+          >
             Suspend account
           </Button>
         ) : (
-          <Button variant="secondary" onClick={() => setConfirming("active")}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setLastSuccessStatus(null);
+              setConfirming("active");
+            }}
+          >
             Reactivate account
           </Button>
         )}

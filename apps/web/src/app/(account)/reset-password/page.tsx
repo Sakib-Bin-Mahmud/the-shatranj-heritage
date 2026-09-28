@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type FormEvent } from "react";
-import { apiFetch, ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage, apiFetch } from "@/lib/api-client";
 import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
 
@@ -30,7 +30,7 @@ function ResetPasswordForm() {
       setSuccess(true);
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : t.genericError);
+      setError(apiErrorMessage(err, t.genericError));
     } finally {
       setSubmitting(false);
     }

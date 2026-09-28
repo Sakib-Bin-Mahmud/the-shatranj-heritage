@@ -7,6 +7,7 @@ import { useAdminAuth } from "@/lib/admin-auth-context";
 import { adminGetCustomer } from "@/lib/api/customers";
 import { titleCase } from "@/lib/text-format";
 import { Badge, type BadgeTone, Skeleton } from "@/components/ui";
+import { usePageTitle } from "@/lib/use-page-title";
 import { CustomerStatusSection } from "./status-section";
 import styles from "../page.module.css";
 
@@ -28,6 +29,8 @@ export default function AdminCustomerDetailPage() {
     queryKey: ["admin-customer", customerId],
     queryFn: () => adminGetCustomer(customerId, accessToken),
   });
+
+  usePageTitle(customer ? customer.full_name : "Customer");
 
   if (isLoading) {
     return (

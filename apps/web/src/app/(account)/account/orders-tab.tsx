@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useDictionary } from "@/i18n/dictionary-context";
 import { listMyOrders, type OrderSummary } from "@/lib/api/orders";
 import { orderStatusLabel, orderStatusTone } from "@/lib/order-status";
@@ -28,6 +28,7 @@ export function OrdersTab({ accessToken }: { accessToken: string | null }) {
     queryKey: ["my-orders", page],
     queryFn: () => listMyOrders({ page, limit: PAGE_SIZE }, accessToken),
     enabled: Boolean(accessToken),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<OrderSummary>[] = [
@@ -114,6 +115,10 @@ export function OrdersTab({ accessToken }: { accessToken: string | null }) {
                 page: meta.page,
                 totalPages: meta.total_pages,
                 onPageChange: setPage,
+                ariaLabel: dict.common.pagination.label,
+                previousLabel: dict.common.pagination.previous,
+                nextLabel: dict.common.pagination.next,
+                pageOfLabel: dict.common.pagination.pageOf,
               }
             : undefined
         }

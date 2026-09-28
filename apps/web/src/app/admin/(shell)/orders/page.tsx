@@ -1,8 +1,9 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { adminListOrders, type OrderSummary } from "@/lib/api/orders";
 import { orderStatusTone } from "@/lib/order-status";
@@ -24,6 +25,7 @@ const STATUSES = [
 ];
 
 export default function AdminOrdersPage() {
+  usePageTitle("Orders");
   const { accessToken } = useAdminAuth();
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
@@ -35,6 +37,7 @@ export default function AdminOrdersPage() {
         { status: status || undefined, page, limit: PAGE_SIZE },
         accessToken,
       ),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<OrderSummary>[] = [

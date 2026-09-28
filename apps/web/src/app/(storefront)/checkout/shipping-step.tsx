@@ -51,31 +51,37 @@ export function ShippingStep({
       {isLoading && <Skeleton height="6rem" />}
       {isError && <Alert tone="danger">{t.quoteError}</Alert>}
 
-      {quote &&
-        quote.shipping_options.map((option) => (
-          <label
-            key={option.method}
-            className={`${styles.optionCard} ${method === option.method ? styles.optionCardSelected : ""}`}
-          >
-            <input
-              type="radio"
-              name="shipping-method"
-              checked={method === option.method}
-              onChange={() =>
-                setMethod(option.method as "standard" | "express")
-              }
-            />
-            <div className={styles.optionCardBody}>
-              <span className={styles.optionCardTitle}>
-                {option.method === "express" ? t.expressLabel : t.standardLabel}
-              </span>
-              <span className={styles.optionCardMeta}>
-                {t.estimatedDaysLabel}: {option.estimated_days}
-              </span>
-            </div>
-            <span className={styles.optionCardPrice}>৳{option.rate}</span>
-          </label>
-        ))}
+      {quote && (
+        <fieldset className={styles.radioGroup}>
+          <legend className="visually-hidden">{t.heading}</legend>
+          {quote.shipping_options.map((option) => (
+            <label
+              key={option.method}
+              className={`${styles.optionCard} ${method === option.method ? styles.optionCardSelected : ""}`}
+            >
+              <input
+                type="radio"
+                name="shipping-method"
+                checked={method === option.method}
+                onChange={() =>
+                  setMethod(option.method as "standard" | "express")
+                }
+              />
+              <div className={styles.optionCardBody}>
+                <span className={styles.optionCardTitle}>
+                  {option.method === "express"
+                    ? t.expressLabel
+                    : t.standardLabel}
+                </span>
+                <span className={styles.optionCardMeta}>
+                  {t.estimatedDaysLabel}: {option.estimated_days}
+                </span>
+              </div>
+              <span className={styles.optionCardPrice}>৳{option.rate}</span>
+            </label>
+          ))}
+        </fieldset>
+      )}
 
       <div className={styles.actionsRow}>
         <Button variant="ghost" onClick={onBack}>

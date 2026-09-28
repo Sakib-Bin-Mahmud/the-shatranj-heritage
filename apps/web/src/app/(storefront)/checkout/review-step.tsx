@@ -8,7 +8,7 @@ import {
   type CheckoutQuote,
   type PlaceOrderRequest,
 } from "@/lib/api/orders";
-import { ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage } from "@/lib/api-client";
 import {
   getOrCreateIdempotencyKey,
   resetIdempotencyKey,
@@ -165,9 +165,7 @@ export function ReviewStep({
 
       {placeOrderMutation.isError && (
         <Alert tone="danger">
-          {placeOrderMutation.error instanceof ApiClientError
-            ? placeOrderMutation.error.message
-            : t.orderError}
+          {apiErrorMessage(placeOrderMutation.error, t.orderError)}
         </Alert>
       )}
 

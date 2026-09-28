@@ -32,6 +32,12 @@ export type TableProps<T> = {
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    // Passed straight through to Pagination — see its own props for why
+    // these are optional overrides rather than a useDictionary() call.
+    ariaLabel?: string;
+    previousLabel?: string;
+    nextLabel?: string;
+    pageOfLabel?: string;
   };
 };
 
@@ -134,6 +140,10 @@ export function Table<T>({
           page={pagination.page}
           totalPages={pagination.totalPages}
           onPageChange={pagination.onPageChange}
+          ariaLabel={pagination.ariaLabel}
+          previousLabel={pagination.previousLabel}
+          nextLabel={pagination.nextLabel}
+          pageOfLabel={pagination.pageOfLabel}
         />
       )}
     </div>

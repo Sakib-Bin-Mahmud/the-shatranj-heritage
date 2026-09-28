@@ -7,10 +7,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { adminCreateProduct } from "@/lib/api/catalog";
 import { ApiClientError } from "@/lib/api-client";
+import { usePageTitle } from "@/lib/use-page-title";
 import { ProductForm, type ProductFormValues } from "../product-form";
 import styles from "../page.module.css";
 
 export default function NewProductPage() {
+  usePageTitle("New product");
   const { accessToken } = useAdminAuth();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);

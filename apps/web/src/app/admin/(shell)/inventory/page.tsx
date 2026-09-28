@@ -1,7 +1,8 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { listInventory, type InventoryItem } from "@/lib/api/inventory";
 import {
@@ -17,6 +18,7 @@ import styles from "./page.module.css";
 const PAGE_SIZE = 20;
 
 export default function AdminInventoryPage() {
+  usePageTitle("Inventory");
   const { accessToken, hasPermission } = useAdminAuth();
   const [lowStockOnly, setLowStockOnly] = useState(false);
   const [page, setPage] = useState(1);
@@ -30,6 +32,7 @@ export default function AdminInventoryPage() {
         { low_stock: lowStockOnly, page, limit: PAGE_SIZE },
         accessToken,
       ),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<InventoryItem>[] = [
@@ -72,7 +75,11 @@ export default function AdminInventoryPage() {
             key: "actions",
             header: "",
             render: (i: InventoryItem) => (
-              <Button size="sm" onClick={() => setAdjusting(i)}>
+              <Button
+                size="sm"
+                onClick={() => setAdjusting(i)}
+                aria-label={`Adjust stock for ${i.product_name} — ${i.variant_name}`}
+              >
                 Adjust
               </Button>
             ),

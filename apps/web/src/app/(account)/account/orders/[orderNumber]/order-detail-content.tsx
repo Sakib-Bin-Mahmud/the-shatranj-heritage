@@ -12,7 +12,7 @@ import {
   getMyOrderShipment,
 } from "@/lib/api/orders";
 import { initiatePayment } from "@/lib/api/payments";
-import { ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage } from "@/lib/api-client";
 import {
   orderStatusLabel,
   orderStatusTone,
@@ -222,7 +222,8 @@ export function OrderDetailContent() {
         <div className={styles.reviewSection}>
           <span className={styles.reviewSectionHeading}>{t.retryHeading}</span>
           <p>{t.retryBody}</p>
-          <div className={styles.retryOptions}>
+          <fieldset className={styles.retryOptions}>
+            <legend className="visually-hidden">{t.retryHeading}</legend>
             {RETRY_METHODS.map((method) => (
               <label
                 key={method}
@@ -239,12 +240,10 @@ export function OrderDetailContent() {
                 <span>{paymentMethodLabel(dict, method)}</span>
               </label>
             ))}
-          </div>
+          </fieldset>
           {retryMutation.isError && (
             <Alert tone="danger">
-              {retryMutation.error instanceof ApiClientError
-                ? retryMutation.error.message
-                : t.retryError}
+              {apiErrorMessage(retryMutation.error, t.retryError)}
             </Alert>
           )}
           <Button
@@ -278,9 +277,7 @@ export function OrderDetailContent() {
         <p>{t.cancelConfirmBody}</p>
         {cancelMutation.isError && (
           <Alert tone="danger">
-            {cancelMutation.error instanceof ApiClientError
-              ? cancelMutation.error.message
-              : t.cancelError}
+            {apiErrorMessage(cancelMutation.error, t.cancelError)}
           </Alert>
         )}
         <div className={styles.actionsRow}>

@@ -41,7 +41,8 @@ function AssignRolesForm({
 
   return (
     <div className={styles.modalForm}>
-      <div className={styles.checkboxGrid}>
+      <fieldset className={styles.checkboxGrid}>
+        <legend className="visually-hidden">Roles</legend>
         {roles.map((role) => (
           <CheckboxField
             key={role.id}
@@ -50,7 +51,7 @@ function AssignRolesForm({
             onChange={() => toggleRole(role.name)}
           />
         ))}
-      </div>
+      </fieldset>
       {mutation.isError && (
         <Alert tone="danger">
           {mutation.error instanceof ApiClientError

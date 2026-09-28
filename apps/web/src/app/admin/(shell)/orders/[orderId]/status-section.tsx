@@ -15,11 +15,16 @@ export function StatusSection({ order }: { order: OrderDetail }) {
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState<string | null>(null);
 
+  const [lastSuccessStatus, setLastSuccessStatus] = useState<string | null>(
+    null,
+  );
+
   const mutation = useMutation({
     mutationFn: (status: string) =>
       adminUpdateOrderStatus(order.id, status, accessToken),
-    onSuccess: () => {
+    onSuccess: (_, status) => {
       setConfirming(null);
+      setLastSuccessStatus(status);
       queryClient.invalidateQueries({ queryKey: ["admin-order", order.id] });
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
     },
@@ -31,12 +36,20 @@ export function StatusSection({ order }: { order: OrderDetail }) {
   return (
     <div className={styles.section}>
       <span className={styles.sectionHeading}>Change status</span>
+      {lastSuccessStatus && (
+        <Alert tone="success">
+          Order marked as {titleCase(lastSuccessStatus)}.
+        </Alert>
+      )}
       <div className={styles.actionsRow}>
         {nextStatuses.map((status) => (
           <Button
             key={status}
             variant={status === "cancelled" ? "danger" : "secondary"}
-            onClick={() => setConfirming(status)}
+            onClick={() => {
+              setLastSuccessStatus(null);
+              setConfirming(status);
+            }}
           >
             Mark as {titleCase(status)}
           </Button>

@@ -9,13 +9,20 @@ import {
   type ProductDetail,
 } from "@/lib/api/catalog";
 import { ApiClientError } from "@/lib/api-client";
-import { Alert, Badge, Button, CheckboxField } from "@/components/ui";
+import {
+  Alert,
+  Badge,
+  Button,
+  CheckboxField,
+  TextField,
+} from "@/components/ui";
 import styles from "../page.module.css";
 
 export function ImageManager({ product }: { product: ProductDetail }) {
   const { accessToken } = useAdminAuth();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [altText, setAltText] = useState("");
   const [isPrimary, setIsPrimary] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,9 +32,10 @@ export function ImageManager({ product }: { product: ProductDetail }) {
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) =>
-      adminAddImage(product.id, { file, isPrimary }, accessToken),
+      adminAddImage(product.id, { file, altText, isPrimary }, accessToken),
     onSuccess: () => {
       invalidate();
+      setAltText("");
       setIsPrimary(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     },
@@ -51,7 +59,7 @@ export function ImageManager({ product }: { product: ProductDetail }) {
       <h2>Images</h2>
 
       <div className={styles.imageGrid}>
-        {product.images.map((image) => (
+        {product.images.map((image, index) => (
           <div key={image.id} className={styles.imageCard}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={image.url} alt={image.alt_text ?? ""} />
@@ -65,6 +73,11 @@ export function ImageManager({ product }: { product: ProductDetail }) {
               size="sm"
               onClick={() => deleteMutation.mutate(image.id)}
               disabled={deleteMutation.isPending}
+              aria-label={
+                image.alt_text
+                  ? `Delete image: ${image.alt_text}`
+                  : `Delete image ${index + 1}`
+              }
             >
               Delete
             </Button>
@@ -75,6 +88,12 @@ export function ImageManager({ product }: { product: ProductDetail }) {
       {error && <Alert tone="danger">{error}</Alert>}
 
       <div className={styles.uploadRow}>
+        <TextField
+          label="Alt text (optional)"
+          value={altText}
+          onChange={(e) => setAltText(e.target.value)}
+          hint="Describes the image for screen readers. Leave blank to fall back to the product name."
+        />
         <label>
           <span className="visually-hidden">Upload image</span>
           <input

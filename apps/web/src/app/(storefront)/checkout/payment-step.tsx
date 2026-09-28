@@ -35,22 +35,25 @@ export function PaymentStep({
     <div className={styles.stepBody}>
       <h2>{t.heading}</h2>
 
-      {METHODS.map((option) => (
-        <label
-          key={option}
-          className={`${styles.optionCard} ${method === option ? styles.optionCardSelected : ""}`}
-        >
-          <input
-            type="radio"
-            name="payment-method"
-            checked={method === option}
-            onChange={() => setMethod(option)}
-          />
-          <div className={styles.optionCardBody}>
-            <span className={styles.optionCardTitle}>{labels[option]}</span>
-          </div>
-        </label>
-      ))}
+      <fieldset className={styles.radioGroup}>
+        <legend className="visually-hidden">{t.heading}</legend>
+        {METHODS.map((option) => (
+          <label
+            key={option}
+            className={`${styles.optionCard} ${method === option ? styles.optionCardSelected : ""}`}
+          >
+            <input
+              type="radio"
+              name="payment-method"
+              checked={method === option}
+              onChange={() => setMethod(option)}
+            />
+            <div className={styles.optionCardBody}>
+              <span className={styles.optionCardTitle}>{labels[option]}</span>
+            </div>
+          </label>
+        ))}
+      </fieldset>
 
       <div className={styles.actionsRow}>
         <Button variant="ghost" onClick={onBack}>

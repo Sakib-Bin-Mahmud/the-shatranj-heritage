@@ -57,13 +57,19 @@ function CategoryRow({
           {node.is_active ? "Active" : "Inactive"}
         </Badge>
         <div className={styles.rowActions}>
-          <Button variant="secondary" size="sm" onClick={() => onEdit(node)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onEdit(node)}
+            aria-label={`Edit ${node.name}`}
+          >
             Edit
           </Button>
           <Button
             variant={node.is_active ? "danger" : "secondary"}
             size="sm"
             onClick={() => onToggle(node)}
+            aria-label={`${node.is_active ? "Deactivate" : "Reactivate"} ${node.name}`}
           >
             {node.is_active ? "Deactivate" : "Reactivate"}
           </Button>

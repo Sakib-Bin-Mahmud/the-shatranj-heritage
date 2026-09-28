@@ -1,5 +1,6 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
@@ -10,6 +11,7 @@ import { EditRateModal } from "./edit-rate-modal";
 import styles from "./page.module.css";
 
 export default function AdminSettingsPage() {
+  usePageTitle("Settings");
   const { accessToken } = useAdminAuth();
   const [editing, setEditing] = useState<ShippingRate | null>(null);
 
@@ -45,7 +47,11 @@ export default function AdminSettingsPage() {
       key: "actions",
       header: "",
       render: (r) => (
-        <Button variant="secondary" onClick={() => setEditing(r)}>
+        <Button
+          variant="secondary"
+          onClick={() => setEditing(r)}
+          aria-label={`Edit ${titleCase(r.zone)} ${titleCase(r.method)} rate`}
+        >
           Edit
         </Button>
       ),

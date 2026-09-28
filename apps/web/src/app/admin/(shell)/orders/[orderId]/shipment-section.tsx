@@ -38,6 +38,7 @@ export function ShipmentSection({ order }: { order: OrderDetail }) {
   }
 
   const [assigning, setAssigning] = useState(false);
+  const [assignSuccess, setAssignSuccess] = useState(false);
   const [courierName, setCourierName] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [eta, setEta] = useState("");
@@ -55,11 +56,15 @@ export function ShipmentSection({ order }: { order: OrderDetail }) {
       ),
     onSuccess: () => {
       setAssigning(false);
+      setAssignSuccess(true);
       invalidate();
     },
   });
 
   const [confirmingStatus, setConfirmingStatus] = useState<string | null>(null);
+  const [lastShipmentStatus, setLastShipmentStatus] = useState<string | null>(
+    null,
+  );
   const statusMutation = useMutation({
     mutationFn: (status: string) =>
       adminUpdateShipmentStatus(
@@ -67,8 +72,9 @@ export function ShipmentSection({ order }: { order: OrderDetail }) {
         status as "dispatched" | "in_transit" | "delivered" | "failed",
         accessToken,
       ),
-    onSuccess: () => {
+    onSuccess: (_, status) => {
       setConfirmingStatus(null);
+      setLastShipmentStatus(status);
       invalidate();
     },
   });
@@ -82,8 +88,22 @@ export function ShipmentSection({ order }: { order: OrderDetail }) {
     <div className={styles.section}>
       <span className={styles.sectionHeading}>Shipping</span>
 
+      {assignSuccess && <Alert tone="success">Courier assigned.</Alert>}
+      {lastShipmentStatus && (
+        <Alert tone="success">
+          Shipment marked as {titleCase(lastShipmentStatus)}.
+        </Alert>
+      )}
+
       {shipmentMissing && order.status === "packed" && !assigning && (
-        <Button onClick={() => setAssigning(true)}>Assign courier</Button>
+        <Button
+          onClick={() => {
+            setAssignSuccess(false);
+            setAssigning(true);
+          }}
+        >
+          Assign courier
+        </Button>
       )}
 
       {shipmentMissing && order.status !== "packed" && (
@@ -173,7 +193,10 @@ export function ShipmentSection({ order }: { order: OrderDetail }) {
                 <Button
                   key={status}
                   variant="secondary"
-                  onClick={() => setConfirmingStatus(status)}
+                  onClick={() => {
+                    setLastShipmentStatus(null);
+                    setConfirmingStatus(status);
+                  }}
                 >
                   Mark as {titleCase(status)}
                 </Button>

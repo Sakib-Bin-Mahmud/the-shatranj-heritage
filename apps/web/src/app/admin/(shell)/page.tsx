@@ -7,6 +7,7 @@ import { getInventoryReport, getSalesReport } from "@/lib/api/reports";
 import { accessibleLinks } from "@/components/admin-sidebar-nav";
 import { titleCase, titleCaseList } from "@/lib/text-format";
 import { formatAmount } from "@/lib/format-number";
+import { usePageTitle } from "@/lib/use-page-title";
 import {
   Alert,
   Badge,
@@ -51,6 +52,7 @@ const slowMovingColumns: TableColumn<SlowMovingItem>[] = [
 ];
 
 export default function AdminDashboardPage() {
+  usePageTitle("Dashboard");
   const { admin, accessToken, hasPermission } = useAdminAuth();
   const canSeeReports = hasPermission("reports.read");
 
@@ -78,7 +80,7 @@ export default function AdminDashboardPage() {
             : "none assigned"}
         </p>
         {links.length > 0 ? (
-          <Card title="Your sections">
+          <Card title="Your sections" headingLevel="h2">
             <ul className={styles.linkList}>
               {links.map((link) => (
                 <li key={link.href}>
@@ -105,15 +107,15 @@ export default function AdminDashboardPage() {
         <Skeleton height="8rem" />
       ) : sales ? (
         <div className={styles.statGrid}>
-          <Card title="Total orders">
+          <Card title="Total orders" headingLevel="h2">
             <span className={styles.statValue}>{sales.total_orders}</span>
           </Card>
-          <Card title="Total revenue">
+          <Card title="Total revenue" headingLevel="h2">
             <span className={styles.statValue}>
               ৳{formatAmount(sales.total_revenue)}
             </span>
           </Card>
-          <Card title="Average order value">
+          <Card title="Average order value" headingLevel="h2">
             <span className={styles.statValue}>
               ৳{formatAmount(sales.average_order_value)}
             </span>
@@ -122,7 +124,7 @@ export default function AdminDashboardPage() {
       ) : null}
 
       {sales && (
-        <Card title="Orders by status">
+        <Card title="Orders by status" headingLevel="h2">
           <div className={styles.statusRow}>
             {Object.entries(sales.orders_by_status).map(([status, count]) => (
               <Badge key={status} tone="neutral">
@@ -139,6 +141,7 @@ export default function AdminDashboardPage() {
         <>
           <Card
             title={`Low stock${inventory.low_stock.length > DASHBOARD_ROW_LIMIT ? ` (${inventory.low_stock.length} total)` : ""}`}
+            headingLevel="h2"
           >
             <Table
               columns={lowStockColumns}
@@ -150,6 +153,7 @@ export default function AdminDashboardPage() {
 
           <Card
             title={`Slow moving${inventory.slow_moving.length > DASHBOARD_ROW_LIMIT ? ` (${inventory.slow_moving.length} total)` : ""}`}
+            headingLevel="h2"
           >
             <Table
               columns={slowMovingColumns}

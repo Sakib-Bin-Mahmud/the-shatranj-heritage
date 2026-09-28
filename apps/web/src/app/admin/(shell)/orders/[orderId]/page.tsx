@@ -10,6 +10,7 @@ import { titleCase } from "@/lib/text-format";
 import { paymentMethodLabelEn } from "@/lib/payment-method-labels";
 import { addressLine } from "@/lib/format-address";
 import { Badge, Skeleton } from "@/components/ui";
+import { usePageTitle } from "@/lib/use-page-title";
 import { StatusSection } from "./status-section";
 import { ShipmentSection } from "./shipment-section";
 import { RefundSection } from "./refund-section";
@@ -27,6 +28,8 @@ export default function AdminOrderDetailPage() {
     queryKey: ["admin-order", orderId],
     queryFn: () => adminGetOrder(orderId, accessToken),
   });
+
+  usePageTitle(order ? `Order ${order.order_number}` : "Order");
 
   if (isLoading) {
     return (

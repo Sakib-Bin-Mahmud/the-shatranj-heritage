@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { apiFetch, ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage, apiFetch } from "@/lib/api-client";
 import type { Customer } from "@/lib/auth-context";
 import { useDictionary } from "@/i18n/dictionary-context";
 import formStyles from "@/components/form.module.css";
@@ -42,7 +42,7 @@ export function ProfileForm({
       await onSaved();
       setMessage(t.successMessage);
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : t.genericError);
+      setError(apiErrorMessage(err, t.genericError));
     } finally {
       setSaving(false);
     }

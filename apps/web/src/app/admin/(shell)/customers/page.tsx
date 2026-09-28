@@ -1,8 +1,9 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { adminListCustomers, type CustomerProfile } from "@/lib/api/customers";
 import { titleCase } from "@/lib/text-format";
@@ -25,6 +26,7 @@ function customerStatusTone(status: string): BadgeTone {
 }
 
 export default function AdminCustomersPage() {
+  usePageTitle("Customers");
   const { accessToken } = useAdminAuth();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
@@ -43,6 +45,7 @@ export default function AdminCustomersPage() {
         },
         accessToken,
       ),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<CustomerProfile>[] = [

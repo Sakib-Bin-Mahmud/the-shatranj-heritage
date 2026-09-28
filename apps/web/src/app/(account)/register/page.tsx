@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
@@ -36,7 +36,7 @@ export default function RegisterPage() {
       });
       router.push("/account");
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : t.genericError);
+      setError(apiErrorMessage(err, t.genericError));
     } finally {
       setSubmitting(false);
     }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { apiFetch, ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage, apiFetch } from "@/lib/api-client";
 import { useDictionary } from "@/i18n/dictionary-context";
 import styles from "@/components/form.module.css";
 
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
         setDebugToken(data.debug_reset_token);
       }
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : t.genericError);
+      setError(apiErrorMessage(err, t.genericError));
     } finally {
       setSubmitting(false);
     }

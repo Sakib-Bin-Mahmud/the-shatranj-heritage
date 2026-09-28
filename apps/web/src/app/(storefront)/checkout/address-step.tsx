@@ -98,28 +98,31 @@ export function AddressStep({
       {isAuthenticated && !useNew && addresses && addresses.length > 0 && (
         <>
           <span>{t.savedHeading}</span>
-          {addresses.map((address: Address) => (
-            <label
-              key={address.id}
-              className={`${styles.optionCard} ${effectiveSelectedId === address.id ? styles.optionCardSelected : ""}`}
-            >
-              <input
-                type="radio"
-                name="saved-address"
-                checked={effectiveSelectedId === address.id}
-                onChange={() => setSelectedAddressId(address.id)}
-              />
-              <div className={styles.optionCardBody}>
-                <span className={styles.optionCardTitle}>
-                  {address.label ? `${address.label} — ` : ""}
-                  {address.recipient_name}
-                </span>
-                <span className={styles.optionCardMeta}>
-                  {address.address_line1}, {address.city}, {address.district}
-                </span>
-              </div>
-            </label>
-          ))}
+          <fieldset className={styles.radioGroup}>
+            <legend className="visually-hidden">{t.savedHeading}</legend>
+            {addresses.map((address: Address) => (
+              <label
+                key={address.id}
+                className={`${styles.optionCard} ${effectiveSelectedId === address.id ? styles.optionCardSelected : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="saved-address"
+                  checked={effectiveSelectedId === address.id}
+                  onChange={() => setSelectedAddressId(address.id)}
+                />
+                <div className={styles.optionCardBody}>
+                  <span className={styles.optionCardTitle}>
+                    {address.label ? `${address.label} — ` : ""}
+                    {address.recipient_name}
+                  </span>
+                  <span className={styles.optionCardMeta}>
+                    {address.address_line1}, {address.city}, {address.district}
+                  </span>
+                </div>
+              </label>
+            ))}
+          </fieldset>
 
           <div className={styles.actionsRow}>
             <Button variant="ghost" onClick={() => setUseNew(true)}>

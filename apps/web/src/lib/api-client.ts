@@ -10,6 +10,25 @@ export class ApiClientError extends Error {
   }
 }
 
+// NETWORK_ERROR and UNKNOWN_ERROR carry a message generated entirely on
+// the client (see apiFetch below) — always English, regardless of the
+// site's locale. Every other ApiClientError code carries a real message
+// from the API, which is intentionally shown verbatim (the backend only
+// speaks English). Call sites use this instead of checking
+// `instanceof ApiClientError` directly, so a network failure or an
+// unparseable response falls back to the caller's own localized string
+// rather than leaking English into a Bangla-locale page.
+export function apiErrorMessage(err: unknown, fallback: string): string {
+  if (
+    err instanceof ApiClientError &&
+    err.code !== "NETWORK_ERROR" &&
+    err.code !== "UNKNOWN_ERROR"
+  ) {
+    return err.message;
+  }
+  return fallback;
+}
+
 type ApiEnvelope<T> =
   | { success: true; message: string; data: T }
   | { success: false; error: { code: string; message: string } };

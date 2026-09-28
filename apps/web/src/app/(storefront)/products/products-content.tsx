@@ -102,6 +102,7 @@ export function ProductsContent() {
               categories={categories}
               activeSlug={filters.category}
               linkTo={(slug) => `/categories/${slug}`}
+              ariaLabel={t.filters.categoryLabel}
             />
           </div>
         )}

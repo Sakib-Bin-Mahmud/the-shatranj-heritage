@@ -68,56 +68,79 @@ export function TimeSeriesChart({
 
   return (
     <div className={styles.chartWrap}>
-      <ResponsiveContainer width="100%" height={260}>
-        <AreaChart
-          data={data}
-          margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid
-            vertical={false}
-            stroke="var(--border-color)"
-            strokeDasharray="0"
-          />
-          <XAxis
-            dataKey="period"
-            tickFormatter={formatPeriodLabel}
-            tick={{ fill: "var(--foreground)", fontSize: 12 }}
-            axisLine={{ stroke: "var(--border-color)" }}
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fill: "var(--foreground)", fontSize: 12 }}
-            axisLine={false}
-            tickLine={false}
-            width={56}
-            tickFormatter={(v: number) => v.toLocaleString("en-US")}
-          />
-          <Tooltip
-            content={
-              <CustomTooltip
-                valueFormatter={valueFormatter}
-                seriesLabel={seriesLabel}
-              />
-            }
-          />
-          <Area
-            type="monotone"
-            dataKey="value"
-            isAnimationActive={false}
-            stroke="var(--color-info)"
-            strokeWidth={2}
-            fill="var(--color-info)"
-            fillOpacity={0.1}
-            dot={{ r: 3, fill: "var(--color-info)", strokeWidth: 0 }}
-            activeDot={{
-              r: 5,
-              fill: "var(--color-info)",
-              stroke: "var(--surface-0)",
-              strokeWidth: 2,
-            }}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      {/* Recharts renders an inert SVG with no text content a screen
+          reader can use, so the actual data is also exposed as a plain
+          table — visually hidden, but the real accessible alternative,
+          not just a one-line summary of the trend. */}
+      <table className="visually-hidden">
+        <caption>{seriesLabel} over time</caption>
+        <thead>
+          <tr>
+            <th scope="col">Period</th>
+            <th scope="col">{seriesLabel}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((point) => (
+            <tr key={point.period}>
+              <td>{formatPeriodLabel(point.period)}</td>
+              <td>{valueFormatter(point.value)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div aria-hidden="true">
+        <ResponsiveContainer width="100%" height={260}>
+          <AreaChart
+            data={data}
+            margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid
+              vertical={false}
+              stroke="var(--border-color)"
+              strokeDasharray="0"
+            />
+            <XAxis
+              dataKey="period"
+              tickFormatter={formatPeriodLabel}
+              tick={{ fill: "var(--foreground)", fontSize: 12 }}
+              axisLine={{ stroke: "var(--border-color)" }}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: "var(--foreground)", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+              width={56}
+              tickFormatter={(v: number) => v.toLocaleString("en-US")}
+            />
+            <Tooltip
+              content={
+                <CustomTooltip
+                  valueFormatter={valueFormatter}
+                  seriesLabel={seriesLabel}
+                />
+              }
+            />
+            <Area
+              type="monotone"
+              dataKey="value"
+              isAnimationActive={false}
+              stroke="var(--color-info)"
+              strokeWidth={2}
+              fill="var(--color-info)"
+              fillOpacity={0.1}
+              dot={{ r: 3, fill: "var(--color-info)", strokeWidth: 0 }}
+              activeDot={{
+                r: 5,
+                fill: "var(--color-info)",
+                stroke: "var(--surface-0)",
+                strokeWidth: 2,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

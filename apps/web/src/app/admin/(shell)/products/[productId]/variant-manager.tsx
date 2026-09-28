@@ -38,6 +38,7 @@ export function VariantManager({ product }: { product: ProductDetail }) {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ProductVariant | null>(null);
   const [form, setForm] = useState<VariantInput>(EMPTY_INPUT);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   function invalidate() {
     queryClient.invalidateQueries({ queryKey: ["admin-product", product.id] });
@@ -45,6 +46,7 @@ export function VariantManager({ product }: { product: ProductDetail }) {
 
   function openCreate() {
     setForm(EMPTY_INPUT);
+    setSuccessMessage(null);
     setCreating(true);
   }
 
@@ -56,6 +58,7 @@ export function VariantManager({ product }: { product: ProductDetail }) {
       weight_grams: variant.weight_grams,
       is_default: variant.is_default,
     });
+    setSuccessMessage(null);
     setEditing(variant);
   }
 
@@ -81,15 +84,21 @@ export function VariantManager({ product }: { product: ProductDetail }) {
           );
     },
     onSuccess: () => {
+      setSuccessMessage(
+        `Variant "${form.variant_name}" ${editing ? "updated" : "added"}.`,
+      );
       invalidate();
       close();
     },
   });
 
   const archiveMutation = useMutation({
-    mutationFn: (variantId: string) =>
-      adminArchiveVariant(product.id, variantId, accessToken),
-    onSuccess: () => invalidate(),
+    mutationFn: (variant: ProductVariant) =>
+      adminArchiveVariant(product.id, variant.id, accessToken),
+    onSuccess: (_, variant) => {
+      setSuccessMessage(`Variant "${variant.variant_name}" archived.`);
+      invalidate();
+    },
   });
 
   const columns: TableColumn<ProductVariant>[] = [
@@ -127,15 +136,21 @@ export function VariantManager({ product }: { product: ProductDetail }) {
       header: "",
       render: (v) => (
         <div className={styles.rowActions}>
-          <Button variant="secondary" size="sm" onClick={() => openEdit(v)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => openEdit(v)}
+            aria-label={`Edit ${v.variant_name}`}
+          >
             Edit
           </Button>
           {v.status === "active" && (
             <Button
               variant="danger"
               size="sm"
-              onClick={() => archiveMutation.mutate(v.id)}
+              onClick={() => archiveMutation.mutate(v)}
               disabled={archiveMutation.isPending}
+              aria-label={`Archive ${v.variant_name}`}
             >
               Archive
             </Button>
@@ -151,6 +166,8 @@ export function VariantManager({ product }: { product: ProductDetail }) {
         <h2>Variants</h2>
         <Button onClick={openCreate}>Add variant</Button>
       </div>
+
+      {successMessage && <Alert tone="success">{successMessage}</Alert>}
 
       <Table
         columns={columns}

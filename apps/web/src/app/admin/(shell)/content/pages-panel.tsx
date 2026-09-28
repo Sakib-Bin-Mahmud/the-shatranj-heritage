@@ -130,7 +130,12 @@ export function PagesPanel({ accessToken }: { accessToken: string | null }) {
       header: "",
       render: (p) => (
         <div className={styles.rowActions}>
-          <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => openEdit(p)}
+            aria-label={`Edit ${p.title}`}
+          >
             Edit
           </Button>
           <Button
@@ -138,6 +143,7 @@ export function PagesPanel({ accessToken }: { accessToken: string | null }) {
             size="sm"
             onClick={() => toggleMutation.mutate(p)}
             disabled={toggleMutation.isPending}
+            aria-label={`${p.is_published ? "Unpublish" : "Publish"} ${p.title}`}
           >
             {p.is_published ? "Unpublish" : "Publish"}
           </Button>

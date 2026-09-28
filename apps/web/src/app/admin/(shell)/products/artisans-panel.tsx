@@ -84,7 +84,12 @@ export function ArtisansPanel({ accessToken }: { accessToken: string | null }) {
       key: "actions",
       header: "",
       render: (a) => (
-        <Button variant="secondary" size="sm" onClick={() => openEdit(a)}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => openEdit(a)}
+          aria-label={`Edit ${a.name}`}
+        >
           Edit
         </Button>
       ),

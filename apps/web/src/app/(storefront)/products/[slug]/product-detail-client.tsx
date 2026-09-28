@@ -12,7 +12,7 @@ import {
   type ProductVariant,
 } from "@/lib/api/catalog";
 import { addCartItem } from "@/lib/api/cart";
-import { ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage } from "@/lib/api-client";
 import { ProductCard } from "@/components/product-card";
 import {
   Alert,
@@ -243,9 +243,7 @@ export function ProductDetailClient({
           {addToCart.isSuccess && <Alert tone="success">{t.addedToCart}</Alert>}
           {addToCart.isError && (
             <Alert tone="danger">
-              {addToCart.error instanceof ApiClientError
-                ? addToCart.error.message
-                : t.addToCartError}
+              {apiErrorMessage(addToCart.error, t.addToCartError)}
             </Alert>
           )}
 

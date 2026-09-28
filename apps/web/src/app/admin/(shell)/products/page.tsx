@@ -1,8 +1,9 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { adminListProducts, type ProductDetail } from "@/lib/api/catalog";
 import {
@@ -28,6 +29,7 @@ function statusTone(status: string): BadgeTone {
 }
 
 export default function AdminProductsPage() {
+  usePageTitle("Products");
   const { accessToken } = useAdminAuth();
   const [tab, setTab] = useState<Tab>("products");
   const [status, setStatus] = useState<StatusFilter>("");
@@ -46,6 +48,7 @@ export default function AdminProductsPage() {
         },
         accessToken,
       ),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<ProductDetail>[] = [
@@ -75,9 +78,17 @@ export default function AdminProductsPage() {
         )}
       </div>
 
-      <nav className={styles.tabs}>
+      <div
+        className={styles.tabs}
+        role="tablist"
+        aria-label="Products sections"
+      >
         <button
           type="button"
+          role="tab"
+          id="tab-products"
+          aria-selected={tab === "products"}
+          aria-controls="tabpanel-products"
           className={`${styles.tab} ${tab === "products" ? styles.tabActive : ""}`}
           onClick={() => setTab("products")}
         >
@@ -85,15 +96,24 @@ export default function AdminProductsPage() {
         </button>
         <button
           type="button"
+          role="tab"
+          id="tab-artisans"
+          aria-selected={tab === "artisans"}
+          aria-controls="tabpanel-artisans"
           className={`${styles.tab} ${tab === "artisans" ? styles.tabActive : ""}`}
           onClick={() => setTab("artisans")}
         >
           Artisans
         </button>
-      </nav>
+      </div>
 
       {tab === "products" ? (
-        <>
+        <div
+          role="tabpanel"
+          id="tabpanel-products"
+          aria-labelledby="tab-products"
+          tabIndex={0}
+        >
           <div className={styles.filters}>
             <TextField
               label="Search"
@@ -135,9 +155,16 @@ export default function AdminProductsPage() {
                 : undefined
             }
           />
-        </>
+        </div>
       ) : (
-        <ArtisansPanel accessToken={accessToken} />
+        <div
+          role="tabpanel"
+          id="tabpanel-artisans"
+          aria-labelledby="tab-artisans"
+          tabIndex={0}
+        >
+          <ArtisansPanel accessToken={accessToken} />
+        </div>
       )}
     </div>
   );

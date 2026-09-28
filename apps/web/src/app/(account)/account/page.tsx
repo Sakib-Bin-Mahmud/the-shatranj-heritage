@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiFetch, ApiClientError } from "@/lib/api-client";
+import { apiErrorMessage, apiFetch } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import { useDictionary } from "@/i18n/dictionary-context";
 import formStyles from "@/components/form.module.css";
@@ -58,9 +58,7 @@ function AccountPageContent() {
       })
       .catch((err) => {
         if (!cancelled) {
-          setAddressesError(
-            err instanceof ApiClientError ? err.message : t.loadError,
-          );
+          setAddressesError(apiErrorMessage(err, t.loadError));
         }
       });
 
@@ -132,9 +130,13 @@ function AccountPageContent() {
         </p>
       </section>
 
-      <nav className={styles.tabs} aria-label={t.sectionsNav}>
+      <div className={styles.tabs} role="tablist" aria-label={t.sectionsNav}>
         <button
           type="button"
+          role="tab"
+          id="tab-profile"
+          aria-selected={tab === "profile"}
+          aria-controls="tabpanel-profile"
           className={`${styles.tab} ${tab === "profile" ? styles.tabActive : ""}`}
           onClick={() => handleTabChange("profile")}
         >
@@ -142,6 +144,10 @@ function AccountPageContent() {
         </button>
         <button
           type="button"
+          role="tab"
+          id="tab-addresses"
+          aria-selected={tab === "addresses"}
+          aria-controls="tabpanel-addresses"
           className={`${styles.tab} ${tab === "addresses" ? styles.tabActive : ""}`}
           onClick={() => handleTabChange("addresses")}
         >
@@ -149,15 +155,25 @@ function AccountPageContent() {
         </button>
         <button
           type="button"
+          role="tab"
+          id="tab-orders"
+          aria-selected={tab === "orders"}
+          aria-controls="tabpanel-orders"
           className={`${styles.tab} ${tab === "orders" ? styles.tabActive : ""}`}
           onClick={() => handleTabChange("orders")}
         >
           {t.tabs.orders}
         </button>
-      </nav>
+      </div>
 
       {tab === "profile" && (
-        <section className={styles.section}>
+        <section
+          className={styles.section}
+          role="tabpanel"
+          id="tabpanel-profile"
+          aria-labelledby="tab-profile"
+          tabIndex={0}
+        >
           <h2>{t.profile.heading}</h2>
           <ProfileForm
             customer={customer}
@@ -167,10 +183,25 @@ function AccountPageContent() {
         </section>
       )}
 
-      {tab === "orders" && <OrdersTab accessToken={accessToken} />}
+      {tab === "orders" && (
+        <div
+          role="tabpanel"
+          id="tabpanel-orders"
+          aria-labelledby="tab-orders"
+          tabIndex={0}
+        >
+          <OrdersTab accessToken={accessToken} />
+        </div>
+      )}
 
       {tab === "addresses" && (
-        <section className={styles.section}>
+        <section
+          className={styles.section}
+          role="tabpanel"
+          id="tabpanel-addresses"
+          aria-labelledby="tab-addresses"
+          tabIndex={0}
+        >
           <h2>{t.addresses.heading}</h2>
           {addressesError && (
             <p className={formStyles.error} role="alert">

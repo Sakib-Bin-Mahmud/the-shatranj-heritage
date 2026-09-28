@@ -53,6 +53,15 @@
   gap: 1.25rem;
 }
 
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .optionCard {
   display: flex;
   align-items: flex-start;

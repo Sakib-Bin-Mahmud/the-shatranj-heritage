@@ -8,6 +8,11 @@ export type CategoryTreeProps = {
   categories: CategoryTreeNode[];
   activeSlug?: string;
   linkTo: (slug: string) => string;
+  // Shared with the (deliberately English-only) admin Content page, so
+  // this is an optional override rather than a useDictionary() call —
+  // storefront callers pass their own localized label, admin passes
+  // nothing and gets the English default.
+  ariaLabel?: string;
 };
 
 function CategoryNode({
@@ -47,9 +52,10 @@ export function CategoryTree({
   categories,
   activeSlug,
   linkTo,
+  ariaLabel = "Categories",
 }: CategoryTreeProps) {
   return (
-    <nav className={styles.tree} aria-label="Categories">
+    <nav className={styles.tree} aria-label={ariaLabel}>
       {categories.map((category) => (
         <CategoryNode
           key={category.id}

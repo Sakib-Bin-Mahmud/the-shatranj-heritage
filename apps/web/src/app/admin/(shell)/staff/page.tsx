@@ -1,7 +1,8 @@
 "use client";
 
+import { usePageTitle } from "@/lib/use-page-title";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import {
   adminListRoles,
@@ -30,6 +31,7 @@ function staffStatusTone(status: string): BadgeTone {
 }
 
 export default function AdminStaffPage() {
+  usePageTitle("Staff & Roles");
   const { accessToken } = useAdminAuth();
   const [tab, setTab] = useState<Tab>("staff");
   const [page, setPage] = useState(1);
@@ -44,6 +46,7 @@ export default function AdminStaffPage() {
   const { data: staffPage, isLoading } = useQuery({
     queryKey: ["admin-staff", page],
     queryFn: () => adminListStaff({ page, limit: PAGE_SIZE }, accessToken),
+    placeholderData: keepPreviousData,
   });
 
   const columns: TableColumn<StaffSummary>[] = [
@@ -75,7 +78,11 @@ export default function AdminStaffPage() {
       key: "actions",
       header: "",
       render: (s) => (
-        <Button variant="secondary" onClick={() => setEditingStaff(s)}>
+        <Button
+          variant="secondary"
+          onClick={() => setEditingStaff(s)}
+          aria-label={`Edit roles for ${s.full_name}`}
+        >
           Edit roles
         </Button>
       ),
@@ -91,9 +98,13 @@ export default function AdminStaffPage() {
         )}
       </div>
 
-      <nav className={styles.tabs}>
+      <div className={styles.tabs} role="tablist" aria-label="Staff sections">
         <button
           type="button"
+          role="tab"
+          id="tab-staff"
+          aria-selected={tab === "staff"}
+          aria-controls="tabpanel-staff"
           className={`${styles.tab} ${tab === "staff" ? styles.tabActive : ""}`}
           onClick={() => setTab("staff")}
         >
@@ -101,55 +112,73 @@ export default function AdminStaffPage() {
         </button>
         <button
           type="button"
+          role="tab"
+          id="tab-roles"
+          aria-selected={tab === "roles"}
+          aria-controls="tabpanel-roles"
           className={`${styles.tab} ${tab === "roles" ? styles.tabActive : ""}`}
           onClick={() => setTab("roles")}
         >
           Roles & Permissions
         </button>
-      </nav>
+      </div>
 
       {tab === "staff" ? (
-        <Table
-          columns={columns}
-          rows={staffPage?.items ?? []}
-          rowKey={(s) => s.id}
-          isLoading={isLoading}
-          emptyTitle="No staff members yet"
-          pagination={
-            staffPage?.meta
-              ? {
-                  page: staffPage.meta.page,
-                  totalPages: staffPage.meta.total_pages,
-                  onPageChange: setPage,
-                }
-              : undefined
-          }
-        />
+        <div
+          role="tabpanel"
+          id="tabpanel-staff"
+          aria-labelledby="tab-staff"
+          tabIndex={0}
+        >
+          <Table
+            columns={columns}
+            rows={staffPage?.items ?? []}
+            rowKey={(s) => s.id}
+            isLoading={isLoading}
+            emptyTitle="No staff members yet"
+            pagination={
+              staffPage?.meta
+                ? {
+                    page: staffPage.meta.page,
+                    totalPages: staffPage.meta.total_pages,
+                    onPageChange: setPage,
+                  }
+                : undefined
+            }
+          />
+        </div>
       ) : (
-        <div className={styles.rolesGrid}>
-          {(roles ?? []).map((role) => (
-            <div key={role.id} className={styles.roleCard}>
-              <span className={styles.roleName}>{titleCase(role.name)}</span>
-              {role.description && (
-                <span className={styles.roleDescription}>
-                  {role.description}
-                </span>
-              )}
-              <div className={styles.roleBadges}>
-                {role.permissions.length > 0 ? (
-                  role.permissions.map((p) => (
-                    <Badge key={p} tone="neutral">
-                      {p}
-                    </Badge>
-                  ))
-                ) : (
+        <div
+          role="tabpanel"
+          id="tabpanel-roles"
+          aria-labelledby="tab-roles"
+          tabIndex={0}
+        >
+          <div className={styles.rolesGrid}>
+            {(roles ?? []).map((role) => (
+              <div key={role.id} className={styles.roleCard}>
+                <span className={styles.roleName}>{titleCase(role.name)}</span>
+                {role.description && (
                   <span className={styles.roleDescription}>
-                    No permissions granted yet.
+                    {role.description}
                   </span>
                 )}
+                <div className={styles.roleBadges}>
+                  {role.permissions.length > 0 ? (
+                    role.permissions.map((p) => (
+                      <Badge key={p} tone="neutral">
+                        {p}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className={styles.roleDescription}>
+                      No permissions granted yet.
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 

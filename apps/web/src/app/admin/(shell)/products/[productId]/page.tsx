@@ -12,6 +12,7 @@ import {
 } from "@/lib/api/catalog";
 import { ApiClientError } from "@/lib/api-client";
 import { Alert, Badge, Button, Skeleton } from "@/components/ui";
+import { usePageTitle } from "@/lib/use-page-title";
 import { ProductForm, type ProductFormValues } from "../product-form";
 import { VariantManager } from "./variant-manager";
 import { ImageManager } from "./image-manager";
@@ -32,6 +33,8 @@ export default function EditProductPage() {
     queryKey: ["admin-product", productId],
     queryFn: () => adminGetProduct(productId, accessToken),
   });
+
+  usePageTitle(product ? product.name : "Product");
 
   const updateMutation = useMutation({
     mutationFn: (values: ProductFormValues) =>
@@ -109,6 +112,7 @@ export default function EditProductPage() {
         error={error}
         submitting={updateMutation.isPending}
       />
+      {updateMutation.isSuccess && <Alert tone="success">Product saved.</Alert>}
 
       <VariantManager product={product} />
       <ImageManager product={product} />

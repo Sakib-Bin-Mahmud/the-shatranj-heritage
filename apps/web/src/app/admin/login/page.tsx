@@ -4,9 +4,11 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ApiClientError } from "@/lib/api-client";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { usePageTitle } from "@/lib/use-page-title";
 import styles from "@/components/form.module.css";
 
 export default function AdminLoginPage() {
+  usePageTitle("Sign in");
   const { status, login } = useAdminAuth();
   const router = useRouter();
 
