@@ -91,6 +91,32 @@ def test_sales_report_counts_confirmed_order_as_revenue(
     assert after["orders_by_status"].get("confirmed", 0) >= 1
 
 
+def test_sales_report_average_order_value_is_rounded_to_cents(
+    client: TestClient,
+    super_admin_credentials,
+    inventory_manager_credentials,
+    content_manager_credentials,
+    order_manager_credentials,
+) -> None:
+    """average_order_value divides total_revenue by an order count that
+    rarely divides evenly, so an unrounded Decimal division can produce
+    long repeating-fraction strings (e.g. "1320.301204819277108433734940")
+    that read as garbage in the UI."""
+    client.cookies.clear()
+    admin_headers = auth_headers(admin_token(client, super_admin_credentials))
+    order_headers = auth_headers(admin_token(client, order_manager_credentials))
+
+    variant, _ = setup_stocked_variant(
+        client, inventory_manager_credentials, content_manager_credentials
+    )
+    _place_and_confirm_cod_order(client, variant_id=variant["id"], order_headers=order_headers)
+
+    after = client.get("/api/v1/admin/reports/sales", headers=admin_headers).json()["data"]
+
+    average = Decimal(after["average_order_value"])
+    assert average.as_tuple().exponent >= -2
+
+
 def test_revenue_report_rejects_invalid_group_by(
     client: TestClient, super_admin_credentials
 ) -> None:

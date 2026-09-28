@@ -10,6 +10,25 @@ export class ApiClientError extends Error {
   }
 }
 
+// NETWORK_ERROR and UNKNOWN_ERROR carry a message generated entirely on
+// the client (see apiFetch below) — always English, regardless of the
+// site's locale. Every other ApiClientError code carries a real message
+// from the API, which is intentionally shown verbatim (the backend only
+// speaks English). Call sites use this instead of checking
+// `instanceof ApiClientError` directly, so a network failure or an
+// unparseable response falls back to the caller's own localized string
+// rather than leaking English into a Bangla-locale page.
+export function apiErrorMessage(err: unknown, fallback: string): string {
+  if (
+    err instanceof ApiClientError &&
+    err.code !== "NETWORK_ERROR" &&
+    err.code !== "UNKNOWN_ERROR"
+  ) {
+    return err.message;
+  }
+  return fallback;
+}
+
 type ApiEnvelope<T> =
   | { success: true; message: string; data: T }
   | { success: false; error: { code: string; message: string } };
@@ -18,15 +37,21 @@ type FetchOptions = {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   accessToken?: string | null;
+  headers?: Record<string, string>;
 };
 
 export async function apiFetch<T>(
   path: string,
   options: FetchOptions = {},
 ): Promise<T> {
-  const { method = "GET", body, accessToken } = options;
+  const { method = "GET", body, accessToken, headers: extraHeaders } = options;
+  const isFormData = body instanceof FormData;
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    // FormData (multipart image uploads) must NOT get an explicit
+    // Content-Type — the browser sets one with the multipart boundary
+    // itself, and overriding it here would drop that boundary.
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    ...extraHeaders,
   };
   if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
@@ -37,7 +62,16 @@ export async function apiFetch<T>(
     response = await fetch(`${apiBaseUrl}/api/v1${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      // The API runs on a different origin in dev (NEXT_PUBLIC_API_URL),
+      // so the guest cart session cookie (see lib/api/cart.ts) needs
+      // "include" explicitly — the fetch default omits credentials on
+      // cross-origin requests.
+      credentials: "include",
+      body: isFormData
+        ? body
+        : body !== undefined
+          ? JSON.stringify(body)
+          : undefined,
     });
   } catch {
     throw new ApiClientError(

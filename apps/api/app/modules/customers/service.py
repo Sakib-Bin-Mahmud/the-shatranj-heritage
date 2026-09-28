@@ -110,7 +110,7 @@ async def delete_address(
 
 
 async def admin_list_customers(
-    session: AsyncSession, *, page: int, limit: int, search: str | None
+    session: AsyncSession, *, page: int, limit: int, search: str | None, status: str | None = None
 ) -> tuple[list[Customer], int]:
     query = select(Customer)
     count_query = select(func.count()).select_from(Customer)
@@ -124,6 +124,10 @@ async def admin_list_customers(
         )
         query = query.where(condition)
         count_query = count_query.where(condition)
+
+    if status:
+        query = query.where(Customer.status == status)
+        count_query = count_query.where(Customer.status == status)
 
     total = await session.scalar(count_query) or 0
     items = await session.scalars(

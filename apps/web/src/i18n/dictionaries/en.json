@@ -12,18 +12,185 @@
     "logIn": "Log in",
     "register": "Register",
     "logOut": "Log out",
-    "account": "Account"
+    "account": "Account",
+    "genericError": "Something went wrong. Please try again.",
+    "footerSupport": "Support",
+    "allRightsReserved": "All rights reserved.",
+    "pagination": {
+      "label": "Pagination",
+      "pageOf": "Page {page} of {totalPages}",
+      "previous": "Previous",
+      "next": "Next"
+    }
   },
   "home": {
-    "heading": "The Shatranj Heritage",
-    "subheading": "Commerce, community, craftsmanship, and education for the chess world.",
-    "apiStatusLabel": "API status",
-    "apiStatusOk": "Connected",
-    "apiStatusError": "Unavailable"
+    "eyebrow": "An Enchanted Collection",
+    "heroHeading": "Step Into the Enchanted Chess Hall",
+    "heroSubheading": "Handcrafted chess sets, carved by master artisans and bound in stories older than the game itself — Bangladesh’s first dedicated home for the noble game.",
+    "heroCta": "Explore the Collection",
+    "artisanPortraitLabel": "[Artisan Portrait]",
+    "mastersEyebrow": "Masters of the Craft",
+    "mastersQuote": "Every board holds a hundred small decisions — the grain, the weight, the balance of a knight in your hand.",
+    "mastersAttribution": "— Abdul Karim, Master Woodcarver, Dhaka",
+    "mastersBadgeLabel": "Handcrafted in Bangladesh",
+    "oathTitle1": "Authentic Craftsmanship",
+    "oathBody1": "Every piece is made by hand — no two boards are ever quite the same.",
+    "oathTitle2": "Heritage of Bangladesh",
+    "oathBody2": "Built in trust with local artisan workshops, generation after generation.",
+    "oathTitle3": "Certified Quality",
+    "oathBody3": "Each set is inspected and guaranteed before it ever reaches your door.",
+    "collectionEyebrow": "The Grand Collection",
+    "collectionTitle": "Relics Fit for the Board",
+    "collectionEmpty": "New pieces are being catalogued — check back soon.",
+    "viewPieceLink": "View piece →",
+    "newsletterHeading": "Join the Circle",
+    "newsletterBody": "New collections, artisan stories, and quiet announcements — sent rarely, and never without reason.",
+    "newsletterPlaceholder": "your@email.com",
+    "newsletterSubmitting": "Subscribing…",
+    "newsletterSubmitButton": "Subscribe",
+    "newsletterSuccessMessage": "You're in. Welcome to the circle."
   },
   "nav": {
     "localeToggleToEnglish": "English",
-    "localeToggleToBangla": "বাংলা"
+    "localeToggleToBangla": "বাংলা",
+    "shop": "Shop",
+    "cart": "Cart",
+    "searchPlaceholder": "Search products…",
+    "searchButton": "Search"
+  },
+  "catalog": {
+    "filters": {
+      "heading": "Filters",
+      "searchLabel": "Search",
+      "categoryLabel": "Category",
+      "allCategories": "All categories",
+      "priceMinLabel": "Min price",
+      "priceMaxLabel": "Max price",
+      "materialLabel": "Material",
+      "materialPlaceholder": "Rosewood, marble…",
+      "inStockOnlyLabel": "In stock only",
+      "featuredOnlyLabel": "Featured only",
+      "sortLabel": "Sort by",
+      "sortRelevance": "Relevance",
+      "sortPriceAsc": "Price: low to high",
+      "sortPriceDesc": "Price: high to low",
+      "sortNewest": "Newest",
+      "sortBestSelling": "Best selling",
+      "sortRating": "Rating",
+      "sortAlphabetical": "Alphabetical",
+      "applyButton": "Apply",
+      "clearButton": "Clear filters"
+    },
+    "listing": {
+      "heading": "The Collection",
+      "resultsCount": "{count} pieces found",
+      "noResultsHeading": "No pieces match your search",
+      "noResultsBody": "Try different filters, or explore these instead.",
+      "suggestedCategoriesHeading": "Browse categories",
+      "suggestedProductsHeading": "Featured pieces"
+    },
+    "stock": {
+      "inStock": "In stock",
+      "lowStock": "Low stock",
+      "outOfStock": "Out of stock"
+    },
+    "product": {
+      "priceLabel": "Price",
+      "quantityLabel": "Quantity",
+      "addToCartButton": "Add to cart",
+      "addingToCart": "Adding…",
+      "addedToCart": "Added to cart.",
+      "addToCartError": "Could not add this to your cart.",
+      "outOfStockButton": "Out of stock",
+      "relatedHeading": "You may also like",
+      "skuLabel": "SKU",
+      "descriptionHeading": "Description",
+      "unavailableVariant": "This combination isn't available.",
+      "viewImageLabel": "View image {index}"
+    },
+    "category": {
+      "backToAll": "All products",
+      "emptyHeading": "No products in this category yet"
+    }
+  },
+  "cart": {
+    "heading": "Your cart",
+    "emptyHeading": "Your cart is empty",
+    "emptyAction": "Browse the collection",
+    "quantityLabel": "Quantity",
+    "removeButton": "Remove",
+    "unavailableLabel": "No longer available",
+    "priceEach": "each",
+    "subtotalLabel": "Subtotal",
+    "shippingLabel": "Estimated shipping",
+    "taxLabel": "Estimated tax",
+    "discountLabel": "Discount",
+    "totalLabel": "Total",
+    "checkoutButton": "Proceed to checkout",
+    "removeError": "Could not remove this item.",
+    "updateError": "Could not update the quantity."
+  },
+  "checkout": {
+    "steps": {
+      "address": "Address",
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "review": "Review"
+    },
+    "backButton": "Back",
+    "continueButton": "Continue",
+    "address": {
+      "heading": "Delivery address",
+      "savedHeading": "Choose a saved address",
+      "useNewButton": "Use a new address",
+      "guestHeading": "Contact & delivery address",
+      "guestEmailLabel": "Email address",
+      "guestPhoneLabel": "Mobile number (optional if email given)",
+      "guestHint": "We'll use this to send your order confirmation and let you look it up later."
+    },
+    "shipping": {
+      "heading": "Shipping method",
+      "standardLabel": "Standard",
+      "expressLabel": "Express",
+      "estimatedDaysLabel": "Estimated delivery",
+      "quoteError": "Could not calculate shipping for this address."
+    },
+    "payment": {
+      "heading": "Payment method",
+      "optionBkash": "bKash",
+      "optionNagad": "Nagad",
+      "optionRocket": "Rocket",
+      "optionCard": "Credit/debit card",
+      "optionCod": "Cash on delivery"
+    },
+    "review": {
+      "heading": "Review your order",
+      "addressHeading": "Delivery address",
+      "shippingHeading": "Shipping",
+      "paymentHeading": "Payment method",
+      "itemsHeading": "Items",
+      "placeOrderButton": "Place order",
+      "placingOrder": "Placing order…",
+      "orderError": "Could not place your order. Please try again."
+    },
+    "stepsNav": "Checkout steps"
+  },
+  "orderConfirmation": {
+    "confirmingHeading": "Confirming your payment…",
+    "confirmingBody": "This can take a few moments — please don't close this page.",
+    "successHeading": "Order confirmed",
+    "successBody": "Thank you — your order has been placed successfully.",
+    "failedHeading": "Payment failed",
+    "failedBody": "Your payment could not be completed. You can try again from your order.",
+    "cancelledHeading": "Payment cancelled",
+    "cancelledBody": "You cancelled the payment. Your order is saved and awaiting payment.",
+    "codHeading": "Order placed",
+    "codBody": "Your order has been placed and will be paid for on delivery.",
+    "orderNumberLabel": "Order number",
+    "totalLabel": "Total",
+    "notFoundHeading": "We couldn't find that order",
+    "continueShoppingButton": "Continue shopping",
+    "viewOrdersButton": "View my orders"
   },
   "auth": {
     "register": {
@@ -108,6 +275,88 @@
         "saveSubmitLabel": "Save address",
         "genericError": "Could not save this address."
       }
-    }
+    },
+    "tabs": {
+      "profile": "Profile",
+      "addresses": "Addresses",
+      "orders": "Orders"
+    },
+    "orders": {
+      "heading": "Order history",
+      "emptyHeading": "No orders yet",
+      "emptyAction": "Start shopping",
+      "loadError": "Could not load your orders.",
+      "columnOrder": "Order",
+      "columnDate": "Date",
+      "columnStatus": "Status",
+      "columnTotal": "Total",
+      "viewButton": "View"
+    },
+    "orderStatus": {
+      "pending": "Pending",
+      "awaiting_payment": "Awaiting payment",
+      "confirmed": "Confirmed",
+      "packed": "Packed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned",
+      "refunded": "Refunded"
+    },
+    "orderDetail": {
+      "backButton": "Back to orders",
+      "heading": "Order",
+      "notFound": "Order not found.",
+      "loadError": "Could not load this order.",
+      "placedOnLabel": "Placed on",
+      "itemsHeading": "Items",
+      "shippingAddressHeading": "Shipping address",
+      "paymentHeading": "Payment",
+      "paymentStatusLabel": "Payment status",
+      "trackingHeading": "Shipment tracking",
+      "trackingCourierLabel": "Courier",
+      "trackingNumberLabel": "Tracking number",
+      "trackingStatusLabel": "Status",
+      "trackingEtaLabel": "Estimated delivery",
+      "noTrackingYet": "Tracking information isn't available yet.",
+      "cancelHeading": "Cancel this order",
+      "cancelBody": "You can cancel this order before it ships. If you already paid, a refund will be requested automatically.",
+      "cancelButton": "Cancel order",
+      "cancelConfirmTitle": "Cancel this order?",
+      "cancelConfirmBody": "This can't be undone. If you already paid, a refund will be requested.",
+      "cancelConfirmButton": "Yes, cancel order",
+      "cancelDismissButton": "Keep order",
+      "cancelSuccessMessage": "Your order has been cancelled.",
+      "cancelError": "Could not cancel this order.",
+      "notCancellableExplanation": "This order can no longer be cancelled — it has already shipped or was already cancelled.",
+      "retryHeading": "Finish your payment",
+      "retryBody": "Your last payment attempt didn't go through. Choose a payment method to try again.",
+      "retryButton": "Retry payment",
+      "retryError": "Could not start a new payment attempt."
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "successful": "Successful",
+      "failed": "Failed",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "shipmentStatus": {
+      "pending": "Pending",
+      "dispatched": "Dispatched",
+      "in_transit": "In transit",
+      "delivered": "Delivered",
+      "failed": "Failed"
+    },
+    "customerStatus": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended"
+    },
+    "sectionsNav": "Account sections"
+  },
+  "legal": {
+    "heading": "Legal & Policies",
+    "empty": "No policy pages published yet"
   }
 }

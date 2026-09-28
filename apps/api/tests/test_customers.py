@@ -194,6 +194,35 @@ def test_admin_can_list_get_and_suspend_customer(
     assert profile.status_code == 401
 
 
+def test_admin_can_filter_customer_list_by_status(
+    client: TestClient, super_admin_credentials
+) -> None:
+    _, active_customer = register_and_login(client)
+    _, suspended_customer = register_and_login(client)
+
+    admin_login = client.post("/api/v1/admin/auth/login", json=super_admin_credentials)
+    admin_headers = auth_headers(admin_login.json()["data"]["access_token"])
+
+    client.patch(
+        f"/api/v1/admin/customers/{suspended_customer['id']}/status",
+        headers=admin_headers,
+        json={"status": "suspended"},
+    )
+
+    suspended_listing = client.get(
+        "/api/v1/admin/customers?status=suspended", headers=admin_headers
+    )
+    assert suspended_listing.status_code == 200
+    suspended_ids = {c["id"] for c in suspended_listing.json()["data"]["items"]}
+    assert suspended_customer["id"] in suspended_ids
+    assert active_customer["id"] not in suspended_ids
+
+    active_listing = client.get("/api/v1/admin/customers?status=active", headers=admin_headers)
+    active_ids = {c["id"] for c in active_listing.json()["data"]["items"]}
+    assert active_customer["id"] in active_ids
+    assert suspended_customer["id"] not in active_ids
+
+
 def test_customer_support_can_read_but_not_manage(
     client: TestClient, customer_support_credentials
 ) -> None:

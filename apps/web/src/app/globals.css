@@ -1,14 +1,4 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+@import "../styles/tokens.css";
 
 html {
   height: 100%;
@@ -40,6 +30,37 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Visually hides content while keeping it in the accessibility tree —
+   for screen-reader-only labels, live-region announcements, and table
+   captions that would otherwise duplicate a visible heading. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 0.5rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--color-accent, #171717);
+  color: var(--color-accent-foreground, #fff);
+  border-radius: 0.25rem;
+  transition: top 0.15s ease-in-out;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {

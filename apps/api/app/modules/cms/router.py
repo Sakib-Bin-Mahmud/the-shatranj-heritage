@@ -33,6 +33,18 @@ async def admin_list_pages(session: AsyncSession = Depends(get_db_session)) -> d
     return success_envelope(data=[PageSummary.model_validate(p).model_dump() for p in pages])
 
 
+@admin_router.get("/{page_id}", dependencies=[Depends(require_permission("cms.write"))])
+async def admin_get_page(
+    page_id: uuid.UUID, session: AsyncSession = Depends(get_db_session)
+) -> dict:
+    """Needed alongside admin_list_pages (which omits `body`, per
+    PageSummary) so the admin UI can prefill an edit form — the public
+    GET /content/pages/{slug} only ever returns published pages, so it
+    can't stand in for this on a draft."""
+    page = await cms_service.get_page_or_404(session, page_id)
+    return success_envelope(data=PageResponse.model_validate(page).model_dump())
+
+
 @admin_router.post("", status_code=201, dependencies=[Depends(require_permission("cms.write"))])
 async def admin_create_page(
     payload: CreatePageRequest, session: AsyncSession = Depends(get_db_session)

@@ -1,0 +1,120 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAdminAuth } from "@/lib/admin-auth-context";
+import {
+  adminAddImage,
+  adminDeleteImage,
+  type ProductDetail,
+} from "@/lib/api/catalog";
+import { ApiClientError } from "@/lib/api-client";
+import {
+  Alert,
+  Badge,
+  Button,
+  CheckboxField,
+  TextField,
+} from "@/components/ui";
+import styles from "../page.module.css";
+
+export function ImageManager({ product }: { product: ProductDetail }) {
+  const { accessToken } = useAdminAuth();
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [altText, setAltText] = useState("");
+  const [isPrimary, setIsPrimary] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function invalidate() {
+    queryClient.invalidateQueries({ queryKey: ["admin-product", product.id] });
+  }
+
+  const uploadMutation = useMutation({
+    mutationFn: (file: File) =>
+      adminAddImage(product.id, { file, altText, isPrimary }, accessToken),
+    onSuccess: () => {
+      invalidate();
+      setAltText("");
+      setIsPrimary(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    },
+    onError: (err) => {
+      setError(
+        err instanceof ApiClientError
+          ? err.message
+          : "Could not upload this image.",
+      );
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (imageId: string) =>
+      adminDeleteImage(product.id, imageId, accessToken),
+    onSuccess: () => invalidate(),
+  });
+
+  return (
+    <div className={styles.section}>
+      <h2>Images</h2>
+
+      <div className={styles.imageGrid}>
+        {product.images.map((image, index) => (
+          <div key={image.id} className={styles.imageCard}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={image.url} alt={image.alt_text ?? ""} />
+            {image.is_primary && (
+              <Badge tone="info" className={styles.imageBadge}>
+                Primary
+              </Badge>
+            )}
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => deleteMutation.mutate(image.id)}
+              disabled={deleteMutation.isPending}
+              aria-label={
+                image.alt_text
+                  ? `Delete image: ${image.alt_text}`
+                  : `Delete image ${index + 1}`
+              }
+            >
+              Delete
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      {error && <Alert tone="danger">{error}</Alert>}
+
+      <div className={styles.uploadRow}>
+        <TextField
+          label="Alt text (optional)"
+          value={altText}
+          onChange={(e) => setAltText(e.target.value)}
+          hint="Describes the image for screen readers. Leave blank to fall back to the product name."
+        />
+        <label>
+          <span className="visually-hidden">Upload image</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setError(null);
+              uploadMutation.mutate(file);
+            }}
+          />
+        </label>
+        <CheckboxField
+          label="Set as primary"
+          checked={isPrimary}
+          onChange={(e) => setIsPrimary(e.target.checked)}
+        />
+        {uploadMutation.isPending && <span role="status">Uploading…</span>}
+      </div>
+    </div>
+  );
+}

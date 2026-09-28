@@ -7,7 +7,7 @@ from app.core.cache import cache_delete_prefix, cache_get_or_set
 from app.core.database import get_db_session
 from app.core.responses import success_envelope
 from app.core.storage import delete_image_url, upload_image_file
-from app.modules.auth.dependencies import require_permission
+from app.modules.auth.dependencies import require_any_permission, require_permission
 from app.modules.catalog import service as catalog_service
 from app.modules.catalog.models import Product
 from app.modules.catalog.schemas import (
@@ -186,8 +186,14 @@ async def get_related_products(
 # --- Admin: categories (Content permission) -----------------------------
 
 
-@admin_router.get("/categories", dependencies=[Depends(require_permission("categories.write"))])
+@admin_router.get(
+    "/categories",
+    dependencies=[Depends(require_any_permission("categories.write", "products.write"))],
+)
 async def admin_list_categories(session: AsyncSession = Depends(get_db_session)) -> dict:
+    """Read-only for either owning role: content_manager (categories.write)
+    edits the tree, but inventory_manager (products.write) still needs
+    to read it to assign a product to a category."""
     categories = await catalog_service.list_categories(session, include_inactive=True)
     return success_envelope(
         data=[CategoryResponse.model_validate(c).model_dump() for c in categories]

@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     # CORS
     cors_allow_origins: list[str] = ["http://localhost:3000"]
 
+    # The customer-facing web app. Used for payment-gateway redirect
+    # targets (success/fail/cancel) — those must point at the frontend,
+    # not at this API, since there's no page to redirect to here.
+    frontend_base_url: str = "http://localhost:3000"
+
     # Database
     database_url: str = "postgresql+asyncpg://shatranj:shatranj@localhost:5432/shatranj_heritage"
 

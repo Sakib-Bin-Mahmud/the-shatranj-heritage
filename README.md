@@ -20,19 +20,42 @@ Beyond selling products, the platform is built to showcase Bangladeshi craftsman
 
 ## Project status
 
-Engineering implementation is underway, following the [Implementation Plan](docs/Implementation%20Plan.md).
+**The V1 (MVP) build is feature-complete: backend Phases 0–8 and frontend Phases F0–F9 are both done**, per the [Implementation Plan](docs/Implementation%20Plan.md) and [Frontend Implementation Plan](docs/Frontend%20Implementation%20Plan.md). What's left before a real launch is stakeholder UAT, production credentials, and the items under [Known limitations](#known-limitations) below — not further engineering on the MVP scope itself.
+
+### Backend (Phases 0–8)
 
 - **Phase 0 (engineering foundations)** — done: monorepo, FastAPI + Next.js skeletons, Docker Compose, CI, linting/formatting.
-- **Phase 1 (Authentication & Customers)** — done: customer registration/login/logout/refresh/forgot-reset-password, admin login, RBAC (roles/permissions), customer profile & address management (self-service and admin), all wired end-to-end through a working Next.js UI.
+- **Phase 1 (Authentication & Customers)** — done: customer registration/login/logout/refresh/forgot-reset-password, admin login, RBAC (roles/permissions), customer profile & address management (self-service and admin).
 - **Phase 2 (Product Catalog & Inventory)** — done: categories (tree, self-referencing), artisans, products & variants with attribute-based filtering, image uploads to S3-compatible storage, public browse/search/filter/sort, and admin inventory management (stock adjustment with a full audit ledger, low-stock reporting).
 - **Phase 3 (Search & Discovery)** — done: Postgres full-text search (weighted, GIN-indexed `tsvector` over product name/description) with relevance ranking, SKU matching, a `featured` filter and flag, and a no-results state that surfaces category and featured-product suggestions instead of a dead end.
-- **Phase 4 (Shopping Cart)** — done: guest (cookie-based) and customer (token-based) carts, add/update/remove items with quantity capped by live inventory, a standalone totals/pricing service (subtotal plus shipping/tax/discount placeholders Checkout will fill in later), self-healing stock revalidation, and a guest cart that merges into the customer's own cart on login/registration.
-- **Phase 5 (Checkout, Payments & Orders)** — done: checkout quote and atomic order placement (guest or customer, row-locked inventory reservation, idempotency-key replay protection), a `PaymentProvider` interface with a real SSLCommerz integration and a fake one for tests, a signature-verified payment webhook that converts a reservation into a real deduction on success, the full order lifecycle (pending → awaiting payment → confirmed → packed → shipped → delivered, with cancellation restoring stock and auto-filing a refund request), and admin order management with audit-logged status transitions.
-- **Phase 6 (Shipping & Fulfillment)** — done: real location- and weight-based shipping cost (admin-configurable rate table, replacing Phase 5's flat placeholder) wired into checkout quote and order placement, a `CourierProvider` interface with a real Pathao integration and a fake one for tests, admin courier assignment (manual tracking number or provider-booked) that moves a packed order to shipped, and shipment tracking through to a delivery confirmation that completes the order.
-- **Phase 7 (Notifications, Admin Portal & Reporting)** — backend done: a push-only notification service (email/SMS logging channel behind a `NotificationChannel` interface) triggered by registration, password reset, order confirmation, payment confirmation, shipment dispatch, and delivery — never blocking the operation that triggered it, and redacting sensitive context (tokens/secrets) before it's persisted to the notification ledger; CMS-lite policy pages (Terms, Privacy, Return, Shipping, Warranty — seeded and publicly readable, satisfying NFR-COM-001) with an admin publish/unpublish workflow; admin staff account creation and role assignment, an audit log viewer, and admin-configurable shipping-rate settings (fulfilling Phase 6's deferred promise); and six admin reporting endpoints (sales, revenue over time, inventory health, customer growth, top-selling products, refund analysis) backed by real SQL aggregations. **Not built in this pass:** the Admin Portal's own Next.js UI (dashboard, product/order/customer/user management screens) — only Phase 1 shipped a customer-facing UI so far, and the Phase 7 admin/reporting APIs above are ready for a UI to wrap them.
-- **Phase 8 (Hardening & MVP Launch Readiness)** — done, scoped to what's real engineering work rather than infrastructure/process this repo can't provide (see below): a security pass (rate limiting extended to reset-password/checkout/order-placement, a startup check that refuses to boot in production with a placeholder secret still in place, a dependency vulnerability scan); a performance pass (missing indexes added on `orders.customer_id`/`orders.status`/`inventory_transactions`, a batched-and-ordered row lock in checkout that also closes a deadlock risk under concurrent overlapping carts, Redis caching for catalog/category reads); a reliability pass (a concurrency test proving five simultaneous checkouts racing for the last unit of stock never oversell); Prometheus metrics at `/metrics` (business counters/gauges for orders, payment outcomes, low stock) with matching alert rules, plus existing Sentry error tracking; tested backup/restore tooling (`apps/api/scripts/`); a deployment runbook and a UAT checklist (`docs/`); and a real accessibility/localization pass on the existing Phase 1 UI (English/Bangla now fully wired with a working locale switcher, `role="alert"`/`role="status"` live regions on dynamic messages, `autoComplete` attributes, dynamic `<html lang>`). **Not done, because it genuinely can't be from inside this environment:** UAT itself (requires real stakeholders — the checklist above is the substitute deliverable), live Grafana dashboards and Alertmanager routing (no Prometheus/Grafana instance exists here — the metrics and alert rules are ready for one), and a11y/l10n QA across a "full customer journey" (most of the storefront still has no UI to QA, per Phase 2–7's own notes above).
+- **Phase 4 (Shopping Cart)** — done: guest (cookie-based) and customer (token-based) carts, add/update/remove items with quantity capped by live inventory, a standalone totals/pricing service, self-healing stock revalidation, and a guest cart that merges into the customer's own cart on login/registration.
+- **Phase 5 (Checkout, Payments & Orders)** — done: checkout quote and atomic order placement (guest or customer, row-locked inventory reservation, idempotency-key replay protection), a `PaymentProvider` interface with a real SSLCommerz integration and a fake one for tests, a signature-verified payment webhook, the full order lifecycle (pending → awaiting payment → confirmed → packed → shipped → delivered, with cancellation restoring stock and auto-filing a refund request), and admin order management with audit-logged status transitions.
+- **Phase 6 (Shipping & Fulfillment)** — done: real location- and weight-based shipping cost (admin-configurable rate table) wired into checkout quote and order placement, a `CourierProvider` interface with a real Pathao integration and a fake one for tests, admin courier assignment, and shipment tracking through to delivery.
+- **Phase 7 (Notifications, Admin Portal APIs & Reporting)** — done: a notification service (behind a `NotificationChannel` interface) triggered by registration, password reset, order/payment confirmation, and shipment events; CMS-lite policy pages with an admin publish/unpublish workflow; admin staff account creation and role assignment, an audit log viewer, admin-configurable shipping rates; and six admin reporting endpoints backed by real SQL aggregations. The Admin Portal *UI* for all of this shipped in Frontend Phases F5–F8, below.
+- **Phase 8 (Hardening & MVP Launch Readiness)** — done, scoped to what's real engineering work rather than infrastructure/process this repo can't provide: a security pass, a performance pass, a reliability pass (concurrency test proving five simultaneous checkouts racing for the last unit of stock never oversell), Prometheus metrics with alert rules, tested backup/restore tooling, a deployment runbook and a UAT checklist. **Not done, because it genuinely can't be from inside this environment:** UAT itself (requires real stakeholders — the checklist is the substitute deliverable) and live Grafana dashboards/Alertmanager routing (no instance exists here — the metrics and alert rules are ready for one).
 
-Next up: Phase 9+ (V2 — Engagement Release, per docs/Implementation Plan.md §5), or building out the customer-facing storefront/Admin Portal UI the backend has been waiting on since Phase 2.
+### Frontend (Phases F0–F9)
+
+- **F0 (Foundations)** — design tokens, shared UI primitives (Button, Field, Table, Modal, etc.), i18n scaffold (English/Bangla).
+- **F1 (Homepage & Marketing)** — homepage, legal/policy pages, newsletter signup.
+- **F2 (Catalog, Search & Discovery)** — product listing with filters, category pages, product detail with variants, search.
+- **F3 (Cart & Checkout)** — cart page, multi-step checkout (address/shipping/payment/review), order confirmation.
+- **F4 (Order Tracking & Account)** — account tabs (profile/addresses/orders), order detail with shipment tracking, cancellation, and payment retry.
+- **F5–F8 (Admin Portal)** — the full operational UI the Phase 7 backend APIs were waiting on: auth-gated shell and dashboard; product/variant/image/category/CMS management; orders, shipping, customers, staff & roles, settings, and a filterable audit log; a reporting & analytics dashboard (Recharts).
+- **F9 (Cross-Cutting Hardening & Launch QA)** — accessibility (focus management, live regions, ARIA on tabs/dialogs/forms, keyboard-reachable everything), full English/Bangla coverage of the storefront, responsive QA (phone-width storefront, tablet-width admin), `next/image` performance pass, and a Playwright end-to-end suite covering the golden paths (guest checkout, logged-in checkout, admin product creation, admin order fulfillment) wired into CI.
+
+See [`docs/Setup Guide.md`](docs/Setup%20Guide.md) to run all of this locally, and [`docs/UAT Checklist.md`](docs/UAT%20Checklist.md) for the launch-readiness checklist (now fully mapped to real pages, not API-only steps).
+
+### Known limitations
+
+Real gaps, not just "not started yet" — worth knowing before treating this as launch-ready:
+
+- **Notifications don't actually send.** The only `NotificationChannel` implementation logs to the database (`notifications_log`); there's no real SMTP/SendGrid/Twilio wiring. Customers never receive a real registration, password-reset, or order-confirmation email/SMS today.
+- **No persistent guest order tracking.** A guest's only order-status view is the confirmation page shown once, right after checkout. There's no emailed link or standalone "track my order" page to return to later.
+- **`best_selling` product sort is a stub** (falls back to newest); there's no `rating` sort since Reviews (V2) doesn't exist yet.
+- **Payment/courier integrations are untested against live services.** `SSLCommerzProvider` and `PathaoCourierProvider` are real implementations, but every automated test runs against their `fake` counterparts (`PAYMENT_PROVIDER=fake` / `COURIER_PROVIDER=fake`) — nobody has round-tripped a real sandbox call from this codebase yet.
+- **No live monitoring stack.** Prometheus metrics and alert rules are correct and ready, but no Grafana/Alertmanager instance exists to point them at.
+- Wishlist, Reviews & Ratings, and a Loyalty Program are explicitly **V2 backlog** (see Roadmap below), not MVP gaps.
 
 ## Documentation
 
@@ -46,7 +69,11 @@ Full product and engineering requirements live in [`docs/`](docs/):
 | [Product Backlog & User Stories](docs/Product%20Backlog%20and%20User%20Stories.md) | Epics, user stories, and MVP scope for implementation |
 | [Entity Relationship Diagram & Database Schema](docs/Entity%20Relationship%20Diagram%20and%20Database%20Schema.md) | ERD and field-level PostgreSQL schema, ready for migrations |
 | [API Specification](docs/API%20Specification.md) | REST endpoint contract, conventions, and request/response shapes |
-| [Implementation Plan](docs/Implementation%20Plan.md) | Phased, sequenced engineering plan from empty repo to MVP launch and beyond |
+| [Implementation Plan](docs/Implementation%20Plan.md) | Phased, sequenced backend engineering plan from empty repo to MVP launch and beyond |
+| [Frontend Implementation Plan](docs/Frontend%20Implementation%20Plan.md) | Phased Next.js frontend plan (storefront + Admin Portal) built against the backend above |
+| [Deployment Runbook](docs/Deployment%20Runbook.md) | Staging→production promotion, rollback, and on-call procedures |
+| [UAT Checklist](docs/UAT%20Checklist.md) | Launch-readiness checklist mapped to real pages/endpoints, for a stakeholder to run |
+| [Setup Guide](docs/Setup%20Guide.md) | Practical local dev setup: environment variables, running the stack, tests, and troubleshooting |
 
 ## Planned technology stack
 
@@ -71,9 +98,10 @@ The initial architecture is a **modular monolith** rather than microservices, to
 
 ```
 apps/
-  api/   FastAPI backend — modular monolith (app/modules/<domain>/...)
-  web/   Next.js (App Router, TypeScript) frontend
-docs/    Product & engineering requirements (PVD, BRD, SRS, ERD, API spec, implementation plan)
+  api/          FastAPI backend — modular monolith (app/modules/<domain>/...)
+  web/          Next.js (App Router, TypeScript) frontend — storefront + Admin Portal
+  web/tests/e2e Playwright golden-path end-to-end suite
+docs/    Product & engineering requirements (PVD, BRD, SRS, ERD, API spec, implementation plans, setup guide)
 docker-compose.yml   Local dev environment: Postgres, Redis, MinIO, API, web
 ```
 
@@ -81,11 +109,17 @@ docker-compose.yml   Local dev environment: Postgres, Redis, MinIO, API, web
 
 **Prerequisites:** Docker, or Python 3.11+ and Node.js 22+ for running the apps outside containers.
 
+This section is the quick version — for environment variable reference, bootstrapping an admin account, running the Playwright suite, and troubleshooting, see the **[Setup Guide](docs/Setup%20Guide.md)**.
+
 ### Full stack via Docker Compose
 
 ```bash
 cp .env.example .env
 docker compose up --build
+
+# First run only (or after pulling new migrations) — the api
+# container does not run these automatically on startup:
+docker compose exec api alembic upgrade head
 ```
 
 This starts Postgres, Redis, MinIO, the API (`http://localhost:8000`), and the web app (`http://localhost:3000`). A one-off `minio-init` service creates the object storage bucket on first run.
@@ -126,13 +160,17 @@ ruff check . && ruff format --check . && pytest -q
 
 # Web — from apps/web
 npm run lint && npm run typecheck && npm run format && npm run build
+
+# Web E2E (golden paths) — from apps/web, full stack already running
+npx playwright install --with-deps chromium   # first run only
+npm run test:e2e
 ```
 
 Optionally install [pre-commit](https://pre-commit.com/) hooks (`pre-commit install`) to run the same checks automatically before each commit.
 
 ## Roadmap
 
-- **V1 (MVP)** — Product catalog, search, cart, checkout, payments, order management, inventory, admin dashboard
+- **V1 (MVP)** — Product catalog, search, cart, checkout, payments, order management, inventory, admin dashboard. **Built and feature-complete** (see Project status above); what remains is UAT, production credentials, and the [Known limitations](#known-limitations).
 - **V2** — Wishlist, reviews & ratings, coupons, blogs & buying guides, richer CMS
 - **V3** — Multi-vendor marketplace for artisans, mobile apps, AI-powered recommendations, regional (South Asia) expansion
 

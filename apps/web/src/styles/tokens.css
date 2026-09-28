@@ -1,0 +1,60 @@
+/*
+ * Functional token set — the plain, clean palette used everywhere except
+ * the marketing surfaces (see theme.css for the Enchanted Chess Hall
+ * theme). Catalog, cart, checkout, account, and the entire Admin Portal
+ * all build on these tokens.
+ */
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Surface levels */
+  --surface-0: #ffffff;
+  --surface-1: #f7f7f8;
+  --surface-2: #eeeef0;
+  --border-color: #dcdce0;
+
+  /* Semantic status colors */
+  --color-success: #1e7a34;
+  --color-success-bg: #e6f4ea;
+  --color-warning: #8a5a00;
+  --color-warning-bg: #fff4e0;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fce8e6;
+  --color-info: #1a5fb4;
+  --color-info-bg: #e8f0fc;
+
+  /* Brand accent (functional surfaces only — the theme set overrides
+     this on marketing routes) */
+  --color-accent: #171717;
+  --color-accent-foreground: #ffffff;
+
+  --focus-ring: #1a5fb4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    --surface-0: #0a0a0a;
+    --surface-1: #151517;
+    --surface-2: #202024;
+    --border-color: #333338;
+
+    --color-success: #4ade80;
+    --color-success-bg: #123321;
+    --color-warning: #fbbf24;
+    --color-warning-bg: #3a2a06;
+    --color-danger: #f87171;
+    --color-danger-bg: #3a1412;
+    --color-info: #7db8f8;
+    --color-info-bg: #0f2743;
+
+    --color-accent: #ededed;
+    --color-accent-foreground: #0a0a0a;
+
+    --focus-ring: #7db8f8;
+  }
+}

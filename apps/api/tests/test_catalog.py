@@ -136,6 +136,21 @@ def test_inventory_manager_cannot_write_categories(
     assert response.json()["error"]["code"] == "FORBIDDEN"
 
 
+def test_inventory_manager_can_list_categories(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials
+):
+    """inventory_manager can't create/edit categories, but still needs
+    to read the list to assign a product to one — see
+    require_any_permission in app/modules/auth/dependencies.py."""
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    category = create_category(client, content_headers)
+
+    inv_headers = auth_headers(admin_token(client, inventory_manager_credentials))
+    response = client.get("/api/v1/admin/categories", headers=inv_headers)
+    assert response.status_code == 200, response.text
+    assert any(c["id"] == category["id"] for c in response.json()["data"])
+
+
 # --- Products & variants -------------------------------------------------
 
 

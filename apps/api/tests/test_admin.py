@@ -119,6 +119,94 @@ def test_assign_roles_updates_staff_and_records_audit_log(
     assert matching[0]["after"]["roles"] == ["order_manager"]
 
 
+def _create_fresh_super_admin(client: TestClient, super_admin_credentials: dict) -> tuple[str, str]:
+    """Creates a throwaway super_admin via the API (never the
+    session-scoped super_admin_credentials fixture itself) so
+    self-lockout tests can attempt to strip their own staff.manage
+    permission without any risk of corrupting the shared fixture other
+    tests in this session depend on."""
+    headers = auth_headers(admin_token(client, super_admin_credentials))
+    email = unique_email("self-lockout-admin")
+    password = "SuperSecret123"
+    staff = client.post(
+        "/api/v1/admin/users",
+        headers=headers,
+        json={
+            "email": email,
+            "password": password,
+            "full_name": "Self Lockout Admin",
+            "role_names": ["super_admin"],
+        },
+    ).json()["data"]
+    token = admin_token(client, {"email": email, "password": password})
+    return staff["id"], token
+
+
+def test_admin_can_reassign_other_staff_roles_freely(
+    client: TestClient, super_admin_credentials
+) -> None:
+    """The self-lockout guard must only apply when staff_id == actor's
+    own id — reassigning someone else's roles, including away from
+    staff.manage entirely, is unaffected."""
+    staff_id, token = _create_fresh_super_admin(client, super_admin_credentials)
+    other_admin_headers = auth_headers(token)
+
+    email = unique_email("staff")
+    other_staff = client.post(
+        "/api/v1/admin/users",
+        headers=other_admin_headers,
+        json={
+            "email": email,
+            "password": "StaffPass123",
+            "full_name": "Someone Else",
+            "role_names": ["super_admin"],
+        },
+    ).json()["data"]
+
+    response = client.patch(
+        f"/api/v1/admin/users/{other_staff['id']}/roles",
+        headers=other_admin_headers,
+        json={"role_names": ["customer_support"]},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["data"]["roles"] == ["customer_support"]
+
+
+def test_admin_cannot_remove_own_staff_manage_role(
+    client: TestClient, super_admin_credentials
+) -> None:
+    staff_id, token = _create_fresh_super_admin(client, super_admin_credentials)
+    headers = auth_headers(token)
+
+    response = client.patch(
+        f"/api/v1/admin/users/{staff_id}/roles",
+        headers=headers,
+        json={"role_names": ["customer_support"]},
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["error"]["code"] == "SELF_LOCKOUT_FORBIDDEN"
+
+    # Confirm the reassignment was NOT applied — the token still carries
+    # staff.manage and can call this same endpoint again.
+    still_works = client.get("/api/v1/admin/roles", headers=headers)
+    assert still_works.status_code == 200
+
+
+def test_admin_can_reassign_own_roles_retaining_staff_manage(
+    client: TestClient, super_admin_credentials
+) -> None:
+    staff_id, token = _create_fresh_super_admin(client, super_admin_credentials)
+    headers = auth_headers(token)
+
+    response = client.patch(
+        f"/api/v1/admin/users/{staff_id}/roles",
+        headers=headers,
+        json={"role_names": ["super_admin", "order_manager"]},
+    )
+    assert response.status_code == 200, response.text
+    assert sorted(response.json()["data"]["roles"]) == ["order_manager", "super_admin"]
+
+
 def test_non_super_admin_cannot_create_staff(
     client: TestClient, content_manager_credentials
 ) -> None:

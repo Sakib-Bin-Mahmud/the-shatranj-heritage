@@ -11,6 +11,7 @@ from app.modules.cms.router import router as cms_router
 from app.modules.customers.router import admin_router as customers_admin_router
 from app.modules.customers.router import router as customers_router
 from app.modules.inventory.router import router as inventory_router
+from app.modules.newsletter.router import router as newsletter_router
 from app.modules.orders.router import admin_router as orders_admin_router
 from app.modules.orders.router import checkout_router
 from app.modules.orders.router import router as orders_router
@@ -38,5 +39,6 @@ for module_router in (
     cms_admin_router,
     admin_router,
     reports_router,
+    newsletter_router,
 ):
     api_router.include_router(module_router)

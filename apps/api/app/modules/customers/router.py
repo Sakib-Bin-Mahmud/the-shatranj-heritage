@@ -93,11 +93,12 @@ async def admin_list_customers(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=20, ge=1, le=100),
     search: str | None = Query(default=None),
+    status: str | None = Query(default=None, pattern="^(active|inactive|suspended)$"),
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """FR-ADM-004."""
     items, total = await customers_service.admin_list_customers(
-        session, page=page, limit=limit, search=search
+        session, page=page, limit=limit, search=search, status=status
     )
     total_pages = (total + limit - 1) // limit if total else 0
     return success_envelope(

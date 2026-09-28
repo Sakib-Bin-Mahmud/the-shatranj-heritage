@@ -25,6 +25,7 @@ from app.modules.catalog import models as catalog_models  # noqa: E402, F401
 from app.modules.cms import models as cms_models  # noqa: E402, F401
 from app.modules.customers import models as customers_models  # noqa: E402, F401
 from app.modules.inventory import models as inventory_models  # noqa: E402, F401
+from app.modules.newsletter import models as newsletter_models  # noqa: E402, F401
 from app.modules.notifications import models as notifications_models  # noqa: E402, F401
 from app.modules.orders import models as orders_models  # noqa: E402, F401
 from app.modules.payments import models as payments_models  # noqa: E402, F401

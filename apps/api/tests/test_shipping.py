@@ -246,6 +246,64 @@ def test_assign_courier_ships_order_and_uses_manual_tracking_number(
     assert order_after["status"] == "shipped"
 
 
+def test_admin_can_read_back_an_assigned_shipment(
+    client: TestClient,
+    inventory_manager_credentials,
+    content_manager_credentials,
+    order_manager_credentials,
+):
+    """Every other shipment endpoint only returns one as the side
+    effect of changing it — this is the only way to see an order's
+    current shipment on a fresh page load."""
+    client.cookies.clear()
+    variant, _ = setup_stocked_variant(
+        client, inventory_manager_credentials, content_manager_credentials
+    )
+    order_headers = auth_headers(admin_token(client, order_manager_credentials))
+    order_detail = place_packed_order(
+        client, variant_id=variant["id"], customer_headers={}, order_headers=order_headers
+    )
+
+    client.post(
+        f"/api/v1/admin/orders/{order_detail['id']}/shipment",
+        headers=order_headers,
+        json={"courier_name": "Pathao", "tracking_number": "PATHAO-READBACK-1"},
+    )
+
+    response = client.get(
+        f"/api/v1/admin/orders/{order_detail['id']}/shipment", headers=order_headers
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["data"]["tracking_number"] == "PATHAO-READBACK-1"
+
+
+def test_admin_get_shipment_404s_before_assignment(
+    client: TestClient,
+    inventory_manager_credentials,
+    content_manager_credentials,
+    order_manager_credentials,
+):
+    client.cookies.clear()
+    variant, _ = setup_stocked_variant(
+        client, inventory_manager_credentials, content_manager_credentials
+    )
+    order_headers = auth_headers(admin_token(client, order_manager_credentials))
+    order_detail = place_packed_order(
+        client, variant_id=variant["id"], customer_headers={}, order_headers=order_headers
+    )
+
+    response = client.get(
+        f"/api/v1/admin/orders/{order_detail['id']}/shipment", headers=order_headers
+    )
+    assert response.status_code == 404
+
+
+def test_non_order_manager_cannot_read_shipment(client: TestClient, customer_support_credentials):
+    headers = auth_headers(admin_token(client, customer_support_credentials))
+    response = client.get(f"/api/v1/admin/orders/{uuid.uuid4()}/shipment", headers=headers)
+    assert response.status_code == 403
+
+
 def test_assign_courier_without_tracking_number_uses_provider(
     client: TestClient,
     inventory_manager_credentials,

@@ -12,18 +12,185 @@
     "logIn": "লগইন",
     "register": "নিবন্ধন",
     "logOut": "লগআউট",
-    "account": "অ্যাকাউন্ট"
+    "account": "অ্যাকাউন্ট",
+    "genericError": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+    "footerSupport": "সহায়তা",
+    "allRightsReserved": "সর্বস্বত্ব সংরক্ষিত।",
+    "pagination": {
+      "label": "পৃষ্ঠা নেভিগেশন",
+      "pageOf": "পৃষ্ঠা {page}, মোট {totalPages}",
+      "previous": "পূর্ববর্তী",
+      "next": "পরবর্তী"
+    }
   },
   "home": {
-    "heading": "দ্য শতরঞ্জ হেরিটেজ",
-    "subheading": "দাবা বিশ্বের জন্য বাণিজ্য, সম্প্রদায়, কারুশিল্প এবং শিক্ষা।",
-    "apiStatusLabel": "API অবস্থা",
-    "apiStatusOk": "সংযুক্ত",
-    "apiStatusError": "অনুপলব্ধ"
+    "eyebrow": "একটি জাদুকরী সংগ্রহ",
+    "heroHeading": "জাদুকরী দাবা মহলে প্রবেশ করুন",
+    "heroSubheading": "নিপুণ কারিগরদের হাতে তৈরি দাবার সেট, খেলাটির চেয়েও পুরনো গল্পে বাঁধা — বাংলাদেশের প্রথম উৎসর্গীকৃত দাবার আবাস।",
+    "heroCta": "সংগ্রহ দেখুন",
+    "artisanPortraitLabel": "[কারিগরের প্রতিকৃতি]",
+    "mastersEyebrow": "কারুশিল্পের গুরুরা",
+    "mastersQuote": "প্রতিটি বোর্ডে লুকিয়ে থাকে শতাধিক ছোট সিদ্ধান্ত — কাঠের বুনন, ওজন, হাতে ধরা নাইটের ভারসাম্য।",
+    "mastersAttribution": "— আব্দুল করিম, প্রধান কাঠশিল্পী, ঢাকা",
+    "mastersBadgeLabel": "বাংলাদেশে হাতে তৈরি",
+    "oathTitle1": "খাঁটি কারুকার্য",
+    "oathBody1": "প্রতিটি সেট হাতে তৈরি — কোনো দুটি বোর্ড কখনও একরকম হয় না।",
+    "oathTitle2": "বাংলাদেশের ঐতিহ্য",
+    "oathBody2": "স্থানীয় কারিগর কর্মশালার সাথে বিশ্বাসের ভিত্তিতে গড়ে তোলা, প্রজন্মের পর প্রজন্ম।",
+    "oathTitle3": "প্রত্যয়িত মান",
+    "oathBody3": "প্রতিটি সেট আপনার দরজায় পৌঁছানোর আগে পরীক্ষিত ও নিশ্চিত।",
+    "collectionEyebrow": "মহান সংগ্রহ",
+    "collectionTitle": "বোর্ডের যোগ্য নিদর্শন",
+    "collectionEmpty": "নতুন সামগ্রী তালিকাভুক্ত করা হচ্ছে — শীঘ্রই আবার দেখুন।",
+    "viewPieceLink": "সামগ্রীটি দেখুন →",
+    "newsletterHeading": "বৃত্তে যোগ দিন",
+    "newsletterBody": "নতুন সংগ্রহ, কারিগরদের গল্প, আর মাঝে মাঝে দেওয়া ঘোষণা — খুব কম পাঠানো হয়, আর কারণ ছাড়া কখনও নয়।",
+    "newsletterPlaceholder": "your@email.com",
+    "newsletterSubmitting": "সাবস্ক্রাইব করা হচ্ছে…",
+    "newsletterSubmitButton": "সাবস্ক্রাইব করুন",
+    "newsletterSuccessMessage": "আপনি যুক্ত হয়েছেন। বৃত্তে স্বাগতম।"
   },
   "nav": {
     "localeToggleToEnglish": "English",
-    "localeToggleToBangla": "বাংলা"
+    "localeToggleToBangla": "বাংলা",
+    "shop": "কেনাকাটা",
+    "cart": "কার্ট",
+    "searchPlaceholder": "পণ্য খুঁজুন…",
+    "searchButton": "খুঁজুন"
+  },
+  "catalog": {
+    "filters": {
+      "heading": "ফিল্টার",
+      "searchLabel": "খুঁজুন",
+      "categoryLabel": "ক্যাটাগরি",
+      "allCategories": "সব ক্যাটাগরি",
+      "priceMinLabel": "সর্বনিম্ন মূল্য",
+      "priceMaxLabel": "সর্বোচ্চ মূল্য",
+      "materialLabel": "উপাদান",
+      "materialPlaceholder": "রোজউড, মার্বেল…",
+      "inStockOnlyLabel": "শুধু স্টকে থাকা",
+      "featuredOnlyLabel": "শুধু বিশেষ পণ্য",
+      "sortLabel": "সাজান",
+      "sortRelevance": "প্রাসঙ্গিকতা",
+      "sortPriceAsc": "মূল্য: কম থেকে বেশি",
+      "sortPriceDesc": "মূল্য: বেশি থেকে কম",
+      "sortNewest": "নতুন",
+      "sortBestSelling": "সর্বাধিক বিক্রিত",
+      "sortRating": "রেটিং",
+      "sortAlphabetical": "বর্ণানুক্রমিক",
+      "applyButton": "প্রয়োগ করুন",
+      "clearButton": "ফিল্টার মুছুন"
+    },
+    "listing": {
+      "heading": "সংগ্রহ",
+      "resultsCount": "{count}টি পণ্য পাওয়া গেছে",
+      "noResultsHeading": "আপনার অনুসন্ধানের সাথে মিলে এমন কিছু পাওয়া যায়নি",
+      "noResultsBody": "ভিন্ন ফিল্টার ব্যবহার করুন, অথবা এগুলো দেখুন।",
+      "suggestedCategoriesHeading": "ক্যাটাগরি দেখুন",
+      "suggestedProductsHeading": "বিশেষ পণ্য"
+    },
+    "stock": {
+      "inStock": "স্টকে আছে",
+      "lowStock": "সীমিত স্টক",
+      "outOfStock": "স্টক নেই"
+    },
+    "product": {
+      "priceLabel": "মূল্য",
+      "quantityLabel": "পরিমাণ",
+      "addToCartButton": "কার্টে যোগ করুন",
+      "addingToCart": "যোগ করা হচ্ছে…",
+      "addedToCart": "কার্টে যোগ করা হয়েছে।",
+      "addToCartError": "এটি কার্টে যোগ করা যায়নি।",
+      "outOfStockButton": "স্টক নেই",
+      "relatedHeading": "আপনার পছন্দ হতে পারে",
+      "skuLabel": "SKU",
+      "descriptionHeading": "বিবরণ",
+      "unavailableVariant": "এই সমন্বয়টি উপলব্ধ নেই।",
+      "viewImageLabel": "ছবি {index} দেখুন"
+    },
+    "category": {
+      "backToAll": "সব পণ্য",
+      "emptyHeading": "এই বিভাগে এখনও কোনো পণ্য নেই"
+    }
+  },
+  "cart": {
+    "heading": "আপনার কার্ট",
+    "emptyHeading": "আপনার কার্ট খালি",
+    "emptyAction": "সংগ্রহ ব্রাউজ করুন",
+    "quantityLabel": "পরিমাণ",
+    "removeButton": "সরান",
+    "unavailableLabel": "আর উপলব্ধ নেই",
+    "priceEach": "প্রতিটি",
+    "subtotalLabel": "সাবটোটাল",
+    "shippingLabel": "আনুমানিক শিপিং",
+    "taxLabel": "আনুমানিক কর",
+    "discountLabel": "ছাড়",
+    "totalLabel": "মোট",
+    "checkoutButton": "চেকআউট করুন",
+    "removeError": "এই আইটেমটি সরানো যায়নি।",
+    "updateError": "পরিমাণ হালনাগাদ করা যায়নি।"
+  },
+  "checkout": {
+    "steps": {
+      "address": "ঠিকানা",
+      "shipping": "শিপিং",
+      "payment": "পেমেন্ট",
+      "review": "পর্যালোচনা"
+    },
+    "backButton": "পিছনে",
+    "continueButton": "এগিয়ে যান",
+    "address": {
+      "heading": "ডেলিভারি ঠিকানা",
+      "savedHeading": "একটি সংরক্ষিত ঠিকানা বেছে নিন",
+      "useNewButton": "নতুন ঠিকানা ব্যবহার করুন",
+      "guestHeading": "যোগাযোগ ও ডেলিভারি ঠিকানা",
+      "guestEmailLabel": "ইমেইল ঠিকানা",
+      "guestPhoneLabel": "মোবাইল নম্বর (ইমেইল দেওয়া থাকলে ঐচ্ছিক)",
+      "guestHint": "আপনার অর্ডার নিশ্চিতকরণ পাঠাতে এবং পরে খুঁজে বের করতে এটি ব্যবহার করা হবে।"
+    },
+    "shipping": {
+      "heading": "শিপিং পদ্ধতি",
+      "standardLabel": "স্ট্যান্ডার্ড",
+      "expressLabel": "এক্সপ্রেস",
+      "estimatedDaysLabel": "আনুমানিক ডেলিভারি",
+      "quoteError": "এই ঠিকানার জন্য শিপিং খরচ হিসাব করা যায়নি।"
+    },
+    "payment": {
+      "heading": "পেমেন্ট পদ্ধতি",
+      "optionBkash": "বিকাশ",
+      "optionNagad": "নগদ",
+      "optionRocket": "রকেট",
+      "optionCard": "ক্রেডিট/ডেবিট কার্ড",
+      "optionCod": "ক্যাশ অন ডেলিভারি"
+    },
+    "review": {
+      "heading": "আপনার অর্ডার পর্যালোচনা করুন",
+      "addressHeading": "ডেলিভারি ঠিকানা",
+      "shippingHeading": "শিপিং",
+      "paymentHeading": "পেমেন্ট পদ্ধতি",
+      "itemsHeading": "আইটেম",
+      "placeOrderButton": "অর্ডার করুন",
+      "placingOrder": "অর্ডার করা হচ্ছে…",
+      "orderError": "আপনার অর্ডার করা যায়নি। আবার চেষ্টা করুন।"
+    },
+    "stepsNav": "চেকআউট ধাপ"
+  },
+  "orderConfirmation": {
+    "confirmingHeading": "আপনার পেমেন্ট নিশ্চিত করা হচ্ছে…",
+    "confirmingBody": "এতে কিছুটা সময় লাগতে পারে — দয়া করে এই পাতাটি বন্ধ করবেন না।",
+    "successHeading": "অর্ডার নিশ্চিত হয়েছে",
+    "successBody": "ধন্যবাদ — আপনার অর্ডারটি সফলভাবে করা হয়েছে।",
+    "failedHeading": "পেমেন্ট ব্যর্থ হয়েছে",
+    "failedBody": "আপনার পেমেন্ট সম্পন্ন করা যায়নি। আপনি আপনার অর্ডার থেকে আবার চেষ্টা করতে পারেন।",
+    "cancelledHeading": "পেমেন্ট বাতিল হয়েছে",
+    "cancelledBody": "আপনি পেমেন্ট বাতিল করেছেন। আপনার অর্ডার সংরক্ষিত আছে এবং পেমেন্টের অপেক্ষায়।",
+    "codHeading": "অর্ডার করা হয়েছে",
+    "codBody": "আপনার অর্ডার করা হয়েছে এবং ডেলিভারির সময় পরিশোধ করতে হবে।",
+    "orderNumberLabel": "অর্ডার নম্বর",
+    "totalLabel": "মোট",
+    "notFoundHeading": "আমরা এই অর্ডারটি খুঁজে পাইনি",
+    "continueShoppingButton": "কেনাকাটা চালিয়ে যান",
+    "viewOrdersButton": "আমার অর্ডার দেখুন"
   },
   "auth": {
     "register": {
@@ -108,6 +275,88 @@
         "saveSubmitLabel": "ঠিকানা সংরক্ষণ করুন",
         "genericError": "এই ঠিকানাটি সংরক্ষণ করা যায়নি।"
       }
-    }
+    },
+    "tabs": {
+      "profile": "প্রোফাইল",
+      "addresses": "ঠিকানা",
+      "orders": "অর্ডার"
+    },
+    "orders": {
+      "heading": "অর্ডারের ইতিহাস",
+      "emptyHeading": "এখনও কোনো অর্ডার নেই",
+      "emptyAction": "কেনাকাটা শুরু করুন",
+      "loadError": "আপনার অর্ডারগুলো লোড করা যায়নি।",
+      "columnOrder": "অর্ডার",
+      "columnDate": "তারিখ",
+      "columnStatus": "অবস্থা",
+      "columnTotal": "মোট",
+      "viewButton": "দেখুন"
+    },
+    "orderStatus": {
+      "pending": "অপেক্ষমাণ",
+      "awaiting_payment": "পেমেন্টের অপেক্ষায়",
+      "confirmed": "নিশ্চিত হয়েছে",
+      "packed": "প্যাক করা হয়েছে",
+      "shipped": "পাঠানো হয়েছে",
+      "delivered": "ডেলিভার হয়েছে",
+      "cancelled": "বাতিল হয়েছে",
+      "returned": "ফেরত দেওয়া হয়েছে",
+      "refunded": "টাকা ফেরত দেওয়া হয়েছে"
+    },
+    "orderDetail": {
+      "backButton": "অর্ডারে ফিরে যান",
+      "heading": "অর্ডার",
+      "notFound": "অর্ডার পাওয়া যায়নি।",
+      "loadError": "এই অর্ডারটি লোড করা যায়নি।",
+      "placedOnLabel": "অর্ডার করা হয়েছে",
+      "itemsHeading": "পণ্যসমূহ",
+      "shippingAddressHeading": "ডেলিভারি ঠিকানা",
+      "paymentHeading": "পেমেন্ট",
+      "paymentStatusLabel": "পেমেন্টের অবস্থা",
+      "trackingHeading": "শিপমেন্ট ট্র্যাকিং",
+      "trackingCourierLabel": "কুরিয়ার",
+      "trackingNumberLabel": "ট্র্যাকিং নম্বর",
+      "trackingStatusLabel": "অবস্থা",
+      "trackingEtaLabel": "প্রত্যাশিত ডেলিভারি",
+      "noTrackingYet": "এখনও ট্র্যাকিং তথ্য পাওয়া যায়নি।",
+      "cancelHeading": "এই অর্ডারটি বাতিল করুন",
+      "cancelBody": "শিপ হওয়ার আগে আপনি এই অর্ডারটি বাতিল করতে পারেন। ইতিমধ্যে পেমেন্ট করা হয়ে থাকলে স্বয়ংক্রিয়ভাবে রিফান্ডের অনুরোধ করা হবে।",
+      "cancelButton": "অর্ডার বাতিল করুন",
+      "cancelConfirmTitle": "এই অর্ডারটি বাতিল করবেন?",
+      "cancelConfirmBody": "এটি আর ফিরিয়ে নেওয়া যাবে না। ইতিমধ্যে পেমেন্ট করা হয়ে থাকলে রিফান্ডের অনুরোধ করা হবে।",
+      "cancelConfirmButton": "হ্যাঁ, অর্ডার বাতিল করুন",
+      "cancelDismissButton": "অর্ডার রাখুন",
+      "cancelSuccessMessage": "আপনার অর্ডারটি বাতিল করা হয়েছে।",
+      "cancelError": "এই অর্ডারটি বাতিল করা যায়নি।",
+      "notCancellableExplanation": "এই অর্ডারটি আর বাতিল করা যাবে না — এটি ইতিমধ্যে পাঠানো হয়েছে অথবা আগেই বাতিল হয়ে গেছে।",
+      "retryHeading": "আপনার পেমেন্ট সম্পন্ন করুন",
+      "retryBody": "আপনার শেষ পেমেন্ট প্রচেষ্টাটি সম্পন্ন হয়নি। আবার চেষ্টা করতে একটি পেমেন্ট পদ্ধতি বেছে নিন।",
+      "retryButton": "পেমেন্ট আবার চেষ্টা করুন",
+      "retryError": "নতুন পেমেন্ট প্রচেষ্টা শুরু করা যায়নি।"
+    },
+    "paymentStatus": {
+      "pending": "অপেক্ষমাণ",
+      "successful": "সফল",
+      "failed": "ব্যর্থ",
+      "refunded": "টাকা ফেরত দেওয়া হয়েছে",
+      "cancelled": "বাতিল হয়েছে"
+    },
+    "shipmentStatus": {
+      "pending": "অপেক্ষমাণ",
+      "dispatched": "প্রেরিত",
+      "in_transit": "পরিবহনে আছে",
+      "delivered": "ডেলিভার হয়েছে",
+      "failed": "ব্যর্থ"
+    },
+    "customerStatus": {
+      "active": "সক্রিয়",
+      "inactive": "নিষ্ক্রিয়",
+      "suspended": "স্থগিত"
+    },
+    "sectionsNav": "অ্যাকাউন্ট বিভাগ"
+  },
+  "legal": {
+    "heading": "আইনি ও নীতিমালা",
+    "empty": "এখনও কোনো নীতিমালা প্রকাশিত হয়নি"
   }
 }

@@ -1,0 +1,19 @@
+.card {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--surface-0);
+  padding: 1.25rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+}
