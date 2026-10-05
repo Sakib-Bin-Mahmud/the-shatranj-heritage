@@ -114,6 +114,7 @@ The API listens on `:8000`, the web app on `:3000`. If you started the infrastru
 | Variable | Default | Notes |
 | --- | --- | --- |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | |
+| `API_INTERNAL_URL` | unset (falls back to `NEXT_PUBLIC_API_URL`) | API address for server-side rendering only. Leave unset for native runs; docker-compose sets it to `http://api:8000`, since `localhost` inside the `web` container isn't the API |
 
 `NEXT_PUBLIC_ASSET_BASE_URL` isn't in `apps/web/.env.example` because its code default (`http://localhost:9000`) already matches MinIO's default port — only set it if you've moved MinIO elsewhere.
 

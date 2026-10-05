@@ -88,6 +88,9 @@ services:
       - api
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      # Server-side rendering runs inside this container, where
+      # `localhost` isn't the API — reach it over the compose network.
+      API_INTERNAL_URL: http://api:8000
     ports:
       - "3000:3000"
 

@@ -1,9 +1,11 @@
 """Seed a local database with demo catalog, customer, and order data.
 
 For local development and demos only — every person, artisan, and
-order here is fictional. Refuses to run when ENVIRONMENT=production or
-when the demo data is already present. Run from apps/api (so `app`
-resolves as a package), after `alembic upgrade head`:
+order here is fictional. Refuses to run when ENVIRONMENT=production.
+Safe to re-run: catalog/customer/order data is skipped once present, and
+product images are only attached to demo products that have none. Run
+from apps/api (so `app` resolves as a package), after `alembic upgrade
+head`:
 
     python -m scripts.seed_demo_data
 
@@ -11,32 +13,38 @@ Inside the docker-compose stack:
 
     docker compose exec api python -m scripts.seed_demo_data
 
-Products are seeded without photos (the storefront falls back to its ♞
-placeholder); upload real images through the admin portal.
+Product images are illustrations from scripts/demo_images/ (see
+generate.py there), uploaded to object storage the same way the admin
+portal's image upload does — so MinIO must be running.
 
 Every demo customer signs in with the password in DEMO_CUSTOMER_PASSWORD.
 """
 
 import asyncio
+import io
 import re
 import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+from starlette.datastructures import Headers, UploadFile
 
 from app.core.config import get_settings
 from app.core.database import AsyncSessionLocal
+from app.core.storage import upload_image_file
 
 # Registers `admin_users`, which inventory/payments models reference by
 # foreign key, so the mapper can resolve it at flush time.
 from app.modules.auth import models as auth_models  # noqa: F401
 from app.modules.auth.security import hash_password
 from app.modules.catalog.models import Artisan, Category, Product, ProductVariant
-from app.modules.catalog.service import effective_price, effective_weight
+from app.modules.catalog.service import add_image, effective_price, effective_weight
 from app.modules.customers.models import Customer, CustomerAddress
 from app.modules.inventory.models import Inventory, InventoryTransaction
 from app.modules.newsletter.models import NewsletterSubscriber
@@ -463,6 +471,32 @@ PRODUCTS: list[ProductSeed] = [
         ],
     ),
 ]
+
+
+DEMO_IMAGES_DIR = Path(__file__).resolve().parent / "demo_images"
+
+# Product SKU -> image file stems (in DEMO_IMAGES_DIR) in gallery order;
+# the first is the primary image. A stem that is also a variant SKU
+# becomes that variant's image.
+PRODUCT_IMAGES: dict[str, list[str]] = {
+    "SH-WCS-001": ["SH-WCS-001-1", "SH-WCS-001-2"],
+    "SH-WCS-002": ["SH-WCS-002-NAT", "SH-WCS-002-EBN", "SH-WCS-002-2"],
+    "SH-WCS-003": ["SH-WCS-003-1"],
+    "SH-BMS-001": ["SH-BMS-001-ANT", "SH-BMS-001-POL", "SH-BMS-001-2"],
+    "SH-BMS-002": ["SH-BMS-002-1", "SH-BMS-002-2"],
+    "SH-TCS-001": ["SH-TCS-001-MAR", "SH-TCS-001-IND", "SH-TCS-001-SAF"],
+    "SH-TCS-002": ["SH-TCS-002-1"],
+    "SH-CB-001": ["SH-CB-001-1"],
+    "SH-CB-002": ["SH-CB-002-1"],
+    "SH-CP-001": ["SH-CP-001-1", "SH-CP-001-2"],
+    "SH-CP-002": ["SH-CP-002-1"],
+    "SH-SB-001": ["SH-SB-001-1"],
+    "SH-SB-002": ["SH-SB-002-1"],
+    "SH-CC-001": ["SH-CC-001-1"],
+    "SH-CC-002": ["SH-CC-002-1"],
+    "SH-WCS-099": ["SH-WCS-099-1"],
+    "SH-TCS-090": ["SH-TCS-090-1"],
+}
 
 
 # --- Customers -------------------------------------------------------------
@@ -973,27 +1007,74 @@ async def _seed_orders(
     await session.flush()
 
 
+async def _seed_images(session: AsyncSession) -> int:
+    """Attaches each demo product's illustrations, primary first. A
+    product that already has any image is left alone, so this never
+    duplicates images or overrides ones uploaded through the admin
+    portal."""
+    products = await session.scalars(
+        select(Product)
+        .where(Product.sku.in_(PRODUCT_IMAGES))
+        .options(selectinload(Product.images), selectinload(Product.variants))
+    )
+    uploaded = 0
+    for product in products:
+        if product.images:
+            continue
+        variants_by_sku = {variant.sku: variant for variant in product.variants}
+        images = []
+        for sort_order, stem in enumerate(PRODUCT_IMAGES[product.sku]):
+            variant = variants_by_sku.get(stem)
+            file = UploadFile(
+                io.BytesIO((DEMO_IMAGES_DIR / f"{stem}.webp").read_bytes()),
+                filename=f"{stem}.webp",
+                headers=Headers({"content-type": "image/webp"}),
+            )
+            url = await upload_image_file(file, key_prefix=f"products/{product.id}")
+            image = await add_image(
+                session,
+                product.id,
+                url=url,
+                alt_text=f"{product.name} — {variant.variant_name}" if variant else product.name,
+                is_primary=sort_order == 0,
+                product_variant_id=variant.id if variant else None,
+            )
+            image.sort_order = sort_order
+            images.append(image)
+            uploaded += 1
+        # add_image decides "first image -> primary" from the product's
+        # loaded `images`, which doesn't see images added earlier in this
+        # same session — so every one claims primary and the last wins.
+        # Set the flags explicitly instead.
+        for image in images:
+            image.is_primary = image is images[0]
+    await session.flush()
+    return uploaded
+
+
 async def seed_demo_data() -> None:
     async with AsyncSessionLocal() as session:
         if await session.scalar(select(Category).where(Category.slug == MARKER_CATEGORY_SLUG)):
             print(
-                f"Demo data already present (category {MARKER_CATEGORY_SLUG!r} exists).",
-                file=sys.stderr,
+                f"Demo data already present (category {MARKER_CATEGORY_SLUG!r} exists) — "
+                "skipping catalog, customers, and orders."
             )
-            raise SystemExit(1)
+        else:
+            variants = await _seed_catalog(session)
+            customers = await _seed_customers(session)
+            await _seed_orders(session, customers, variants)
+            session.add_all(NewsletterSubscriber(email=email) for email in NEWSLETTER_EMAILS)
+            await session.commit()
+            print(
+                f"Seeded {len(CATEGORIES)} categories, {len(ARTISANS)} artisans, "
+                f"{len(PRODUCTS)} products, {len(CUSTOMERS)} customers, {len(ORDERS)} orders, "
+                f"and {len(NEWSLETTER_EMAILS)} newsletter subscribers."
+            )
+            print(f"Demo customers sign in with password {DEMO_CUSTOMER_PASSWORD!r}.")
 
-        variants = await _seed_catalog(session)
-        customers = await _seed_customers(session)
-        await _seed_orders(session, customers, variants)
-        session.add_all(NewsletterSubscriber(email=email) for email in NEWSLETTER_EMAILS)
+        uploaded = await _seed_images(session)
         await session.commit()
-
-    print(
-        f"Seeded {len(CATEGORIES)} categories, {len(ARTISANS)} artisans, "
-        f"{len(PRODUCTS)} products, {len(CUSTOMERS)} customers, {len(ORDERS)} orders, "
-        f"and {len(NEWSLETTER_EMAILS)} newsletter subscribers."
-    )
-    print(f"Demo customers sign in with password {DEMO_CUSTOMER_PASSWORD!r}.")
+        print(f"Uploaded {uploaded} product images.")
 
 
 def main() -> None:
