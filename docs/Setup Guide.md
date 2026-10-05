@@ -86,9 +86,9 @@ The API listens on `:8000`, the web app on `:3000`. If you started the infrastru
 | `JWT_SECRET_KEY` | `change-me-in-every-environment` | Must be changed for anything beyond local dev — the API refuses to boot in production with this literal placeholder value |
 | `SENTRY_DSN` | empty | Leave empty locally; error tracking is a no-op without it |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Passed to the `web` container; must be reachable from the **browser**, not just from other containers |
-| `NEXT_PUBLIC_ASSET_BASE_URL` | `http://localhost:9000` | Same constraint — must resolve from the browser. Used by `next.config.ts` to allowlist the image host for `next/image`'s optimizer |
+| `NEXT_PUBLIC_ASSET_BASE_URL` | `http://localhost:9000` | Same constraint — must resolve from the browser. Passed to the `api` container as `S3_PUBLIC_BASE_URL` (the base of every image URL it returns) and used by `next.config.ts` to allowlist the image host for `next/image` |
 
-### `apps/api/.env` (native runs; docker-compose overrides `DATABASE_URL`/`REDIS_URL`/`S3_ENDPOINT_URL` itself)
+### `apps/api/.env` (native runs; docker-compose overrides `DATABASE_URL`/`REDIS_URL`/`S3_ENDPOINT_URL`/`S3_PUBLIC_BASE_URL` itself)
 
 | Variable | Default | Notes |
 | --- | --- | --- |
@@ -99,6 +99,7 @@ The API listens on `:8000`, the web app on `:3000`. If you started the infrastru
 | `DATABASE_URL` | `postgresql+asyncpg://shatranj:shatranj@localhost:5432/shatranj_heritage` | |
 | `REDIS_URL` | `redis://localhost:6379/0` | |
 | `S3_ENDPOINT_URL` / `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_BUCKET_NAME` | see `.env.example` | MinIO connection |
+| `S3_PUBLIC_BASE_URL` | unset (falls back to `S3_ENDPOINT_URL`) | Base of the image URLs the API returns. Set it when browsers reach storage at a different address than the API does (a CDN, or MinIO behind docker-compose) |
 | `JWT_SECRET_KEY` / `JWT_ALGORITHM` / `ACCESS_TOKEN_EXPIRE_MINUTES` / `REFRESH_TOKEN_EXPIRE_DAYS` | see `.env.example` | |
 | `PAYMENT_PROVIDER` | `sslcommerz` | Set to `fake` for local dev/testing without hitting a real gateway — see [below](#payment--courier-providers-fake-vs-real) |
 | `SSLCOMMERZ_STORE_ID` / `SSLCOMMERZ_STORE_PASSWORD` / `SSLCOMMERZ_API_BASE_URL` / `SSLCOMMERZ_IS_LIVE` | `testbox` / `qwerty` / `https://sandbox.sslcommerz.com` / `false` | SSLCommerz's own public sandbox credentials — only relevant when `PAYMENT_PROVIDER=sslcommerz` |
@@ -206,7 +207,7 @@ The storefront (not the Admin Portal, which is deliberately English-only) is ful
 
 **"Could not connect to Redis" / `pg_isready` fails on a fresh container.** If you're not using Docker Compose for infra, make sure Postgres and Redis are actually running (`service postgresql start`, `service redis-server start` on a bare Linux box) before starting the API.
 
-**Images don't load / 500 from `/_next/image`.** Next.js's image optimizer blocks loopback/private-IP hosts by default (a real SSRF protection, not a bug). `next.config.ts` already allows this for local dev when `NEXT_PUBLIC_ASSET_BASE_URL` resolves to `localhost`/a private IP. If images still fail with a `500` (not a `400`), check that MinIO is actually running and the bucket exists — that's an environment problem, not a config one.
+**Images don't load.** When `NEXT_PUBLIC_ASSET_BASE_URL` is `localhost`/a private IP (local MinIO), `next.config.ts` turns image optimization off and the browser loads images straight from MinIO — Next's optimizer can't reach `localhost:9000` from inside the `web` container. So check the image URL itself: it should start with `NEXT_PUBLIC_ASSET_BASE_URL`, not `http://minio:9000` (if it does, the image was uploaded before `S3_PUBLIC_BASE_URL` existed — re-upload it). If the URL is right but 404s/refuses, check that MinIO is running and the bucket exists.
 
 **`429 RATE_LIMITED` while testing login/register/checkout by hand.** Several endpoints (login, register, forgot-password, reset-password, order placement) are rate-limited per the SRS's security requirements. This is expected under rapid manual re-testing or repeated E2E runs — wait for the window to clear (most are 10 requests/60s).
 

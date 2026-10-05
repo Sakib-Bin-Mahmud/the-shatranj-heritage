@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     s3_access_key: str = "minioadmin"
     s3_secret_key: str = "minioadmin"
     s3_bucket_name: str = "shatranj-heritage"
+    # Base of the image URLs handed to browsers, when that differs from
+    # the endpoint this API talks to — e.g. in docker-compose the API
+    # reaches MinIO at http://minio:9000, which no browser can resolve.
+    # Unset means "same as s3_endpoint_url".
+    s3_public_base_url: str | None = None
 
     # Auth
     jwt_secret_key: str = "change-me-in-every-environment"

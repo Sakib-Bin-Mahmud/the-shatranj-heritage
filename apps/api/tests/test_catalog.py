@@ -1,7 +1,12 @@
 import io
 import uuid
 
+import pytest
+from botocore.exceptions import ClientError
 from fastapi.testclient import TestClient
+
+from app.core.config import get_settings
+from app.core.storage import get_s3_client
 
 FAKE_JPEG_BYTES = b"\xff\xd8\xff\xe0fake-jpeg-content-for-testing"
 
@@ -568,6 +573,35 @@ def test_image_upload_sets_primary_and_delete_removes_it(
     )
     assert deleted.status_code == 200
     assert deleted.json()["data"]["images"] == []
+
+
+def test_image_urls_use_public_base_url_when_set(
+    client: TestClient, inventory_manager_credentials, content_manager_credentials, monkeypatch
+):
+    settings = get_settings()
+    monkeypatch.setattr(settings, "s3_public_base_url", "http://cdn.example.test/")
+    inv_headers = auth_headers(admin_token(client, inventory_manager_credentials))
+    content_headers = auth_headers(admin_token(client, content_manager_credentials))
+    category = create_category(client, content_headers)
+    product = create_product(client, inv_headers, category["id"])
+
+    upload = client.post(
+        f"/api/v1/admin/products/{product['id']}/images",
+        headers=inv_headers,
+        files={"file": ("test.jpg", io.BytesIO(FAKE_JPEG_BYTES), "image/jpeg")},
+    )
+    assert upload.status_code == 201, upload.text
+    image = upload.json()["data"]["images"][0]
+    prefix = f"http://cdn.example.test/{settings.s3_bucket_name}/"
+    assert image["url"].startswith(prefix)
+
+    # Deleting must still map the public URL back to the stored object.
+    key = image["url"][len(prefix) :]
+    client.delete(
+        f"/api/v1/admin/products/{product['id']}/images/{image['id']}", headers=inv_headers
+    )
+    with pytest.raises(ClientError):
+        get_s3_client().head_object(Bucket=settings.s3_bucket_name, Key=key)
 
 
 def test_image_upload_rejects_unsupported_type(

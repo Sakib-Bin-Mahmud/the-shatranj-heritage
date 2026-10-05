@@ -31,6 +31,12 @@ def get_s3_client():
     )
 
 
+def _public_url_prefix() -> str:
+    settings = get_settings()
+    base_url = (settings.s3_public_base_url or settings.s3_endpoint_url).rstrip("/")
+    return f"{base_url}/{settings.s3_bucket_name}/"
+
+
 def ensure_bucket_exists() -> None:
     settings = get_settings()
     client = get_s3_client()
@@ -78,14 +84,14 @@ async def upload_image_file(file: UploadFile, key_prefix: str) -> str:
             status_code=500, code="STORAGE_ERROR", message="Could not store image."
         ) from exc
 
-    return f"{settings.s3_endpoint_url}/{settings.s3_bucket_name}/{key}"
+    return f"{_public_url_prefix()}{key}"
 
 
 def delete_image_url(url: str) -> None:
     """Best-effort delete — a missing/unparseable object is not an error
     worth failing the caller's request over."""
     settings = get_settings()
-    prefix = f"{settings.s3_endpoint_url}/{settings.s3_bucket_name}/"
+    prefix = _public_url_prefix()
     if not url.startswith(prefix):
         return
 
